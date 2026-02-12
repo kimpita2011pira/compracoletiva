@@ -1,5 +1,4 @@
 import { useAuth } from "@/hooks/useAuth";
-import { Navigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ShoppingBag, Store, Shield, LogOut, Wallet, Package } from "lucide-react";
 
@@ -13,8 +12,6 @@ const Index = () => {
       </div>
     );
   }
-
-  if (!user) return <Navigate to="/auth" replace />;
 
   const isVendedor = roles.includes("VENDEDOR");
   const isAdmin = roles.includes("ADMIN");
