@@ -8,6 +8,7 @@ import Auth from "./pages/Auth";
 import VendorDashboard from "./pages/VendorDashboard";
 import VendorOnboarding from "./pages/VendorOnboarding";
 import AdminDashboard from "./pages/AdminDashboard";
+import OffersMarketplace from "./pages/OffersMarketplace";
 import NotFound from "./pages/NotFound";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 
@@ -25,6 +26,7 @@ const App = () => (
           <Route path="/vendor" element={<ProtectedRoute requiredRole="VENDEDOR"><VendorDashboard /></ProtectedRoute>} />
           <Route path="/vendor/onboarding" element={<ProtectedRoute requiredRole="VENDEDOR"><VendorOnboarding /></ProtectedRoute>} />
           <Route path="/admin" element={<ProtectedRoute requiredRole="ADMIN"><AdminDashboard /></ProtectedRoute>} />
+          <Route path="/offers" element={<ProtectedRoute><OffersMarketplace /></ProtectedRoute>} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

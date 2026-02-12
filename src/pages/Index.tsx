@@ -51,6 +51,7 @@ const Index = () => {
           title="Ofertas Ativas"
           description="Veja as melhores ofertas disponíveis agora"
           color="primary"
+          onClick={() => navigate("/offers")}
         />
         <QuickCard
           icon={<Wallet className="h-8 w-8" />}
