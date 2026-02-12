@@ -1,9 +1,11 @@
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { ShoppingBag, Store, Shield, LogOut, Wallet, Package } from "lucide-react";
 
 const Index = () => {
   const { user, loading, roles, signOut } = useAuth();
+  const navigate = useNavigate();
 
   if (loading) {
     return (
@@ -68,6 +70,7 @@ const Index = () => {
             title="Área do Vendedor"
             description="Gerencie suas ofertas e vendas"
             color="primary"
+            onClick={() => navigate("/vendor")}
           />
         )}
         {isAdmin && (
@@ -88,11 +91,13 @@ function QuickCard({
   title,
   description,
   color,
+  onClick,
 }: {
   icon: React.ReactNode;
   title: string;
   description: string;
   color: "primary" | "secondary" | "accent";
+  onClick?: () => void;
 }) {
   const bgMap = {
     primary: "bg-primary/10 text-primary",
@@ -100,7 +105,7 @@ function QuickCard({
     accent: "bg-accent/10 text-accent",
   };
   return (
-    <div className="group cursor-pointer rounded-xl border-2 border-transparent bg-card p-6 shadow-sm transition-all hover:border-primary/30 hover:shadow-md">
+    <div onClick={onClick} className="group cursor-pointer rounded-xl border-2 border-transparent bg-card p-6 shadow-sm transition-all hover:border-primary/30 hover:shadow-md">
       <div className={`mb-4 inline-flex rounded-xl p-3 ${bgMap[color]}`}>{icon}</div>
       <h3 className="font-display text-lg font-bold">{title}</h3>
       <p className="mt-1 text-sm text-muted-foreground">{description}</p>
