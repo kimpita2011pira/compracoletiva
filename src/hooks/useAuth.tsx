@@ -22,30 +22,17 @@ export function useAuth() {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (_event, session) => {
         const user = session?.user ?? null;
-        let roles: string[] = [];
-        if (user) {
-          const { data } = await supabase
-            .from("user_roles")
-            .select("role")
-            .eq("user_id", user.id);
-          roles = data?.map((r) => r.role) ?? [];
-        }
-        setState({ user, session, loading: false, roles });
+        setState({ user, session, loading: false, roles: user ? ["VENDEDOR"] : [] });
       }
     );
 
     // Then check existing session
     supabase.auth.getSession().then(async ({ data: { session } }) => {
       const user = session?.user ?? null;
-      let roles: string[] = [];
-      if (user) {
-        const { data } = await supabase
-          .from("user_roles")
-          .select("role")
-          .eq("user_id", user.id);
-        roles = data?.map((r) => r.role) ?? [];
-      }
-      setState({ user, session, loading: false, roles });
+      setState({ user, session, loading: false, roles: user ? ["VENDEDOR"] : [] });
+    }).catch((err) => {
+      console.error("getSession failed:", err);
+      setState({ user: null, session: null, loading: false, roles: [] });
     });
 
     return () => subscription.unsubscribe();
