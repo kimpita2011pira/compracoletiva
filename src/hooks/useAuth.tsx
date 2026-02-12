@@ -9,6 +9,23 @@ interface AuthState {
   roles: string[];
 }
 
+async function fetchRoles(userId: string): Promise<string[]> {
+  try {
+    const { data, error } = await supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", userId);
+    if (error) {
+      console.error("Failed to fetch roles:", error);
+      return [];
+    }
+    return data?.map((r) => r.role) ?? [];
+  } catch (err) {
+    console.error("Role fetch exception:", err);
+    return [];
+  }
+}
+
 export function useAuth() {
   const [state, setState] = useState<AuthState>({
     user: null,
@@ -18,18 +35,18 @@ export function useAuth() {
   });
 
   useEffect(() => {
-    // Set up listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (_event, session) => {
         const user = session?.user ?? null;
-        setState({ user, session, loading: false, roles: user ? ["VENDEDOR"] : [] });
+        const roles = user ? await fetchRoles(user.id) : [];
+        setState({ user, session, loading: false, roles });
       }
     );
 
-    // Then check existing session
     supabase.auth.getSession().then(async ({ data: { session } }) => {
       const user = session?.user ?? null;
-      setState({ user, session, loading: false, roles: user ? ["VENDEDOR"] : [] });
+      const roles = user ? await fetchRoles(user.id) : [];
+      setState({ user, session, loading: false, roles });
     }).catch((err) => {
       console.error("getSession failed:", err);
       setState({ user: null, session: null, loading: false, roles: [] });
