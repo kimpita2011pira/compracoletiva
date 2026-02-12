@@ -79,6 +79,7 @@ const Index = () => {
             title="Painel Admin"
             description="Dashboard e gestão da plataforma"
             color="accent"
+            onClick={() => navigate("/admin")}
           />
         )}
       </section>
