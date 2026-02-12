@@ -11,15 +11,27 @@ export function useVendor() {
     queryKey: ["vendor", user?.id],
     queryFn: async () => {
       if (!user) return null;
-      const { data, error } = await supabase
-        .from("vendors")
-        .select("*")
-        .eq("user_id", user.id)
-        .maybeSingle();
-      if (error) throw error;
-      return data as Tables<"vendors"> | null;
+      try {
+        console.log("Fetching vendor for user:", user.id);
+        const { data, error } = await supabase
+          .from("vendors")
+          .select("*")
+          .eq("user_id", user.id)
+          .maybeSingle();
+        if (error) {
+          console.error("Vendor fetch error:", error);
+          throw error;
+        }
+        console.log("Vendor data received:", data);
+        return data as Tables<"vendors"> | null;
+      } catch (err) {
+        console.error("Vendor query failed:", err);
+        throw err;
+      }
     },
     enabled: !!user,
+    retry: 1,
+    staleTime: 1000 * 60 * 5, // 5 minutes
   });
 
   const registerVendor = useMutation({
