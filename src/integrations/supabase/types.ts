@@ -384,6 +384,15 @@ export type Database = {
         }
         Returns: boolean
       }
+      reserve_offer: {
+        Args: {
+          p_address_id?: string
+          p_delivery_type: Database["public"]["Enums"]["delivery_type"]
+          p_offer_id: string
+          p_quantity: number
+        }
+        Returns: string
+      }
     }
     Enums: {
       app_role: "CLIENTE" | "VENDEDOR" | "ADMIN"
