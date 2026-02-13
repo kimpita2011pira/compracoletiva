@@ -58,6 +58,7 @@ const Index = () => {
           title="Minha Carteira"
           description="Gerencie seu saldo e extrato"
           color="secondary"
+          onClick={() => navigate("/wallet")}
         />
         <QuickCard
           icon={<Package className="h-8 w-8" />}
