@@ -1,7 +1,9 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useOffers } from "@/hooks/useOffers";
 import type { OfferWithVendor } from "@/hooks/useOffers";
+import ReserveOfferModal from "@/components/ReserveOfferModal";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
@@ -21,6 +23,7 @@ export default function OffersMarketplace() {
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
   const { data: offers, isLoading } = useOffers();
+  const [selectedOffer, setSelectedOffer] = useState<OfferWithVendor | null>(null);
 
   return (
     <div className="min-h-screen bg-background">
@@ -85,16 +88,24 @@ export default function OffersMarketplace() {
         {offers && offers.length > 0 && (
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {offers.map((offer) => (
-              <OfferCard key={offer.id} offer={offer} />
+              <OfferCard key={offer.id} offer={offer} onReserve={setSelectedOffer} />
             ))}
           </div>
+        )}
+
+        {selectedOffer && (
+          <ReserveOfferModal
+            offer={selectedOffer}
+            open={!!selectedOffer}
+            onOpenChange={(open) => !open && setSelectedOffer(null)}
+          />
         )}
       </main>
     </div>
   );
 }
 
-function OfferCard({ offer }: { offer: OfferWithVendor }) {
+function OfferCard({ offer, onReserve }: { offer: OfferWithVendor; onReserve: (offer: OfferWithVendor) => void }) {
   const discount = Math.round(
     ((offer.original_price - offer.offer_price) / offer.original_price) * 100
   );
@@ -221,7 +232,7 @@ function OfferCard({ offer }: { offer: OfferWithVendor }) {
         </div>
 
         {/* CTA Button */}
-        <Button className="w-full gap-2 font-bold" size="lg">
+        <Button className="w-full gap-2 font-bold" size="lg" onClick={() => onReserve(offer)}>
           <ShoppingBag className="h-4 w-4" /> Reservar Agora
         </Button>
       </div>
