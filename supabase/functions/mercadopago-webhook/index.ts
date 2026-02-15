@@ -23,9 +23,6 @@ Deno.serve(async (req) => {
     const body = await req.json();
     console.log("Webhook received:", JSON.stringify(body));
 
-    // MP sends different notification formats
-    // IPN format: { topic: "payment", id: "123" }
-    // Webhook format: { action: "payment.updated", data: { id: "123" } }
     let paymentId: string | null = null;
 
     if (body.topic === "payment" && body.id) {
@@ -53,7 +50,7 @@ Deno.serve(async (req) => {
       const errText = await mpRes.text();
       console.error(`MP API error [${mpRes.status}]: ${errText}`);
       return new Response(JSON.stringify({ error: "Failed to fetch payment" }), {
-        status: 200, // Return 200 so MP doesn't retry indefinitely
+        status: 200,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
@@ -62,7 +59,7 @@ Deno.serve(async (req) => {
     console.log("Payment status:", payment.status, "Amount:", payment.transaction_amount);
 
     if (payment.status !== "approved") {
-      console.log(`Payment ${paymentId} status is ${payment.status}, not crediting wallet`);
+      console.log(`Payment ${paymentId} status is ${payment.status}, not crediting`);
       return new Response(JSON.stringify({ ok: true, status: payment.status }), {
         status: 200,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -80,12 +77,16 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Check for duplicate processing
+    const amount = Number(payment.transaction_amount);
+    const mpDescription = `Depósito via ${payment.payment_method_id === "pix" ? "Pix" : "Cartão"} - MP #${paymentId}`;
+
+    // Check for duplicate processing using description
     const { data: existingTx } = await supabase
       .from("wallet_transactions")
       .select("id")
-      .eq("reference_id", paymentId)
+      .eq("wallet_id", walletId)
       .eq("type", "DEPOSITO")
+      .like("description", `%MP #${paymentId}%`)
       .maybeSingle();
 
     if (existingTx) {
@@ -96,33 +97,17 @@ Deno.serve(async (req) => {
       });
     }
 
-    const amount = Number(payment.transaction_amount);
-
-    // Credit wallet balance
-    const { error: updateError } = await supabase
-      .from("wallets")
-      .update({
-        balance: undefined, // We'll use rpc or raw update
-      })
-      .eq("id", walletId);
-
-    // Use direct SQL-like update for atomic increment
-    const { data: walletData, error: walletError } = await supabase.rpc("credit_wallet", {
+    // Credit wallet atomically
+    const { error: creditError } = await supabase.rpc("credit_wallet", {
       p_wallet_id: walletId,
       p_amount: amount,
-      p_description: `Depósito via ${payment.payment_method_id === "pix" ? "Pix" : "Cartão"} - MP #${paymentId}`,
-      p_reference_id: paymentId,
+      p_description: mpDescription,
+      p_reference_id: null,
     });
 
-    if (walletError) {
-      console.error("Error crediting wallet:", walletError);
-      // Fallback: direct insert
-      const { error: balError } = await supabase
-        .from("wallets")
-        .update({ balance: undefined })
-        .eq("id", walletId);
-
-      // Manual credit
+    if (creditError) {
+      console.error("Error crediting wallet via RPC:", creditError);
+      // Fallback: manual credit
       const { data: currentWallet } = await supabase
         .from("wallets")
         .select("balance")
@@ -139,8 +124,7 @@ Deno.serve(async (req) => {
           wallet_id: walletId,
           type: "DEPOSITO",
           amount,
-          description: `Depósito via ${payment.payment_method_id === "pix" ? "Pix" : "Cartão"} - MP #${paymentId}`,
-          reference_id: paymentId,
+          description: mpDescription,
         });
       }
     }
