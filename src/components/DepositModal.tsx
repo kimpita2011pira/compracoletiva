@@ -12,20 +12,45 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { toast } from "@/hooks/use-toast";
-import { CreditCard, QrCode, Loader2, Wallet } from "lucide-react";
+import { CreditCard, QrCode, Loader2, Wallet, Copy, Check, ExternalLink } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
+type Step = "form" | "pix" | "redirect";
+
+interface PixData {
+  pix_qr_code: string;
+  pix_qr_code_base64: string;
+  pix_copy_paste: string;
+  payment_id: string;
+}
+
 export default function DepositModal({ open, onOpenChange }: Props) {
   const [amount, setAmount] = useState("");
   const [method, setMethod] = useState<"pix" | "card">("pix");
   const [loading, setLoading] = useState(false);
+  const [step, setStep] = useState<Step>("form");
+  const [pixData, setPixData] = useState<PixData | null>(null);
+  const [copied, setCopied] = useState(false);
+  const queryClient = useQueryClient();
 
   const presetAmounts = [20, 50, 100, 200];
   const numAmount = parseFloat(amount.replace(",", ".")) || 0;
+
+  const handleClose = (open: boolean) => {
+    if (!open) {
+      setStep("form");
+      setPixData(null);
+      setAmount("");
+      setCopied(false);
+    }
+    onOpenChange(open);
+  };
 
   const handleDeposit = async () => {
     if (numAmount < 1) {
@@ -34,22 +59,179 @@ export default function DepositModal({ open, onOpenChange }: Props) {
     }
     setLoading(true);
     try {
-      // TODO: integrate with Mercado Pago edge function
-      toast({
-        title: "Funcionalidade em desenvolvimento",
-        description: `Depósito de R$ ${numAmount.toFixed(2).replace(".", ",")} via ${method === "pix" ? "Pix" : "Cartão"} será processado em breve.`,
+      const { data: sessionData } = await supabase.auth.getSession();
+      const token = sessionData?.session?.access_token;
+      if (!token) {
+        toast({ title: "Você precisa estar logado", variant: "destructive" });
+        return;
+      }
+
+      const res = await supabase.functions.invoke("mercadopago-create-payment", {
+        body: { amount: numAmount, method },
       });
-      onOpenChange(false);
-      setAmount("");
-    } catch {
-      toast({ title: "Erro ao processar depósito", variant: "destructive" });
+
+      if (res.error) {
+        throw new Error(res.error.message || "Erro ao processar pagamento");
+      }
+
+      const data = res.data;
+
+      if (method === "pix" && data.pix_qr_code) {
+        setPixData({
+          pix_qr_code: data.pix_qr_code,
+          pix_qr_code_base64: data.pix_qr_code_base64,
+          pix_copy_paste: data.pix_copy_paste,
+          payment_id: data.payment_id,
+        });
+        setStep("pix");
+        toast({
+          title: "Pix gerado com sucesso!",
+          description: "Escaneie o QR Code ou copie o código para pagar.",
+        });
+      } else if (method === "card" && data.init_point) {
+        window.open(data.init_point, "_blank");
+        setStep("redirect");
+        toast({
+          title: "Redirecionando para pagamento",
+          description: "Complete o pagamento na página do Mercado Pago.",
+        });
+      } else {
+        throw new Error("Resposta inesperada do servidor");
+      }
+    } catch (err) {
+      console.error("Deposit error:", err);
+      toast({
+        title: "Erro ao processar depósito",
+        description: err instanceof Error ? err.message : "Tente novamente",
+        variant: "destructive",
+      });
     } finally {
       setLoading(false);
     }
   };
 
+  const copyPixCode = async () => {
+    if (pixData?.pix_copy_paste) {
+      await navigator.clipboard.writeText(pixData.pix_copy_paste);
+      setCopied(true);
+      toast({ title: "Código Pix copiado!" });
+      setTimeout(() => setCopied(false), 3000);
+    }
+  };
+
+  const handlePixDone = () => {
+    queryClient.invalidateQueries({ queryKey: ["wallet"] });
+    queryClient.invalidateQueries({ queryKey: ["wallet-transactions"] });
+    handleClose(false);
+    toast({
+      title: "Aguardando confirmação",
+      description: "Seu saldo será atualizado assim que o pagamento for confirmado.",
+    });
+  };
+
+  // PIX step
+  if (step === "pix" && pixData) {
+    return (
+      <Dialog open={open} onOpenChange={handleClose}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="font-display text-xl flex items-center gap-2">
+              <QrCode className="h-5 w-5 text-primary" />
+              Pague com Pix
+            </DialogTitle>
+            <DialogDescription>
+              Escaneie o QR Code ou copie o código Pix para pagar R$ {numAmount.toFixed(2).replace(".", ",")}
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 py-2">
+            {pixData.pix_qr_code_base64 && (
+              <div className="flex justify-center">
+                <img
+                  src={`data:image/png;base64,${pixData.pix_qr_code_base64}`}
+                  alt="QR Code Pix"
+                  className="h-48 w-48 rounded-lg border p-2"
+                />
+              </div>
+            )}
+
+            <div className="space-y-2">
+              <Label className="text-sm font-semibold">Código Pix (copia e cola)</Label>
+              <div className="flex gap-2">
+                <Input
+                  readOnly
+                  value={pixData.pix_copy_paste}
+                  className="text-xs font-mono"
+                />
+                <Button variant="outline" size="icon" onClick={copyPixCode}>
+                  {copied ? <Check className="h-4 w-4 text-success" /> : <Copy className="h-4 w-4" />}
+                </Button>
+              </div>
+            </div>
+
+            <div className="rounded-lg border bg-muted/30 p-3 text-sm text-muted-foreground">
+              <p>⏱ O pagamento Pix é processado em segundos. Após o pagamento, seu saldo será atualizado automaticamente.</p>
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setStep("form")}>
+              Voltar
+            </Button>
+            <Button onClick={handlePixDone} className="gap-2 font-bold">
+              <Check className="h-4 w-4" /> Já paguei
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    );
+  }
+
+  // Redirect step (card)
+  if (step === "redirect") {
+    return (
+      <Dialog open={open} onOpenChange={handleClose}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="font-display text-xl flex items-center gap-2">
+              <CreditCard className="h-5 w-5 text-primary" />
+              Pagamento via Cartão
+            </DialogTitle>
+            <DialogDescription>
+              Complete o pagamento na página do Mercado Pago
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="flex flex-col items-center gap-4 py-6">
+            <ExternalLink className="h-12 w-12 text-muted-foreground/40" />
+            <p className="text-center text-sm text-muted-foreground">
+              Uma nova aba foi aberta para você completar o pagamento. Após a confirmação, seu saldo será atualizado automaticamente.
+            </p>
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setStep("form")}>
+              Voltar
+            </Button>
+            <Button
+              onClick={() => {
+                queryClient.invalidateQueries({ queryKey: ["wallet"] });
+                queryClient.invalidateQueries({ queryKey: ["wallet-transactions"] });
+                handleClose(false);
+              }}
+              className="gap-2 font-bold"
+            >
+              <Check className="h-4 w-4" /> Fechar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    );
+  }
+
+  // Default form step
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="font-display text-xl flex items-center gap-2">
@@ -138,7 +320,7 @@ export default function DepositModal({ open, onOpenChange }: Props) {
         </div>
 
         <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
+          <Button variant="outline" onClick={() => handleClose(false)}>
             Cancelar
           </Button>
           <Button
