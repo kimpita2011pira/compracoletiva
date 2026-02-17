@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Store, Clock, CheckCircle, XCircle, Package, Plus } from "lucide-react";
+import { NotificationBell } from "@/components/NotificationBell";
 
 const statusConfig = {
   PENDENTE: { label: "Pendente", icon: Clock, variant: "secondary" as const, color: "text-yellow-600", bg: "bg-yellow-50" },
@@ -50,7 +51,10 @@ const VendorDashboard = () => {
               Área do Vendedor
             </h1>
           </div>
-          <Badge variant={status.variant}>{status.label}</Badge>
+          <div className="flex items-center gap-2">
+            <NotificationBell />
+            <Badge variant={status.variant}>{status.label}</Badge>
+          </div>
         </div>
       </header>
 
