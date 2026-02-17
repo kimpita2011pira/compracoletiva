@@ -65,6 +65,7 @@ const Index = () => {
           title="Meus Pedidos"
           description="Acompanhe suas reservas e compras"
           color="accent"
+          onClick={() => navigate("/orders")}
         />
         {isVendedor && (
           <QuickCard
