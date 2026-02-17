@@ -4,9 +4,10 @@ import type { Tables } from "@/integrations/supabase/types";
 
 export type WalletTransaction = Tables<"wallet_transactions">;
 
-export function useWallet() {
+export function useWallet(polling = false) {
   return useQuery({
     queryKey: ["wallet"],
+    refetchInterval: polling ? 5000 : false,
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return null;
@@ -21,9 +22,10 @@ export function useWallet() {
   });
 }
 
-export function useWalletTransactions() {
+export function useWalletTransactions(polling = false) {
   return useQuery({
     queryKey: ["wallet-transactions"],
+    refetchInterval: polling ? 5000 : false,
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return [];

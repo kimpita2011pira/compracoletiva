@@ -29,9 +29,10 @@ const TX_CONFIG: Record<string, { label: string; icon: typeof ArrowDownLeft; col
 export default function WalletPage() {
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
-  const { data: wallet, isLoading: walletLoading } = useWallet();
-  const { data: transactions, isLoading: txLoading } = useWalletTransactions();
   const [depositOpen, setDepositOpen] = useState(false);
+  const [polling, setPolling] = useState(false);
+  const { data: wallet, isLoading: walletLoading } = useWallet(polling);
+  const { data: transactions, isLoading: txLoading } = useWalletTransactions(polling);
 
   const balance = wallet?.balance ?? 0;
 
@@ -116,7 +117,7 @@ export default function WalletPage() {
         </div>
       </main>
 
-      <DepositModal open={depositOpen} onOpenChange={setDepositOpen} />
+      <DepositModal open={depositOpen} onOpenChange={setDepositOpen} onPollingChange={setPolling} />
     </div>
   );
 }

@@ -19,6 +19,7 @@ import { useQueryClient } from "@tanstack/react-query";
 interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onPollingChange?: (polling: boolean) => void;
 }
 
 type Step = "form" | "pix" | "redirect";
@@ -30,7 +31,7 @@ interface PixData {
   payment_id: string;
 }
 
-export default function DepositModal({ open, onOpenChange }: Props) {
+export default function DepositModal({ open, onOpenChange, onPollingChange }: Props) {
   const [amount, setAmount] = useState("");
   const [method, setMethod] = useState<"pix" | "card">("pix");
   const [loading, setLoading] = useState(false);
@@ -48,6 +49,7 @@ export default function DepositModal({ open, onOpenChange }: Props) {
       setPixData(null);
       setAmount("");
       setCopied(false);
+      onPollingChange?.(false);
     }
     onOpenChange(open);
   };
@@ -84,6 +86,7 @@ export default function DepositModal({ open, onOpenChange }: Props) {
           payment_id: data.payment_id,
         });
         setStep("pix");
+        onPollingChange?.(true);
         toast({
           title: "Pix gerado com sucesso!",
           description: "Escaneie o QR Code ou copie o código para pagar.",
@@ -91,6 +94,7 @@ export default function DepositModal({ open, onOpenChange }: Props) {
       } else if (method === "card" && data.init_point) {
         window.open(data.init_point, "_blank");
         setStep("redirect");
+        onPollingChange?.(true);
         toast({
           title: "Redirecionando para pagamento",
           description: "Complete o pagamento na página do Mercado Pago.",
