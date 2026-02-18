@@ -1,4 +1,5 @@
 import { Bell, CheckCheck } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -7,6 +8,7 @@ import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
 export function NotificationBell() {
+  const navigate = useNavigate();
   const { data: notifications, unreadCount, markAsRead, markAllRead } = useNotifications();
 
   return (
@@ -66,6 +68,16 @@ export function NotificationBell() {
             ))
           )}
         </ScrollArea>
+        <div className="border-t px-4 py-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="w-full text-xs text-primary"
+            onClick={() => navigate("/notifications")}
+          >
+            Ver todas as notificações
+          </Button>
+        </div>
       </PopoverContent>
     </Popover>
   );
