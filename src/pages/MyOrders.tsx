@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ArrowLeft, Package, Truck, MapPin, ShoppingBag } from "lucide-react";
+import { NotificationBell } from "@/components/NotificationBell";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
@@ -31,6 +32,7 @@ const MyOrders = () => {
             <Package className="h-5 w-5 text-primary" />
             <h1 className="font-display text-xl font-bold">Meus Pedidos</h1>
           </div>
+          <NotificationBell />
         </div>
       </header>
 
