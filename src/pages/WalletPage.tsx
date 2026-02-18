@@ -16,6 +16,7 @@ import {
   RotateCcw,
   Clock,
 } from "lucide-react";
+import { NotificationBell } from "@/components/NotificationBell";
 
 const TX_CONFIG: Record<string, { label: string; icon: typeof ArrowDownLeft; colorClass: string }> = {
   DEPOSITO: { label: "Depósito", icon: ArrowDownLeft, colorClass: "text-success" },
@@ -54,6 +55,7 @@ export default function WalletPage() {
               <span className="hidden text-sm text-muted-foreground sm:inline">
                 {user.email}
               </span>
+              <NotificationBell />
               <Button variant="ghost" size="icon" onClick={signOut}>
                 <LogOut className="h-5 w-5" />
               </Button>

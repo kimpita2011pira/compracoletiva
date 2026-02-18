@@ -18,6 +18,7 @@ import {
   Tag,
   Store,
 } from "lucide-react";
+import { NotificationBell } from "@/components/NotificationBell";
 
 export default function OffersMarketplace() {
   const navigate = useNavigate();
@@ -43,6 +44,7 @@ export default function OffersMarketplace() {
               <span className="hidden text-sm text-muted-foreground sm:inline">
                 {user.email}
               </span>
+              <NotificationBell />
               <Button variant="ghost" size="icon" onClick={signOut}>
                 <LogOut className="h-5 w-5" />
               </Button>
