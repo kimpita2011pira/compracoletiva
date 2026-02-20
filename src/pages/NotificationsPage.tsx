@@ -21,7 +21,7 @@ type FilterType = "all" | "unread" | "read";
 
 export default function NotificationsPage() {
   const navigate = useNavigate();
-  const { data: notifications, unreadCount, markAsRead, markAllRead, deleteNotification, isLoading } = useNotifications();
+  const { data: notifications, unreadCount, markAsRead, markAllRead, deleteNotification, deleteAllRead, isLoading } = useNotifications();
   const [filter, setFilter] = useState<FilterType>("all");
   const [deletingIds, setDeletingIds] = useState<Set<string>>(new Set());
 
@@ -31,6 +31,8 @@ export default function NotificationsPage() {
       deleteNotification.mutate(id);
     }, 300);
   }, [deleteNotification]);
+
+  const readCount = (notifications ?? []).filter((n) => n.read).length;
 
   const filtered = (notifications ?? []).filter((n) => {
     if (filter === "unread") return !n.read;
@@ -57,17 +59,31 @@ export default function NotificationsPage() {
               </Badge>
             )}
           </div>
-          {unreadCount > 0 && (
-            <Button
-              variant="outline"
-              size="sm"
-              className="gap-1.5 text-xs"
-              onClick={() => markAllRead.mutate()}
-            >
-              <CheckCheck className="h-3.5 w-3.5" />
-              Marcar todas como lidas
-            </Button>
-          )}
+          <div className="flex items-center gap-2">
+            {readCount > 0 && (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="gap-1.5 text-xs text-destructive hover:text-destructive hover:bg-destructive/10"
+                onClick={() => deleteAllRead.mutate()}
+                disabled={deleteAllRead.isPending}
+              >
+                <Trash2 className="h-3.5 w-3.5" />
+                Excluir lidas ({readCount})
+              </Button>
+            )}
+            {unreadCount > 0 && (
+              <Button
+                variant="outline"
+                size="sm"
+                className="gap-1.5 text-xs"
+                onClick={() => markAllRead.mutate()}
+              >
+                <CheckCheck className="h-3.5 w-3.5" />
+                Marcar todas como lidas
+              </Button>
+            )}
+          </div>
         </div>
       </header>
 
