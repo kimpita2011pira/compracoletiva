@@ -11,6 +11,7 @@ import {
   Clock,
   Filter,
   Inbox,
+  Trash2,
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -20,7 +21,7 @@ type FilterType = "all" | "unread" | "read";
 
 export default function NotificationsPage() {
   const navigate = useNavigate();
-  const { data: notifications, unreadCount, markAsRead, markAllRead, isLoading } = useNotifications();
+  const { data: notifications, unreadCount, markAsRead, markAllRead, deleteNotification, isLoading } = useNotifications();
   const [filter, setFilter] = useState<FilterType>("all");
 
   const filtered = (notifications ?? []).filter((n) => {
@@ -111,7 +112,7 @@ export default function NotificationsPage() {
         {filtered.length > 0 && (
           <div className="space-y-2">
             {filtered.map((n) => (
-              <NotificationCard key={n.id} notification={n} onRead={() => !n.read && markAsRead.mutate(n.id)} />
+              <NotificationCard key={n.id} notification={n} onRead={() => !n.read && markAsRead.mutate(n.id)} onDelete={() => deleteNotification.mutate(n.id)} />
             ))}
           </div>
         )}
@@ -120,32 +121,41 @@ export default function NotificationsPage() {
   );
 }
 
-function NotificationCard({ notification: n, onRead }: { notification: Notification; onRead: () => void }) {
+function NotificationCard({ notification: n, onRead, onDelete }: { notification: Notification; onRead: () => void; onDelete: () => void }) {
   return (
-    <button
-      onClick={onRead}
-      className={`w-full text-left rounded-xl border p-4 transition-colors hover:bg-muted/50 ${
+    <div
+      className={`relative rounded-xl border p-4 transition-colors hover:bg-muted/50 ${
         !n.read ? "bg-primary/5 border-primary/20" : "bg-card"
       }`}
     >
-      <div className="flex items-start gap-3">
-        {!n.read && (
-          <span className="mt-1.5 h-2.5 w-2.5 flex-shrink-0 rounded-full bg-primary" />
-        )}
-        <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-2">
-            <p className="text-sm font-bold">{n.title}</p>
-            {!n.read && (
-              <Badge variant="secondary" className="text-[10px]">Nova</Badge>
-            )}
-          </div>
-          <p className="mt-1 text-sm text-muted-foreground">{n.message}</p>
-          <div className="mt-2 flex items-center gap-1.5 text-xs text-muted-foreground">
-            <Clock className="h-3 w-3" />
-            {formatDistanceToNow(new Date(n.created_at), { addSuffix: true, locale: ptBR })}
+      <button onClick={onRead} className="w-full text-left">
+        <div className="flex items-start gap-3 pr-8">
+          {!n.read && (
+            <span className="mt-1.5 h-2.5 w-2.5 flex-shrink-0 rounded-full bg-primary" />
+          )}
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-2">
+              <p className="text-sm font-bold">{n.title}</p>
+              {!n.read && (
+                <Badge variant="secondary" className="text-[10px]">Nova</Badge>
+              )}
+            </div>
+            <p className="mt-1 text-sm text-muted-foreground">{n.message}</p>
+            <div className="mt-2 flex items-center gap-1.5 text-xs text-muted-foreground">
+              <Clock className="h-3 w-3" />
+              {formatDistanceToNow(new Date(n.created_at), { addSuffix: true, locale: ptBR })}
+            </div>
           </div>
         </div>
-      </div>
-    </button>
+      </button>
+      <Button
+        variant="ghost"
+        size="icon"
+        className="absolute right-2 top-2 h-7 w-7 text-muted-foreground hover:text-destructive"
+        onClick={(e) => { e.stopPropagation(); onDelete(); }}
+      >
+        <Trash2 className="h-3.5 w-3.5" />
+      </Button>
+    </div>
   );
 }
