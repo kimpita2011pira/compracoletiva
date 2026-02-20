@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useNotifications } from "@/hooks/useNotifications";
 import { Button } from "@/components/ui/button";
@@ -23,6 +23,14 @@ export default function NotificationsPage() {
   const navigate = useNavigate();
   const { data: notifications, unreadCount, markAsRead, markAllRead, deleteNotification, isLoading } = useNotifications();
   const [filter, setFilter] = useState<FilterType>("all");
+  const [deletingIds, setDeletingIds] = useState<Set<string>>(new Set());
+
+  const handleDelete = useCallback((id: string) => {
+    setDeletingIds((prev) => new Set(prev).add(id));
+    setTimeout(() => {
+      deleteNotification.mutate(id);
+    }, 300);
+  }, [deleteNotification]);
 
   const filtered = (notifications ?? []).filter((n) => {
     if (filter === "unread") return !n.read;
@@ -91,7 +99,7 @@ export default function NotificationsPage() {
 
         {/* Empty state */}
         {!isLoading && filtered.length === 0 && (
-          <div className="flex flex-col items-center justify-center rounded-xl border border-dashed bg-muted/30 py-16">
+          <div className="flex flex-col items-center justify-center rounded-xl border border-dashed bg-muted/30 py-16 animate-fade-in">
             <Inbox className="mb-3 h-10 w-10 text-muted-foreground/40" />
             <p className="font-display font-bold text-muted-foreground">
               {filter === "unread"
@@ -112,7 +120,13 @@ export default function NotificationsPage() {
         {filtered.length > 0 && (
           <div className="space-y-2">
             {filtered.map((n) => (
-              <NotificationCard key={n.id} notification={n} onRead={() => !n.read && markAsRead.mutate(n.id)} onDelete={() => deleteNotification.mutate(n.id)} />
+              <NotificationCard
+                key={n.id}
+                notification={n}
+                isDeleting={deletingIds.has(n.id)}
+                onRead={() => !n.read && markAsRead.mutate(n.id)}
+                onDelete={() => handleDelete(n.id)}
+              />
             ))}
           </div>
         )}
@@ -121,12 +135,22 @@ export default function NotificationsPage() {
   );
 }
 
-function NotificationCard({ notification: n, onRead, onDelete }: { notification: Notification; onRead: () => void; onDelete: () => void }) {
+function NotificationCard({
+  notification: n,
+  onRead,
+  onDelete,
+  isDeleting,
+}: {
+  notification: Notification;
+  onRead: () => void;
+  onDelete: () => void;
+  isDeleting: boolean;
+}) {
   return (
     <div
-      className={`relative rounded-xl border p-4 transition-colors hover:bg-muted/50 ${
+      className={`relative rounded-xl border p-4 transition-all duration-300 hover:bg-muted/50 overflow-hidden ${
         !n.read ? "bg-primary/5 border-primary/20" : "bg-card"
-      }`}
+      } ${isDeleting ? "animate-slide-out-right opacity-0 pointer-events-none" : "animate-fade-in"}`}
     >
       <button onClick={onRead} className="w-full text-left">
         <div className="flex items-start gap-3 pr-8">
@@ -151,7 +175,7 @@ function NotificationCard({ notification: n, onRead, onDelete }: { notification:
       <Button
         variant="ghost"
         size="icon"
-        className="absolute right-2 top-2 h-7 w-7 text-muted-foreground hover:text-destructive"
+        className="absolute right-2 top-2 h-7 w-7 text-muted-foreground hover:text-destructive transition-colors"
         onClick={(e) => { e.stopPropagation(); onDelete(); }}
       >
         <Trash2 className="h-3.5 w-3.5" />
@@ -159,3 +183,4 @@ function NotificationCard({ notification: n, onRead, onDelete }: { notification:
     </div>
   );
 }
+
