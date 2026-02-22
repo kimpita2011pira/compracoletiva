@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, Save, User } from "lucide-react";
+import { ArrowLeft, Save, User, Camera } from "lucide-react";
 
 function formatPhone(value: string): string {
   const digits = value.replace(/\D/g, "").slice(0, 11);
@@ -22,17 +22,20 @@ const ProfilePage = () => {
   const { user } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [whatsapp, setWhatsapp] = useState("");
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
 
   useEffect(() => {
     if (!user) return;
     supabase
       .from("profiles")
-      .select("name, phone, whatsapp")
+      .select("name, phone, whatsapp, avatar_url")
       .eq("id", user.id)
       .single()
       .then(({ data, error }) => {
@@ -40,11 +43,48 @@ const ProfilePage = () => {
           setName(data.name || "");
           setPhone(formatPhone(data.phone || ""));
           setWhatsapp(formatPhone(data.whatsapp || ""));
+          setAvatarUrl(data.avatar_url || null);
         }
         if (error) console.error("Error loading profile:", error);
         setLoading(false);
       });
   }, [user]);
+
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !user) return;
+
+    if (!file.type.startsWith("image/")) {
+      toast({ title: "Arquivo inválido", description: "Selecione uma imagem.", variant: "destructive" });
+      return;
+    }
+    if (file.size > 2 * 1024 * 1024) {
+      toast({ title: "Arquivo muito grande", description: "Máximo 2MB.", variant: "destructive" });
+      return;
+    }
+
+    setUploading(true);
+    const ext = file.name.split(".").pop();
+    const filePath = `${user.id}/avatar.${ext}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from("avatars")
+      .upload(filePath, file, { upsert: true });
+
+    if (uploadError) {
+      toast({ title: "Erro no upload", description: uploadError.message, variant: "destructive" });
+      setUploading(false);
+      return;
+    }
+
+    const { data: publicData } = supabase.storage.from("avatars").getPublicUrl(filePath);
+    const newUrl = `${publicData.publicUrl}?t=${Date.now()}`;
+
+    await supabase.from("profiles").update({ avatar_url: newUrl }).eq("id", user.id);
+    setAvatarUrl(newUrl);
+    setUploading(false);
+    toast({ title: "Foto atualizada! 📸" });
+  };
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -82,9 +122,34 @@ const ProfilePage = () => {
 
         <Card className="border-0 shadow-xl">
           <CardHeader className="text-center">
-            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
-              <User className="h-8 w-8 text-primary" />
+            <div className="relative mx-auto">
+              <div
+                className="flex h-20 w-20 cursor-pointer items-center justify-center overflow-hidden rounded-full bg-primary/10 transition-opacity hover:opacity-80"
+                onClick={() => fileInputRef.current?.click()}
+              >
+                {avatarUrl ? (
+                  <img src={avatarUrl} alt="Avatar" className="h-full w-full object-cover" />
+                ) : (
+                  <User className="h-10 w-10 text-primary" />
+                )}
+              </div>
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={uploading}
+                className="absolute -bottom-1 -right-1 flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-md transition-colors hover:bg-primary/90"
+              >
+                <Camera className="h-4 w-4" />
+              </button>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handleAvatarUpload}
+              />
             </div>
+            {uploading && <p className="text-xs text-muted-foreground">Enviando...</p>}
             <CardTitle className="font-display text-xl">Meu Perfil</CardTitle>
             <CardDescription>Edite suas informações pessoais</CardDescription>
           </CardHeader>
