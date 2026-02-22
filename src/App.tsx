@@ -12,6 +12,7 @@ import OffersMarketplace from "./pages/OffersMarketplace";
 import WalletPage from "./pages/WalletPage";
 import MyOrders from "./pages/MyOrders";
 import NotificationsPage from "./pages/NotificationsPage";
+import ProfilePage from "./pages/ProfilePage";
 import NotFound from "./pages/NotFound";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 
@@ -33,6 +34,7 @@ const App = () => (
           <Route path="/wallet" element={<ProtectedRoute><WalletPage /></ProtectedRoute>} />
           <Route path="/orders" element={<ProtectedRoute><MyOrders /></ProtectedRoute>} />
           <Route path="/notifications" element={<ProtectedRoute><NotificationsPage /></ProtectedRoute>} />
+          <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
