@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
-import { ShoppingBag, Store, Shield, LogOut, Wallet, Package } from "lucide-react";
+import { ShoppingBag, Store, Shield, LogOut, Wallet, Package, User } from "lucide-react";
 import { NotificationBell } from "@/components/NotificationBell";
 
 const Index = () => {
@@ -28,6 +28,9 @@ const Index = () => {
           <div className="flex items-center gap-3">
             <span className="text-sm text-muted-foreground">{user.email}</span>
             <NotificationBell />
+            <Button variant="ghost" size="icon" onClick={() => navigate("/profile")} title="Meu Perfil">
+              <User className="h-5 w-5" />
+            </Button>
             <Button variant="ghost" size="icon" onClick={signOut}>
               <LogOut className="h-5 w-5" />
             </Button>
