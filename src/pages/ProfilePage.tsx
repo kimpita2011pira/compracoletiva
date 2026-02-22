@@ -9,6 +9,15 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, Save, User } from "lucide-react";
 
+function formatPhone(value: string): string {
+  const digits = value.replace(/\D/g, "").slice(0, 11);
+  if (digits.length <= 2) return digits.length ? `(${digits}` : "";
+  if (digits.length <= 6) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+  if (digits.length <= 10)
+    return `(${digits.slice(0, 2)}) ${digits.slice(2, 6)}-${digits.slice(6)}`;
+  return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
+}
+
 const ProfilePage = () => {
   const { user } = useAuth();
   const { toast } = useToast();
@@ -29,8 +38,8 @@ const ProfilePage = () => {
       .then(({ data, error }) => {
         if (data) {
           setName(data.name || "");
-          setPhone(data.phone || "");
-          setWhatsapp(data.whatsapp || "");
+          setPhone(formatPhone(data.phone || ""));
+          setWhatsapp(formatPhone(data.whatsapp || ""));
         }
         if (error) console.error("Error loading profile:", error);
         setLoading(false);
@@ -101,8 +110,8 @@ const ProfilePage = () => {
                   <Input
                     id="profile-phone"
                     value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    maxLength={20}
+                    onChange={(e) => setPhone(formatPhone(e.target.value))}
+                    maxLength={15}
                     placeholder="(00) 0000-0000"
                   />
                 </div>
@@ -111,8 +120,8 @@ const ProfilePage = () => {
                   <Input
                     id="profile-whatsapp"
                     value={whatsapp}
-                    onChange={(e) => setWhatsapp(e.target.value)}
-                    maxLength={20}
+                    onChange={(e) => setWhatsapp(formatPhone(e.target.value))}
+                    maxLength={15}
                     placeholder="(00) 00000-0000"
                   />
                 </div>
