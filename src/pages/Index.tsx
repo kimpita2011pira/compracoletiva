@@ -52,7 +52,7 @@ const Index = () => {
                 {user.email?.charAt(0).toUpperCase() ?? "U"}
               </AvatarFallback>
             </Avatar>
-            <span className="text-sm text-muted-foreground">{profileName || user.email}</span>
+            
             <NotificationBell />
             <Button variant="ghost" size="icon" onClick={() => navigate("/profile")} title="Meu Perfil">
               <User className="h-5 w-5" />
