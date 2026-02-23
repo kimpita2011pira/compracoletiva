@@ -4,6 +4,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { ShoppingBag, Store, Shield, LogOut, Wallet, Package, User } from "lucide-react";
 import { NotificationBell } from "@/components/NotificationBell";
 
@@ -44,22 +45,34 @@ const Index = () => {
         <div className="container flex h-16 items-center justify-between">
           <h1 className="font-display text-2xl font-bold text-primary">🛒 OfertaJá</h1>
           <div className="flex items-center gap-3">
-            <Avatar className="h-8 w-8 cursor-pointer" onClick={() => navigate("/profile")}>
-              {avatarUrl ? (
-                <AvatarImage src={avatarUrl} alt="Avatar" />
-              ) : null}
-              <AvatarFallback className="bg-primary/10 text-primary text-xs">
-                {user.email?.charAt(0).toUpperCase() ?? "U"}
-              </AvatarFallback>
-            </Avatar>
-            
             <NotificationBell />
-            <Button variant="ghost" size="icon" onClick={() => navigate("/profile")} title="Meu Perfil">
-              <User className="h-5 w-5" />
-            </Button>
-            <Button variant="ghost" size="icon" onClick={signOut}>
-              <LogOut className="h-5 w-5" />
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="rounded-full outline-none focus:ring-2 focus:ring-primary">
+                  <Avatar className="h-9 w-9 cursor-pointer">
+                    {avatarUrl ? <AvatarImage src={avatarUrl} alt="Avatar" /> : null}
+                    <AvatarFallback className="bg-primary/10 text-primary text-xs">
+                      {user.email?.charAt(0).toUpperCase() ?? "U"}
+                    </AvatarFallback>
+                  </Avatar>
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-48 bg-card border shadow-lg z-50">
+                <DropdownMenuItem onClick={() => navigate("/profile")} className="cursor-pointer">
+                  <User className="mr-2 h-4 w-4" /> Meu Perfil
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate("/wallet")} className="cursor-pointer">
+                  <Wallet className="mr-2 h-4 w-4" /> Minha Carteira
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate("/orders")} className="cursor-pointer">
+                  <Package className="mr-2 h-4 w-4" /> Meus Pedidos
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={signOut} className="cursor-pointer text-destructive focus:text-destructive">
+                  <LogOut className="mr-2 h-4 w-4" /> Sair
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
       </header>
