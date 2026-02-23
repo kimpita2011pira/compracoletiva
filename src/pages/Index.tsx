@@ -11,16 +11,18 @@ const Index = () => {
   const { user, loading, roles, signOut } = useAuth();
   const navigate = useNavigate();
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [profileName, setProfileName] = useState<string | null>(null);
 
   useEffect(() => {
     if (!user) return;
     supabase
       .from("profiles")
-      .select("avatar_url")
+      .select("avatar_url, name")
       .eq("id", user.id)
       .single()
       .then(({ data }) => {
         if (data?.avatar_url) setAvatarUrl(data.avatar_url);
+        if (data?.name) setProfileName(data.name);
       });
   }, [user]);
 
@@ -50,7 +52,7 @@ const Index = () => {
                 {user.email?.charAt(0).toUpperCase() ?? "U"}
               </AvatarFallback>
             </Avatar>
-            <span className="text-sm text-muted-foreground">{user.email}</span>
+            <span className="text-sm text-muted-foreground">{profileName || user.email}</span>
             <NotificationBell />
             <Button variant="ghost" size="icon" onClick={() => navigate("/profile")} title="Meu Perfil">
               <User className="h-5 w-5" />
