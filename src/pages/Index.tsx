@@ -66,7 +66,10 @@ const Index = () => {
 
       {/* Hero */}
       <section className="container py-12 text-center">
-        <h2 className="font-display text-4xl font-bold md:text-5xl">
+        <p className="text-lg text-muted-foreground">
+          Olá, <span className="font-semibold text-foreground">{profileName || "visitante"}</span>! 👋
+        </p>
+        <h2 className="mt-2 font-display text-4xl font-bold md:text-5xl">
           Ofertas incríveis em{" "}
           <span className="text-primary">compra coletiva</span>
         </h2>
