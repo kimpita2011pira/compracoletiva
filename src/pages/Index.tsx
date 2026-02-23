@@ -67,6 +67,16 @@ const Index = () => {
                 <DropdownMenuItem onClick={() => navigate("/orders")} className="cursor-pointer">
                   <Package className="mr-2 h-4 w-4" /> Meus Pedidos
                 </DropdownMenuItem>
+                {isVendedor && (
+                  <DropdownMenuItem onClick={() => navigate("/vendor")} className="cursor-pointer">
+                    <Store className="mr-2 h-4 w-4" /> Área do Vendedor
+                  </DropdownMenuItem>
+                )}
+                {isAdmin && (
+                  <DropdownMenuItem onClick={() => navigate("/admin")} className="cursor-pointer">
+                    <Shield className="mr-2 h-4 w-4" /> Painel Admin
+                  </DropdownMenuItem>
+                )}
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={signOut} className="cursor-pointer text-destructive focus:text-destructive">
                   <LogOut className="mr-2 h-4 w-4" /> Sair
