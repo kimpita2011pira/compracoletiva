@@ -1,12 +1,28 @@
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { ShoppingBag, Store, Shield, LogOut, Wallet, Package, User } from "lucide-react";
 import { NotificationBell } from "@/components/NotificationBell";
 
 const Index = () => {
   const { user, loading, roles, signOut } = useAuth();
   const navigate = useNavigate();
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!user) return;
+    supabase
+      .from("profiles")
+      .select("avatar_url")
+      .eq("id", user.id)
+      .single()
+      .then(({ data }) => {
+        if (data?.avatar_url) setAvatarUrl(data.avatar_url);
+      });
+  }, [user]);
 
   if (loading) {
     return (
@@ -26,6 +42,14 @@ const Index = () => {
         <div className="container flex h-16 items-center justify-between">
           <h1 className="font-display text-2xl font-bold text-primary">🛒 OfertaJá</h1>
           <div className="flex items-center gap-3">
+            <Avatar className="h-8 w-8 cursor-pointer" onClick={() => navigate("/profile")}>
+              {avatarUrl ? (
+                <AvatarImage src={avatarUrl} alt="Avatar" />
+              ) : null}
+              <AvatarFallback className="bg-primary/10 text-primary text-xs">
+                {user.email?.charAt(0).toUpperCase() ?? "U"}
+              </AvatarFallback>
+            </Avatar>
             <span className="text-sm text-muted-foreground">{user.email}</span>
             <NotificationBell />
             <Button variant="ghost" size="icon" onClick={() => navigate("/profile")} title="Meu Perfil">
