@@ -1,12 +1,10 @@
-import { useNavigate } from "react-router-dom";
-import { useAuth } from "@/hooks/useAuth";
 import { useAdminVendors } from "@/hooks/useAdminVendors";
 import { useAdminMetrics } from "@/hooks/useAdminMetrics";
+import { AppLayout } from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
-  ArrowLeft,
   CheckCircle,
   XCircle,
   Clock,
@@ -36,7 +34,6 @@ import {
   Cell,
   LineChart,
   Line,
-  Legend,
 } from "recharts";
 
 type VendorStatus = Database["public"]["Enums"]["vendor_status"];
@@ -50,8 +47,6 @@ const statusConfig: Record<VendorStatus, { label: string; color: string; icon: R
 const PIE_COLORS = ["hsl(24, 95%, 53%)", "hsl(142, 70%, 45%)", "hsl(0, 84%, 60%)", "hsl(45, 100%, 51%)"];
 
 export default function AdminDashboard() {
-  const navigate = useNavigate();
-  const { signOut } = useAuth();
   const { vendors, isLoading, updateStatus } = useAdminVendors();
   const { data: metrics, isLoading: metricsLoading } = useAdminMetrics();
 
@@ -78,21 +73,7 @@ export default function AdminDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="sticky top-0 z-50 border-b bg-card/80 backdrop-blur-sm">
-        <div className="container flex h-16 items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Button variant="ghost" size="icon" onClick={() => navigate("/")}>
-              <ArrowLeft className="h-5 w-5" />
-            </Button>
-            <h1 className="font-display text-xl font-bold text-primary">🛡️ Painel Admin</h1>
-          </div>
-          <Button variant="ghost" size="sm" onClick={signOut}>
-            Sair
-          </Button>
-        </div>
-      </header>
-
+    <AppLayout title="🛡️ Painel Admin">
       <main className="container py-8">
         <Tabs defaultValue="metricas" className="space-y-6">
           <TabsList className="grid w-full grid-cols-2">
@@ -112,7 +93,6 @@ export default function AdminDashboard() {
               </div>
             ) : metrics ? (
               <>
-                {/* KPI row */}
                 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                   <MetricCard icon={<Users className="h-5 w-5" />} label="Usuários" value={metrics.totalUsers} color="primary" />
                   <MetricCard icon={<ShoppingCart className="h-5 w-5" />} label="Pedidos" value={metrics.totalOrders} color="secondary" />
@@ -137,64 +117,32 @@ export default function AdminDashboard() {
                   <MetricCard icon={<Clock className="h-5 w-5" />} label="Vendedores Pendentes" value={pending.length} color="warning" />
                 </div>
 
-                {/* Revenue chart */}
                 <div className="rounded-xl border bg-card p-5 shadow-sm">
                   <h3 className="mb-4 font-display text-lg font-bold">Receita dos últimos 14 dias</h3>
                   <ResponsiveContainer width="100%" height={300}>
                     <BarChart data={metrics.dailyRevenue}>
                       <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                      <XAxis
-                        dataKey="date"
-                        tickFormatter={(d) => {
-                          const [, m, day] = d.split("-");
-                          return `${day}/${m}`;
-                        }}
-                        fontSize={12}
-                        stroke="hsl(var(--muted-foreground))"
-                      />
+                      <XAxis dataKey="date" tickFormatter={(d) => { const [, m, day] = d.split("-"); return `${day}/${m}`; }} fontSize={12} stroke="hsl(var(--muted-foreground))" />
                       <YAxis fontSize={12} stroke="hsl(var(--muted-foreground))" />
-                      <Tooltip
-                        formatter={(v: number) => [`R$ ${v.toFixed(2)}`, "Receita"]}
-                        labelFormatter={(d) => {
-                          const [y, m, day] = d.split("-");
-                          return `${day}/${m}/${y}`;
-                        }}
-                        contentStyle={{ borderRadius: "0.75rem", border: "1px solid hsl(var(--border))" }}
-                      />
+                      <Tooltip formatter={(v: number) => [`R$ ${v.toFixed(2)}`, "Receita"]} labelFormatter={(d) => { const [y, m, day] = d.split("-"); return `${day}/${m}/${y}`; }} contentStyle={{ borderRadius: "0.75rem", border: "1px solid hsl(var(--border))" }} />
                       <Bar dataKey="revenue" fill="hsl(24, 95%, 53%)" radius={[6, 6, 0, 0]} />
                     </BarChart>
                   </ResponsiveContainer>
                 </div>
 
-                {/* Orders line chart */}
                 <div className="rounded-xl border bg-card p-5 shadow-sm">
                   <h3 className="mb-4 font-display text-lg font-bold">Pedidos dos últimos 14 dias</h3>
                   <ResponsiveContainer width="100%" height={250}>
                     <LineChart data={metrics.dailyRevenue}>
                       <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                      <XAxis
-                        dataKey="date"
-                        tickFormatter={(d) => {
-                          const [, m, day] = d.split("-");
-                          return `${day}/${m}`;
-                        }}
-                        fontSize={12}
-                        stroke="hsl(var(--muted-foreground))"
-                      />
+                      <XAxis dataKey="date" tickFormatter={(d) => { const [, m, day] = d.split("-"); return `${day}/${m}`; }} fontSize={12} stroke="hsl(var(--muted-foreground))" />
                       <YAxis fontSize={12} stroke="hsl(var(--muted-foreground))" allowDecimals={false} />
-                      <Tooltip
-                        labelFormatter={(d) => {
-                          const [y, m, day] = d.split("-");
-                          return `${day}/${m}/${y}`;
-                        }}
-                        contentStyle={{ borderRadius: "0.75rem", border: "1px solid hsl(var(--border))" }}
-                      />
+                      <Tooltip labelFormatter={(d) => { const [y, m, day] = d.split("-"); return `${day}/${m}/${y}`; }} contentStyle={{ borderRadius: "0.75rem", border: "1px solid hsl(var(--border))" }} />
                       <Line type="monotone" dataKey="orders" stroke="hsl(142, 70%, 45%)" strokeWidth={2} dot={{ r: 3 }} />
                     </LineChart>
                   </ResponsiveContainer>
                 </div>
 
-                {/* Pie charts row */}
                 <div className="grid gap-4 md:grid-cols-2">
                   <div className="rounded-xl border bg-card p-5 shadow-sm">
                     <h3 className="mb-4 font-display text-lg font-bold">Pedidos por Status</h3>
@@ -203,19 +151,8 @@ export default function AdminDashboard() {
                     ) : (
                       <ResponsiveContainer width="100%" height={220}>
                         <PieChart>
-                          <Pie
-                            data={metrics.ordersByStatus}
-                            dataKey="count"
-                            nameKey="status"
-                            cx="50%"
-                            cy="50%"
-                            outerRadius={80}
-                            label={({ status, count }) => `${status} (${count})`}
-                            fontSize={11}
-                          >
-                            {metrics.ordersByStatus.map((_, i) => (
-                              <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />
-                            ))}
+                          <Pie data={metrics.ordersByStatus} dataKey="count" nameKey="status" cx="50%" cy="50%" outerRadius={80} label={({ status, count }) => `${status} (${count})`} fontSize={11}>
+                            {metrics.ordersByStatus.map((_, i) => (<Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />))}
                           </Pie>
                           <Tooltip />
                         </PieChart>
@@ -230,19 +167,8 @@ export default function AdminDashboard() {
                     ) : (
                       <ResponsiveContainer width="100%" height={220}>
                         <PieChart>
-                          <Pie
-                            data={metrics.offersByStatus}
-                            dataKey="count"
-                            nameKey="status"
-                            cx="50%"
-                            cy="50%"
-                            outerRadius={80}
-                            label={({ status, count }) => `${status} (${count})`}
-                            fontSize={11}
-                          >
-                            {metrics.offersByStatus.map((_, i) => (
-                              <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />
-                            ))}
+                          <Pie data={metrics.offersByStatus} dataKey="count" nameKey="status" cx="50%" cy="50%" outerRadius={80} label={({ status, count }) => `${status} (${count})`} fontSize={11}>
+                            {metrics.offersByStatus.map((_, i) => (<Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />))}
                           </Pie>
                           <Tooltip />
                         </PieChart>
@@ -251,7 +177,6 @@ export default function AdminDashboard() {
                   </div>
                 </div>
 
-                {/* Recent orders table */}
                 <div className="rounded-xl border bg-card p-5 shadow-sm">
                   <h3 className="mb-4 font-display text-lg font-bold">Pedidos Recentes</h3>
                   {metrics.recentOrders.length === 0 ? (
@@ -273,15 +198,9 @@ export default function AdminDashboard() {
                             <tr key={o.id} className="border-b last:border-0">
                               <td className="py-2 pr-4 font-medium truncate max-w-[200px]">{o.offer_title}</td>
                               <td className="py-2 pr-4">{o.quantity}</td>
-                              <td className="py-2 pr-4 font-semibold">
-                                R$ {Number(o.total_price).toFixed(2).replace(".", ",")}
-                              </td>
-                              <td className="py-2 pr-4">
-                                <Badge variant="outline" className="text-[10px]">{o.status}</Badge>
-                              </td>
-                              <td className="py-2 text-muted-foreground">
-                                {new Date(o.created_at).toLocaleDateString("pt-BR")}
-                              </td>
+                              <td className="py-2 pr-4 font-semibold">R$ {Number(o.total_price).toFixed(2).replace(".", ",")}</td>
+                              <td className="py-2 pr-4"><Badge variant="outline" className="text-[10px]">{o.status}</Badge></td>
+                              <td className="py-2 text-muted-foreground">{new Date(o.created_at).toLocaleDateString("pt-BR")}</td>
                             </tr>
                           ))}
                         </tbody>
@@ -333,23 +252,13 @@ export default function AdminDashboard() {
           </TabsContent>
         </Tabs>
       </main>
-    </div>
+    </AppLayout>
   );
 }
 
 /* ── Sub-components ── */
 
-function MetricCard({
-  icon,
-  label,
-  value,
-  color,
-}: {
-  icon: React.ReactNode;
-  label: string;
-  value: string | number;
-  color: string;
-}) {
+function MetricCard({ icon, label, value, color }: { icon: React.ReactNode; label: string; value: string | number; color: string }) {
   const bgMap: Record<string, string> = {
     primary: "bg-primary/10 text-primary",
     secondary: "bg-secondary/10 text-secondary-foreground",
@@ -384,66 +293,49 @@ function KpiCard({ label, value, icon, color }: { label: string; value: number; 
   );
 }
 
-function VendorCard({
-  vendor,
-  onApprove,
-  onReject,
-  isPending,
-}: {
-  vendor: Tables<"vendors">;
-  onApprove?: () => void;
-  onReject?: () => void;
-  isPending?: boolean;
-}) {
+function VendorCard({ vendor, onApprove, onReject, isPending }: { vendor: Tables<"vendors">; onApprove?: () => void; onReject?: () => void; isPending?: boolean }) {
   const cfg = statusConfig[vendor.status];
   return (
-    <div className="rounded-xl border bg-card p-5 shadow-sm transition-all hover:shadow-md">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        <div className="flex-1 space-y-2">
-          <div className="flex items-center gap-3">
-            <div className="rounded-lg bg-primary/10 p-2">
-              <Building2 className="h-5 w-5 text-primary" />
-            </div>
-            <div>
-              <h3 className="font-display text-lg font-bold">{vendor.company_name}</h3>
-              {vendor.cnpj && <p className="text-sm text-muted-foreground">CNPJ: {vendor.cnpj}</p>}
-            </div>
-          </div>
-          {vendor.description && (
-            <p className="text-sm text-muted-foreground leading-relaxed">{vendor.description}</p>
-          )}
+    <div className="rounded-xl border bg-card p-5 shadow-sm">
+      <div className="flex items-start justify-between gap-4">
+        <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
-            <Badge variant="outline" className={cfg.color}>
-              {cfg.icon}
-              <span className="ml-1">{cfg.label}</span>
-            </Badge>
-            <span className="text-xs text-muted-foreground">
-              Cadastrado em {new Date(vendor.created_at).toLocaleDateString("pt-BR")}
-            </span>
+            <Store className="h-4 w-4 text-primary shrink-0" />
+            <h3 className="font-display font-bold truncate">{vendor.company_name}</h3>
           </div>
+          {vendor.cnpj && <p className="mt-1 text-xs text-muted-foreground">CNPJ: {vendor.cnpj}</p>}
+          {vendor.description && <p className="mt-2 text-sm text-muted-foreground line-clamp-2">{vendor.description}</p>}
+          <p className="mt-2 text-xs text-muted-foreground">
+            Cadastrado em {new Date(vendor.created_at).toLocaleDateString("pt-BR")}
+          </p>
         </div>
-        <div className="flex gap-2 sm:flex-col">
-          {(isPending || vendor.status === "REJEITADO") && onApprove && (
-            <Button size="sm" onClick={onApprove} className="gap-1.5">
-              <CheckCircle className="h-4 w-4" /> Aprovar
-            </Button>
-          )}
-          {(isPending || vendor.status === "APROVADO") && onReject && (
-            <Button size="sm" variant="destructive" onClick={onReject} className="gap-1.5">
-              <XCircle className="h-4 w-4" /> Rejeitar
-            </Button>
-          )}
-        </div>
+        <Badge variant="outline" className={`shrink-0 gap-1 ${cfg.color}`}>
+          {cfg.icon} {cfg.label}
+        </Badge>
       </div>
+      {(onApprove || onReject) && (
+        <div className="mt-4 flex gap-2 border-t pt-4">
+          {onApprove && (
+            <Button size="sm" className="gap-1.5" onClick={onApprove}>
+              <CheckCircle className="h-3.5 w-3.5" /> Aprovar
+            </Button>
+          )}
+          {onReject && (
+            <Button size="sm" variant="outline" className="gap-1.5 text-destructive hover:text-destructive" onClick={onReject}>
+              <XCircle className="h-3.5 w-3.5" /> Rejeitar
+            </Button>
+          )}
+        </div>
+      )}
     </div>
   );
 }
 
 function EmptyState({ message }: { message: string }) {
   return (
-    <div className="flex flex-col items-center justify-center rounded-xl border border-dashed bg-muted/30 py-16">
-      <Store className="mb-3 h-10 w-10 text-muted-foreground/50" />
-      <p className="text-muted-foreground">{message}</p>
+    <div className="flex flex-col items-center justify-center rounded-xl border border-dashed bg-muted/30 py-12">
+      <Building2 className="mb-3 h-10 w-10 text-muted-foreground/40" />
+      <p className="font-display font-bold text-muted-foreground">{message}</p>
     </div>
   );
 }

@@ -1,11 +1,11 @@
 import { useNavigate } from "react-router-dom";
 import { useOrders } from "@/hooks/useOrders";
+import { AppLayout } from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ArrowLeft, Package, Truck, MapPin, ShoppingBag } from "lucide-react";
-import { NotificationBell } from "@/components/NotificationBell";
+import { Package, Truck, MapPin, ShoppingBag } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
@@ -21,21 +21,7 @@ const MyOrders = () => {
   const { data: orders, isLoading, error } = useOrders();
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="sticky top-0 z-50 border-b bg-card/80 backdrop-blur-sm">
-        <div className="container flex h-16 items-center gap-3">
-          <Button variant="ghost" size="icon" onClick={() => navigate("/")}>
-            <ArrowLeft className="h-5 w-5" />
-          </Button>
-          <div className="flex items-center gap-2">
-            <Package className="h-5 w-5 text-primary" />
-            <h1 className="font-display text-xl font-bold">Meus Pedidos</h1>
-          </div>
-          <NotificationBell />
-        </div>
-      </header>
-
+    <AppLayout title="📦 Meus Pedidos">
       <main className="container max-w-2xl py-6 space-y-4">
         {isLoading && (
           <div className="space-y-4">
@@ -71,7 +57,6 @@ const MyOrders = () => {
           return (
             <Card key={order.id} className="overflow-hidden">
               <div className="flex gap-4 p-4">
-                {/* Image */}
                 <div className="h-20 w-20 flex-shrink-0 overflow-hidden rounded-lg bg-muted">
                   {order.offer?.image_url ? (
                     <img
@@ -86,7 +71,6 @@ const MyOrders = () => {
                   )}
                 </div>
 
-                {/* Info */}
                 <div className="flex flex-1 flex-col justify-between min-w-0">
                   <div>
                     <h3 className="font-display font-bold truncate">
@@ -110,7 +94,6 @@ const MyOrders = () => {
                   </div>
                 </div>
 
-                {/* Price */}
                 <div className="flex flex-col items-end justify-between text-right">
                   <p className="font-display text-lg font-bold text-primary">
                     R$ {Number(order.total_price).toFixed(2)}
@@ -127,7 +110,7 @@ const MyOrders = () => {
           );
         })}
       </main>
-    </div>
+    </AppLayout>
   );
 };
 

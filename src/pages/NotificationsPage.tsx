@@ -1,11 +1,10 @@
 import { useState, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
 import { useNotifications } from "@/hooks/useNotifications";
+import { AppLayout } from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
-  ArrowLeft,
   Bell,
   CheckCheck,
   Clock,
@@ -20,7 +19,6 @@ import type { Notification } from "@/hooks/useNotifications";
 type FilterType = "all" | "unread" | "read";
 
 export default function NotificationsPage() {
-  const navigate = useNavigate();
   const { data: notifications, unreadCount, markAsRead, markAllRead, deleteNotification, deleteAllRead, isLoading } = useNotifications();
   const [filter, setFilter] = useState<FilterType>("all");
   const [deletingIds, setDeletingIds] = useState<Set<string>>(new Set());
@@ -40,53 +38,36 @@ export default function NotificationsPage() {
     return true;
   });
 
-  return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="sticky top-0 z-50 border-b bg-card/80 backdrop-blur-sm">
-        <div className="container flex h-16 items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
-              <ArrowLeft className="h-5 w-5" />
-            </Button>
-            <div className="flex items-center gap-2">
-              <Bell className="h-5 w-5 text-primary" />
-              <h1 className="font-display text-xl font-bold">Notificações</h1>
-            </div>
-            {unreadCount > 0 && (
-              <Badge variant="secondary" className="text-xs">
-                {unreadCount} não lida{unreadCount > 1 ? "s" : ""}
-              </Badge>
-            )}
-          </div>
-          <div className="flex items-center gap-2">
-            {readCount > 0 && (
-              <Button
-                variant="ghost"
-                size="sm"
-                className="gap-1.5 text-xs text-destructive hover:text-destructive hover:bg-destructive/10"
-                onClick={() => deleteAllRead.mutate()}
-                disabled={deleteAllRead.isPending}
-              >
-                <Trash2 className="h-3.5 w-3.5" />
-                Excluir lidas ({readCount})
-              </Button>
-            )}
-            {unreadCount > 0 && (
-              <Button
-                variant="outline"
-                size="sm"
-                className="gap-1.5 text-xs"
-                onClick={() => markAllRead.mutate()}
-              >
-                <CheckCheck className="h-3.5 w-3.5" />
-                Marcar todas como lidas
-              </Button>
-            )}
-          </div>
-        </div>
-      </header>
+  const headerRight = (
+    <div className="flex items-center gap-2">
+      {readCount > 0 && (
+        <Button
+          variant="ghost"
+          size="sm"
+          className="gap-1.5 text-xs text-destructive hover:text-destructive hover:bg-destructive/10"
+          onClick={() => deleteAllRead.mutate()}
+          disabled={deleteAllRead.isPending}
+        >
+          <Trash2 className="h-3.5 w-3.5" />
+          <span className="hidden sm:inline">Excluir lidas ({readCount})</span>
+        </Button>
+      )}
+      {unreadCount > 0 && (
+        <Button
+          variant="outline"
+          size="sm"
+          className="gap-1.5 text-xs"
+          onClick={() => markAllRead.mutate()}
+        >
+          <CheckCheck className="h-3.5 w-3.5" />
+          <span className="hidden sm:inline">Marcar todas como lidas</span>
+        </Button>
+      )}
+    </div>
+  );
 
+  return (
+    <AppLayout title="🔔 Notificações" headerRight={headerRight}>
       <main className="container max-w-2xl py-6 space-y-4">
         {/* Filters */}
         <Tabs value={filter} onValueChange={(v) => setFilter(v as FilterType)}>
@@ -147,7 +128,7 @@ export default function NotificationsPage() {
           </div>
         )}
       </main>
-    </div>
+    </AppLayout>
   );
 }
 
@@ -199,4 +180,3 @@ function NotificationCard({
     </div>
   );
 }
-
