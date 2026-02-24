@@ -1,14 +1,11 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useAuth } from "@/hooks/useAuth";
 import { useWallet, useWalletTransactions } from "@/hooks/useWallet";
 import type { WalletTransaction } from "@/hooks/useWallet";
 import DepositModal from "@/components/DepositModal";
+import { AppLayout } from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
-  ArrowLeft,
-  LogOut,
   Wallet,
   Plus,
   ArrowDownLeft,
@@ -16,7 +13,6 @@ import {
   RotateCcw,
   Clock,
 } from "lucide-react";
-import { NotificationBell } from "@/components/NotificationBell";
 
 const TX_CONFIG: Record<string, { label: string; icon: typeof ArrowDownLeft; colorClass: string }> = {
   DEPOSITO: { label: "Depósito", icon: ArrowDownLeft, colorClass: "text-success" },
@@ -28,8 +24,6 @@ const TX_CONFIG: Record<string, { label: string; icon: typeof ArrowDownLeft; col
 };
 
 export default function WalletPage() {
-  const navigate = useNavigate();
-  const { user, signOut } = useAuth();
   const [depositOpen, setDepositOpen] = useState(false);
   const [polling, setPolling] = useState(false);
   const { data: wallet, isLoading: walletLoading } = useWallet(polling);
@@ -38,32 +32,7 @@ export default function WalletPage() {
   const balance = wallet?.balance ?? 0;
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="sticky top-0 z-50 border-b bg-card/80 backdrop-blur-sm">
-        <div className="container flex h-16 items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Button variant="ghost" size="icon" onClick={() => navigate("/")}>
-              <ArrowLeft className="h-5 w-5" />
-            </Button>
-            <h1 className="font-display text-xl font-bold text-primary">
-              💰 Minha Carteira
-            </h1>
-          </div>
-          {user && (
-            <div className="flex items-center gap-3">
-              <span className="hidden text-sm text-muted-foreground sm:inline">
-                {user.email}
-              </span>
-              <NotificationBell />
-              <Button variant="ghost" size="icon" onClick={signOut}>
-                <LogOut className="h-5 w-5" />
-              </Button>
-            </div>
-          )}
-        </div>
-      </header>
-
+    <AppLayout title="💰 Minha Carteira">
       <main className="container max-w-2xl py-8 space-y-6">
         {/* Balance card */}
         <div className="rounded-2xl border bg-gradient-to-br from-primary/5 via-card to-secondary/5 p-6 shadow-sm">
@@ -120,7 +89,7 @@ export default function WalletPage() {
       </main>
 
       <DepositModal open={depositOpen} onOpenChange={setDepositOpen} onPollingChange={setPolling} />
-    </div>
+    </AppLayout>
   );
 }
 

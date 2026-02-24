@@ -2,27 +2,22 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { Button } from "@/components/ui/button";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { ShoppingBag, Store, Shield, LogOut, Wallet, Package, User } from "lucide-react";
-import { NotificationBell } from "@/components/NotificationBell";
+import { AppLayout } from "@/components/AppLayout";
+import { ShoppingBag, Wallet, Package } from "lucide-react";
 
 const Index = () => {
-  const { user, loading, roles, signOut } = useAuth();
+  const { user, loading } = useAuth();
   const navigate = useNavigate();
-  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [profileName, setProfileName] = useState<string | null>(null);
 
   useEffect(() => {
     if (!user) return;
     supabase
       .from("profiles")
-      .select("avatar_url, name")
+      .select("name")
       .eq("id", user.id)
       .single()
       .then(({ data }) => {
-        if (data?.avatar_url) setAvatarUrl(data.avatar_url);
         if (data?.name) setProfileName(data.name);
       });
   }, [user]);
@@ -35,58 +30,8 @@ const Index = () => {
     );
   }
 
-  const isVendedor = roles.includes("VENDEDOR");
-  const isAdmin = roles.includes("ADMIN");
-
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="sticky top-0 z-50 border-b bg-card/80 backdrop-blur-sm">
-        <div className="container flex h-16 items-center justify-between">
-          <h1 className="font-display text-2xl font-bold text-primary">🛒 OfertaJá</h1>
-          <div className="flex items-center gap-3">
-            <NotificationBell />
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button className="rounded-full outline-none focus:ring-2 focus:ring-primary">
-                  <Avatar className="h-9 w-9 cursor-pointer">
-                    {avatarUrl ? <AvatarImage src={avatarUrl} alt="Avatar" /> : null}
-                    <AvatarFallback className="bg-primary/10 text-primary text-xs">
-                      {user.email?.charAt(0).toUpperCase() ?? "U"}
-                    </AvatarFallback>
-                  </Avatar>
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-48 bg-card border shadow-lg z-50">
-                <DropdownMenuItem onClick={() => navigate("/profile")} className="cursor-pointer">
-                  <User className="mr-2 h-4 w-4" /> Meu Perfil
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => navigate("/wallet")} className="cursor-pointer">
-                  <Wallet className="mr-2 h-4 w-4" /> Minha Carteira
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => navigate("/orders")} className="cursor-pointer">
-                  <Package className="mr-2 h-4 w-4" /> Meus Pedidos
-                </DropdownMenuItem>
-                {isVendedor && (
-                  <DropdownMenuItem onClick={() => navigate("/vendor")} className="cursor-pointer">
-                    <Store className="mr-2 h-4 w-4" /> Área do Vendedor
-                  </DropdownMenuItem>
-                )}
-                {isAdmin && (
-                  <DropdownMenuItem onClick={() => navigate("/admin")} className="cursor-pointer">
-                    <Shield className="mr-2 h-4 w-4" /> Painel Admin
-                  </DropdownMenuItem>
-                )}
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={signOut} className="cursor-pointer text-destructive focus:text-destructive">
-                  <LogOut className="mr-2 h-4 w-4" /> Sair
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        </div>
-      </header>
-
+    <AppLayout>
       {/* Hero */}
       <section className="container py-12 text-center">
         <p className="text-lg text-muted-foreground">
@@ -125,42 +70,7 @@ const Index = () => {
           onClick={() => navigate("/orders")}
         />
       </section>
-
-      {/* Footer */}
-      <footer className="border-t bg-card/50 mt-auto">
-        <div className="container py-10">
-          <div className="grid gap-8 md:grid-cols-3">
-            <div>
-              <h3 className="font-display text-lg font-bold text-primary">🛒 OfertaJá</h3>
-              <p className="mt-2 text-sm text-muted-foreground">
-                A plataforma de compra coletiva que conecta você às melhores ofertas da sua cidade.
-              </p>
-            </div>
-            <div>
-              <h4 className="font-semibold text-foreground">Links Úteis</h4>
-              <ul className="mt-2 space-y-1 text-sm text-muted-foreground">
-                <li><button onClick={() => navigate("/offers")} className="hover:text-primary transition-colors">Ofertas Ativas</button></li>
-                <li><button onClick={() => navigate("/wallet")} className="hover:text-primary transition-colors">Minha Carteira</button></li>
-                <li><button onClick={() => navigate("/orders")} className="hover:text-primary transition-colors">Meus Pedidos</button></li>
-                <li><button onClick={() => navigate("/profile")} className="hover:text-primary transition-colors">Meu Perfil</button></li>
-                <li><button onClick={() => navigate("/about")} className="hover:text-primary transition-colors">Sobre</button></li>
-                <li><button onClick={() => navigate("/terms")} className="hover:text-primary transition-colors">Termos de Uso</button></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-semibold text-foreground">Contato</h4>
-              <ul className="mt-2 space-y-1 text-sm text-muted-foreground">
-                <li>📧 contato@ofertaja.com</li>
-                <li>📱 (11) 99999-9999</li>
-              </ul>
-            </div>
-          </div>
-          <div className="mt-8 border-t pt-4 text-center text-xs text-muted-foreground">
-            © {new Date().getFullYear()} OfertaJá. Todos os direitos reservados.
-          </div>
-        </div>
-      </footer>
-    </div>
+    </AppLayout>
   );
 };
 

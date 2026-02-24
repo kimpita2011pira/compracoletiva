@@ -1,21 +1,8 @@
-import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
+import { AppLayout } from "@/components/AppLayout";
 
 const AboutPage = () => {
-  const navigate = useNavigate();
-
   return (
-    <div className="min-h-screen bg-background">
-      <header className="sticky top-0 z-50 border-b bg-card/80 backdrop-blur-sm">
-        <div className="container flex h-16 items-center gap-3">
-          <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
-            <ArrowLeft className="h-5 w-5" />
-          </Button>
-          <h1 className="font-display text-xl font-bold text-primary">Sobre o OfertaJá</h1>
-        </div>
-      </header>
-
+    <AppLayout title="Sobre o OfertaJá" isPublic>
       <main className="container max-w-3xl py-10 space-y-8">
         <section>
           <h2 className="font-display text-3xl font-bold">🛒 O que é o OfertaJá?</h2>
@@ -55,7 +42,7 @@ const AboutPage = () => {
           </ul>
         </section>
       </main>
-    </div>
+    </AppLayout>
   );
 };
 

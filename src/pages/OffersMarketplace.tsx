@@ -1,15 +1,12 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useAuth } from "@/hooks/useAuth";
 import { useOffers } from "@/hooks/useOffers";
 import type { OfferWithVendor } from "@/hooks/useOffers";
 import ReserveOfferModal from "@/components/ReserveOfferModal";
-import { Button } from "@/components/ui/button";
+import { AppLayout } from "@/components/AppLayout";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import {
-  ArrowLeft,
-  LogOut,
   Clock,
   ShoppingBag,
   Truck,
@@ -18,41 +15,13 @@ import {
   Tag,
   Store,
 } from "lucide-react";
-import { NotificationBell } from "@/components/NotificationBell";
 
 export default function OffersMarketplace() {
-  const navigate = useNavigate();
-  const { user, signOut } = useAuth();
   const { data: offers, isLoading } = useOffers();
   const [selectedOffer, setSelectedOffer] = useState<OfferWithVendor | null>(null);
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="sticky top-0 z-50 border-b bg-card/80 backdrop-blur-sm">
-        <div className="container flex h-16 items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Button variant="ghost" size="icon" onClick={() => navigate("/")}>
-              <ArrowLeft className="h-5 w-5" />
-            </Button>
-            <h1 className="font-display text-xl font-bold text-primary">
-              🔥 Ofertas Ativas
-            </h1>
-          </div>
-          {user && (
-            <div className="flex items-center gap-3">
-              <span className="hidden text-sm text-muted-foreground sm:inline">
-                {user.email}
-              </span>
-              <NotificationBell />
-              <Button variant="ghost" size="icon" onClick={signOut}>
-                <LogOut className="h-5 w-5" />
-              </Button>
-            </div>
-          )}
-        </div>
-      </header>
-
+    <AppLayout title="🔥 Ofertas Ativas">
       <main className="container py-8">
         {/* Hero */}
         <div className="mb-8 text-center">
@@ -61,8 +30,7 @@ export default function OffersMarketplace() {
             <span className="text-primary">compra coletiva</span>
           </h2>
           <p className="mx-auto mt-2 max-w-lg text-muted-foreground">
-            Quanto mais gente compra, maior o desconto! Reserve agora e
-            economize.
+            Quanto mais gente compra, maior o desconto! Reserve agora e economize.
           </p>
         </div>
 
@@ -103,7 +71,7 @@ export default function OffersMarketplace() {
           />
         )}
       </main>
-    </div>
+    </AppLayout>
   );
 }
 
@@ -142,12 +110,10 @@ function OfferCard({ offer, onReserve }: { offer: OfferWithVendor; onReserve: (o
           </div>
         )}
 
-        {/* Discount badge */}
         <Badge className="absolute left-3 top-3 gap-1 bg-accent text-accent-foreground shadow-md text-sm px-2.5 py-1">
           <Tag className="h-3.5 w-3.5" />-{discount}%
         </Badge>
 
-        {/* Urgency badge */}
         {isAlmostDone && !isGoalReached && (
           <Badge
             variant="outline"
@@ -166,7 +132,6 @@ function OfferCard({ offer, onReserve }: { offer: OfferWithVendor; onReserve: (o
 
       {/* Content */}
       <div className="p-4 space-y-3">
-        {/* Vendor name */}
         {offer.vendors?.company_name && (
           <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
             <Store className="h-3 w-3" />
@@ -174,12 +139,10 @@ function OfferCard({ offer, onReserve }: { offer: OfferWithVendor; onReserve: (o
           </div>
         )}
 
-        {/* Title */}
         <h3 className="font-display text-lg font-bold leading-tight line-clamp-2">
           {offer.title}
         </h3>
 
-        {/* Prices */}
         <div className="flex items-baseline gap-2">
           <span className="font-display text-2xl font-bold text-primary">
             R$ {offer.offer_price.toFixed(2).replace(".", ",")}
@@ -189,7 +152,6 @@ function OfferCard({ offer, onReserve }: { offer: OfferWithVendor; onReserve: (o
           </span>
         </div>
 
-        {/* Progress bar */}
         <div className="space-y-1.5">
           <div className="flex items-center justify-between text-xs">
             <span className="text-muted-foreground">
@@ -203,13 +165,9 @@ function OfferCard({ offer, onReserve }: { offer: OfferWithVendor; onReserve: (o
                 : `Faltam ${remaining}`}
             </span>
           </div>
-          <Progress
-            value={progress}
-            className="h-2.5"
-          />
+          <Progress value={progress} className="h-2.5" />
         </div>
 
-        {/* Footer info */}
         <div className="flex items-center justify-between border-t pt-3 text-xs text-muted-foreground">
           <div className="flex items-center gap-1">
             <Clock className="h-3.5 w-3.5" />
@@ -233,7 +191,6 @@ function OfferCard({ offer, onReserve }: { offer: OfferWithVendor; onReserve: (o
           </div>
         </div>
 
-        {/* CTA Button */}
         <Button className="w-full gap-2 font-bold" size="lg" onClick={() => onReserve(offer)}>
           <ShoppingBag className="h-4 w-4" /> Reservar Agora
         </Button>

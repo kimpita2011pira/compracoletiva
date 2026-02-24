@@ -1,11 +1,9 @@
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "@/hooks/useAuth";
 import { useVendor } from "@/hooks/useVendor";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { AppLayout } from "@/components/AppLayout";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Store, Clock, CheckCircle, XCircle, Package, Plus } from "lucide-react";
-import { NotificationBell } from "@/components/NotificationBell";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Store, Clock, CheckCircle, XCircle, Package, Plus } from "lucide-react";
 
 const statusConfig = {
   PENDENTE: { label: "Pendente", icon: Clock, variant: "secondary" as const, color: "text-yellow-600", bg: "bg-yellow-50" },
@@ -14,7 +12,6 @@ const statusConfig = {
 };
 
 const VendorDashboard = () => {
-  const { user } = useAuth();
   const { vendor, isLoading } = useVendor();
   const navigate = useNavigate();
 
@@ -26,7 +23,6 @@ const VendorDashboard = () => {
     );
   }
 
-  // No vendor record yet → redirect to onboarding
   if (!vendor) {
     navigate("/vendor/onboarding", { replace: true });
     return null;
@@ -38,26 +34,10 @@ const VendorDashboard = () => {
   const isPending = vendor.status === "PENDENTE";
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="sticky top-0 z-50 border-b bg-card/80 backdrop-blur-sm">
-        <div className="container flex h-16 items-center justify-between">
-          <div className="flex items-center gap-3">
-            <button onClick={() => navigate("/")} className="text-muted-foreground hover:text-foreground">
-              <ArrowLeft className="h-5 w-5" />
-            </button>
-            <h1 className="font-display text-xl font-bold text-primary">
-              <Store className="mr-2 inline h-5 w-5" />
-              Área do Vendedor
-            </h1>
-          </div>
-          <div className="flex items-center gap-2">
-            <NotificationBell />
-            <Badge variant={status.variant}>{status.label}</Badge>
-          </div>
-        </div>
-      </header>
-
+    <AppLayout
+      title="🏪 Área do Vendedor"
+      headerRight={<Badge variant={status.variant}>{status.label}</Badge>}
+    >
       <div className="container max-w-3xl py-8 space-y-6">
         {/* Company Info Card */}
         <Card>
@@ -75,7 +55,6 @@ const VendorDashboard = () => {
               <p className="text-sm text-muted-foreground">{vendor.description}</p>
             )}
 
-            {/* Status Banner */}
             <div className={`rounded-lg p-4 ${status.bg} flex items-start gap-3`}>
               <StatusIcon className={`h-5 w-5 mt-0.5 ${status.color}`} />
               <div>
@@ -94,7 +73,6 @@ const VendorDashboard = () => {
           </CardContent>
         </Card>
 
-        {/* Actions for Approved Vendors */}
         {isApproved && (
           <div className="grid gap-4 sm:grid-cols-2">
             <Card className="cursor-pointer border-2 border-transparent transition-all hover:border-primary/30 hover:shadow-md">
@@ -122,7 +100,6 @@ const VendorDashboard = () => {
           </div>
         )}
 
-        {/* Pending state - helpful info */}
         {isPending && (
           <Card className="border-dashed">
             <CardContent className="p-6 text-center text-muted-foreground">
@@ -135,7 +112,7 @@ const VendorDashboard = () => {
           </Card>
         )}
       </div>
-    </div>
+    </AppLayout>
   );
 };
 

@@ -1,13 +1,13 @@
 import { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
+import { AppLayout } from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, Save, User, Camera } from "lucide-react";
+import { Save, User, Camera } from "lucide-react";
 
 function formatPhone(value: string): string {
   const digits = value.replace(/\D/g, "").slice(0, 11);
@@ -21,7 +21,6 @@ function formatPhone(value: string): string {
 const ProfilePage = () => {
   const { user } = useAuth();
   const { toast } = useToast();
-  const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -111,15 +110,8 @@ const ProfilePage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-secondary/5 p-4">
-      <div className="mx-auto max-w-lg space-y-4">
-        <button
-          onClick={() => navigate(-1)}
-          className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
-        >
-          <ArrowLeft className="h-4 w-4" /> Voltar
-        </button>
-
+    <AppLayout title="👤 Meu Perfil">
+      <main className="container max-w-lg py-8">
         <Card className="border-0 shadow-xl">
           <CardHeader className="text-center">
             <div className="relative mx-auto">
@@ -198,8 +190,8 @@ const ProfilePage = () => {
             </form>
           </CardContent>
         </Card>
-      </div>
-    </div>
+      </main>
+    </AppLayout>
   );
 };
 
