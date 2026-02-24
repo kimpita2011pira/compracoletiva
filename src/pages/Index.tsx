@@ -124,24 +124,6 @@ const Index = () => {
           color="accent"
           onClick={() => navigate("/orders")}
         />
-        {isVendedor && (
-          <QuickCard
-            icon={<Store className="h-8 w-8" />}
-            title="Área do Vendedor"
-            description="Gerencie suas ofertas e vendas"
-            color="primary"
-            onClick={() => navigate("/vendor")}
-          />
-        )}
-        {isAdmin && (
-          <QuickCard
-            icon={<Shield className="h-8 w-8" />}
-            title="Painel Admin"
-            description="Dashboard e gestão da plataforma"
-            color="accent"
-            onClick={() => navigate("/admin")}
-          />
-        )}
       </section>
     </div>
   );
