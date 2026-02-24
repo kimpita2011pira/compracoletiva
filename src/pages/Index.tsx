@@ -143,6 +143,8 @@ const Index = () => {
                 <li><button onClick={() => navigate("/wallet")} className="hover:text-primary transition-colors">Minha Carteira</button></li>
                 <li><button onClick={() => navigate("/orders")} className="hover:text-primary transition-colors">Meus Pedidos</button></li>
                 <li><button onClick={() => navigate("/profile")} className="hover:text-primary transition-colors">Meu Perfil</button></li>
+                <li><button onClick={() => navigate("/about")} className="hover:text-primary transition-colors">Sobre</button></li>
+                <li><button onClick={() => navigate("/terms")} className="hover:text-primary transition-colors">Termos de Uso</button></li>
               </ul>
             </div>
             <div>
