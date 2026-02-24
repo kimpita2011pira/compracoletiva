@@ -125,6 +125,39 @@ const Index = () => {
           onClick={() => navigate("/orders")}
         />
       </section>
+
+      {/* Footer */}
+      <footer className="border-t bg-card/50 mt-auto">
+        <div className="container py-10">
+          <div className="grid gap-8 md:grid-cols-3">
+            <div>
+              <h3 className="font-display text-lg font-bold text-primary">🛒 OfertaJá</h3>
+              <p className="mt-2 text-sm text-muted-foreground">
+                A plataforma de compra coletiva que conecta você às melhores ofertas da sua cidade.
+              </p>
+            </div>
+            <div>
+              <h4 className="font-semibold text-foreground">Links Úteis</h4>
+              <ul className="mt-2 space-y-1 text-sm text-muted-foreground">
+                <li><button onClick={() => navigate("/offers")} className="hover:text-primary transition-colors">Ofertas Ativas</button></li>
+                <li><button onClick={() => navigate("/wallet")} className="hover:text-primary transition-colors">Minha Carteira</button></li>
+                <li><button onClick={() => navigate("/orders")} className="hover:text-primary transition-colors">Meus Pedidos</button></li>
+                <li><button onClick={() => navigate("/profile")} className="hover:text-primary transition-colors">Meu Perfil</button></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-semibold text-foreground">Contato</h4>
+              <ul className="mt-2 space-y-1 text-sm text-muted-foreground">
+                <li>📧 contato@ofertaja.com</li>
+                <li>📱 (11) 99999-9999</li>
+              </ul>
+            </div>
+          </div>
+          <div className="mt-8 border-t pt-4 text-center text-xs text-muted-foreground">
+            © {new Date().getFullYear()} OfertaJá. Todos os direitos reservados.
+          </div>
+        </div>
+      </footer>
     </div>
   );
 };
