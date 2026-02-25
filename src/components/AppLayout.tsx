@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
+import { PageTransition } from "@/components/PageTransition";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -44,7 +45,9 @@ export function AppLayout({
         <AuthHeader title={title} headerRight={headerRight} />
       )}
 
-      <div className="flex-1 pb-16 md:pb-0">{children}</div>
+      <PageTransition>
+        <div className="flex-1 pb-16 md:pb-0">{children}</div>
+      </PageTransition>
 
       {showFooter && <Footer />}
       {!isPublic && <BottomNav />}
