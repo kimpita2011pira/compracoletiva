@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useOffers } from "@/hooks/useOffers";
 import type { OfferWithVendor } from "@/hooks/useOffers";
 import ReserveOfferModal from "@/components/ReserveOfferModal";
 import { AppLayout } from "@/components/AppLayout";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
 import {
   Clock,
@@ -14,11 +15,83 @@ import {
   Flame,
   Tag,
   Store,
+  Search,
+  SlidersHorizontal,
+  X,
 } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+type SortOption = "ending_soon" | "biggest_discount" | "lowest_price" | "most_popular";
+type DeliveryFilter = "all" | "delivery" | "pickup";
 
 export default function OffersMarketplace() {
   const { data: offers, isLoading } = useOffers();
   const [selectedOffer, setSelectedOffer] = useState<OfferWithVendor | null>(null);
+
+  const [search, setSearch] = useState("");
+  const [sort, setSort] = useState<SortOption>("ending_soon");
+  const [deliveryFilter, setDeliveryFilter] = useState<DeliveryFilter>("all");
+  const [onlyGoalReached, setOnlyGoalReached] = useState(false);
+  const [showFilters, setShowFilters] = useState(false);
+
+  const filtered = useMemo(() => {
+    if (!offers) return [];
+    let result = [...offers];
+
+    // Search
+    if (search.trim()) {
+      const q = search.toLowerCase();
+      result = result.filter(
+        (o) =>
+          o.title.toLowerCase().includes(q) ||
+          o.description?.toLowerCase().includes(q) ||
+          o.vendors?.company_name?.toLowerCase().includes(q)
+      );
+    }
+
+    // Delivery filter
+    if (deliveryFilter === "delivery") result = result.filter((o) => o.delivery_available);
+    if (deliveryFilter === "pickup") result = result.filter((o) => o.pickup_available);
+
+    // Goal reached
+    if (onlyGoalReached) result = result.filter((o) => o.sold_quantity >= o.min_quantity);
+
+    // Sort
+    result.sort((a, b) => {
+      switch (sort) {
+        case "ending_soon":
+          return new Date(a.end_date).getTime() - new Date(b.end_date).getTime();
+        case "biggest_discount": {
+          const dA = (a.original_price - a.offer_price) / a.original_price;
+          const dB = (b.original_price - b.offer_price) / b.original_price;
+          return dB - dA;
+        }
+        case "lowest_price":
+          return a.offer_price - b.offer_price;
+        case "most_popular":
+          return b.sold_quantity - a.sold_quantity;
+        default:
+          return 0;
+      }
+    });
+
+    return result;
+  }, [offers, search, sort, deliveryFilter, onlyGoalReached]);
+
+  const hasActiveFilters = search.trim() || deliveryFilter !== "all" || onlyGoalReached || sort !== "ending_soon";
+
+  const clearFilters = () => {
+    setSearch("");
+    setSort("ending_soon");
+    setDeliveryFilter("all");
+    setOnlyGoalReached(false);
+  };
 
   return (
     <AppLayout title="🔥 Ofertas Ativas">
@@ -34,6 +107,88 @@ export default function OffersMarketplace() {
           </p>
         </div>
 
+        {/* Search & Filters */}
+        <div className="mb-6 space-y-3">
+          <div className="flex gap-2">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                placeholder="Buscar ofertas, produtos ou lojas..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="pl-9"
+              />
+              {search && (
+                <button
+                  onClick={() => setSearch("")}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              )}
+            </div>
+            <Button
+              variant={showFilters ? "default" : "outline"}
+              size="icon"
+              onClick={() => setShowFilters(!showFilters)}
+              className="shrink-0"
+            >
+              <SlidersHorizontal className="h-4 w-4" />
+            </Button>
+          </div>
+
+          {showFilters && (
+            <div className="flex flex-wrap items-center gap-2 rounded-xl border bg-card p-3 animate-fade-in">
+              <Select value={sort} onValueChange={(v) => setSort(v as SortOption)}>
+                <SelectTrigger className="w-[170px] text-xs">
+                  <SelectValue placeholder="Ordenar por" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="ending_soon">Encerrando em breve</SelectItem>
+                  <SelectItem value="biggest_discount">Maior desconto</SelectItem>
+                  <SelectItem value="lowest_price">Menor preço</SelectItem>
+                  <SelectItem value="most_popular">Mais reservados</SelectItem>
+                </SelectContent>
+              </Select>
+
+              <Select value={deliveryFilter} onValueChange={(v) => setDeliveryFilter(v as DeliveryFilter)}>
+                <SelectTrigger className="w-[140px] text-xs">
+                  <SelectValue placeholder="Entrega" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Todos</SelectItem>
+                  <SelectItem value="delivery">Com entrega</SelectItem>
+                  <SelectItem value="pickup">Com retirada</SelectItem>
+                </SelectContent>
+              </Select>
+
+              <Button
+                variant={onlyGoalReached ? "default" : "outline"}
+                size="sm"
+                className="text-xs gap-1"
+                onClick={() => setOnlyGoalReached(!onlyGoalReached)}
+              >
+                ✅ Meta atingida
+              </Button>
+
+              {hasActiveFilters && (
+                <Button variant="ghost" size="sm" className="text-xs text-muted-foreground gap-1" onClick={clearFilters}>
+                  <X className="h-3 w-3" /> Limpar filtros
+                </Button>
+              )}
+            </div>
+          )}
+
+          {/* Results count */}
+          {!isLoading && offers && (
+            <p className="text-xs text-muted-foreground">
+              {filtered.length === offers.length
+                ? `${offers.length} oferta${offers.length !== 1 ? "s" : ""} ativa${offers.length !== 1 ? "s" : ""}`
+                : `${filtered.length} de ${offers.length} oferta${offers.length !== 1 ? "s" : ""}`}
+            </p>
+          )}
+        </div>
+
         {/* Loading */}
         {isLoading && (
           <div className="flex justify-center py-20">
@@ -42,22 +197,31 @@ export default function OffersMarketplace() {
         )}
 
         {/* Empty state */}
-        {!isLoading && (!offers || offers.length === 0) && (
+        {!isLoading && filtered.length === 0 && (
           <div className="flex flex-col items-center justify-center rounded-xl border border-dashed bg-muted/30 py-20">
             <ShoppingBag className="mb-4 h-12 w-12 text-muted-foreground/40" />
             <p className="font-display text-lg font-bold text-muted-foreground">
-              Nenhuma oferta ativa no momento
+              {offers && offers.length > 0
+                ? "Nenhuma oferta encontrada com esses filtros"
+                : "Nenhuma oferta ativa no momento"}
             </p>
             <p className="mt-1 text-sm text-muted-foreground">
-              Volte em breve para novas ofertas incríveis!
+              {offers && offers.length > 0
+                ? "Tente alterar os filtros ou a busca"
+                : "Volte em breve para novas ofertas incríveis!"}
             </p>
+            {hasActiveFilters && (
+              <Button variant="outline" size="sm" className="mt-4" onClick={clearFilters}>
+                Limpar filtros
+              </Button>
+            )}
           </div>
         )}
 
         {/* Offers Grid */}
-        {offers && offers.length > 0 && (
+        {filtered.length > 0 && (
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {offers.map((offer) => (
+            {filtered.map((offer) => (
               <OfferCard key={offer.id} offer={offer} onReserve={setSelectedOffer} />
             ))}
           </div>
