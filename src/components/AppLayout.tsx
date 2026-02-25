@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { NotificationBell } from "@/components/NotificationBell";
 import { ArrowLeft, Store, Shield, LogOut, Wallet, Package, User } from "lucide-react";
+import { BottomNav } from "@/components/BottomNav";
 
 interface AppLayoutProps {
   children: React.ReactNode;
@@ -43,9 +44,10 @@ export function AppLayout({
         <AuthHeader title={title} headerRight={headerRight} />
       )}
 
-      <div className="flex-1">{children}</div>
+      <div className="flex-1 pb-16 md:pb-0">{children}</div>
 
       {showFooter && <Footer />}
+      {!isPublic && <BottomNav />}
     </div>
   );
 }
