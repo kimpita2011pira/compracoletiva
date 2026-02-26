@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import { useOffers } from "@/hooks/useOffers";
 import type { OfferWithVendor } from "@/hooks/useOffers";
 import ReserveOfferModal from "@/components/ReserveOfferModal";
@@ -240,6 +241,7 @@ export default function OffersMarketplace() {
 }
 
 function OfferCard({ offer, onReserve }: { offer: OfferWithVendor; onReserve: (offer: OfferWithVendor) => void }) {
+  const navigate = useNavigate();
   const discount = Math.round(
     ((offer.original_price - offer.offer_price) / offer.original_price) * 100
   );
@@ -258,7 +260,7 @@ function OfferCard({ offer, onReserve }: { offer: OfferWithVendor; onReserve: (o
   const isGoalReached = offer.sold_quantity >= offer.min_quantity;
 
   return (
-    <div className="group relative overflow-hidden rounded-2xl border bg-card shadow-sm transition-all hover:shadow-lg hover:-translate-y-1">
+    <div className="group relative overflow-hidden rounded-2xl border bg-card shadow-sm transition-all hover:shadow-lg hover:-translate-y-1 cursor-pointer" onClick={() => navigate(`/offers/${offer.id}`)}>
       {/* Image area */}
       <div className="relative h-44 bg-gradient-to-br from-primary/10 via-secondary/10 to-accent/10">
         {offer.image_url ? (
@@ -355,7 +357,7 @@ function OfferCard({ offer, onReserve }: { offer: OfferWithVendor; onReserve: (o
           </div>
         </div>
 
-        <Button className="w-full gap-2 font-bold" size="lg" onClick={() => onReserve(offer)}>
+        <Button className="w-full gap-2 font-bold" size="lg" onClick={(e) => { e.stopPropagation(); onReserve(offer); }}>
           <ShoppingBag className="h-4 w-4" /> Reservar Agora
         </Button>
       </div>
