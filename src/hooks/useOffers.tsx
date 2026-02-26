@@ -4,6 +4,7 @@ import type { Tables } from "@/integrations/supabase/types";
 
 export type OfferWithVendor = Tables<"offers"> & {
   vendors: Pick<Tables<"vendors">, "company_name"> | null;
+  category?: string | null;
 };
 
 export function useOffers() {

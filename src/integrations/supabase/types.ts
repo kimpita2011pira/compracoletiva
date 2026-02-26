@@ -121,6 +121,7 @@ export type Database = {
       }
       offers: {
         Row: {
+          category: Database["public"]["Enums"]["offer_category"] | null
           created_at: string
           delivery_available: boolean | null
           delivery_fee: number | null
@@ -141,6 +142,7 @@ export type Database = {
           vendor_id: string
         }
         Insert: {
+          category?: Database["public"]["Enums"]["offer_category"] | null
           created_at?: string
           delivery_available?: boolean | null
           delivery_fee?: number | null
@@ -161,6 +163,7 @@ export type Database = {
           vendor_id: string
         }
         Update: {
+          category?: Database["public"]["Enums"]["offer_category"] | null
           created_at?: string
           delivery_available?: boolean | null
           delivery_fee?: number | null
@@ -484,6 +487,15 @@ export type Database = {
     Enums: {
       app_role: "CLIENTE" | "VENDEDOR" | "ADMIN"
       delivery_type: "DELIVERY" | "RETIRADA"
+      offer_category:
+        | "ALIMENTACAO"
+        | "BELEZA"
+        | "ELETRONICOS"
+        | "MODA"
+        | "CASA"
+        | "SAUDE"
+        | "SERVICOS"
+        | "OUTROS"
       offer_status: "ATIVA" | "VALIDADA" | "CANCELADA" | "ENCERRADA"
       order_status: "RESERVADO" | "CONFIRMADO" | "CANCELADO" | "ESTORNADO"
       transaction_type:
@@ -623,6 +635,16 @@ export const Constants = {
     Enums: {
       app_role: ["CLIENTE", "VENDEDOR", "ADMIN"],
       delivery_type: ["DELIVERY", "RETIRADA"],
+      offer_category: [
+        "ALIMENTACAO",
+        "BELEZA",
+        "ELETRONICOS",
+        "MODA",
+        "CASA",
+        "SAUDE",
+        "SERVICOS",
+        "OUTROS",
+      ],
       offer_status: ["ATIVA", "VALIDADA", "CANCELADA", "ENCERRADA"],
       order_status: ["RESERVADO", "CONFIRMADO", "CANCELADO", "ESTORNADO"],
       transaction_type: [
