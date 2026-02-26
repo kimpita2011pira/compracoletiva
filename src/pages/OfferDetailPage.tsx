@@ -13,6 +13,7 @@ import { toast } from "@/hooks/use-toast";
 import {
   ArrowLeft, Clock, Flame, MapPin, ShoppingBag, Star, Store, Tag, Truck,
 } from "lucide-react";
+import { CATEGORY_MAP } from "./OffersMarketplace";
 
 export default function OfferDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -106,12 +107,21 @@ export default function OfferDetailPage() {
 
         {/* Info */}
         <div className="space-y-4">
-          {offer.vendors?.company_name && (
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Store className="h-4 w-4" />
-              {offer.vendors.company_name}
-            </div>
-          )}
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            {offer.vendors?.company_name && (
+              <>
+                <Store className="h-4 w-4" />
+                {offer.vendors.company_name}
+              </>
+            )}
+            {offer.category && CATEGORY_MAP[offer.category] && (
+              <>
+                {offer.vendors?.company_name && <span>·</span>}
+                {(() => { const CatIcon = CATEGORY_MAP[offer.category].icon; return <CatIcon className="h-4 w-4" />; })()}
+                {CATEGORY_MAP[offer.category].label}
+              </>
+            )}
+          </div>
 
           <h1 className="font-display text-2xl font-bold sm:text-3xl">{offer.title}</h1>
 

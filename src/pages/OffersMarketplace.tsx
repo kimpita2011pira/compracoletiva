@@ -19,6 +19,14 @@ import {
   Search,
   SlidersHorizontal,
   X,
+  UtensilsCrossed,
+  Sparkles,
+  Cpu,
+  Shirt,
+  Home,
+  HeartPulse,
+  Wrench,
+  Package,
 } from "lucide-react";
 import {
   Select,
@@ -31,6 +39,19 @@ import {
 type SortOption = "ending_soon" | "biggest_discount" | "lowest_price" | "most_popular";
 type DeliveryFilter = "all" | "delivery" | "pickup";
 
+const CATEGORY_MAP: Record<string, { label: string; icon: React.ElementType }> = {
+  ALIMENTACAO: { label: "Alimentação", icon: UtensilsCrossed },
+  BELEZA: { label: "Beleza", icon: Sparkles },
+  ELETRONICOS: { label: "Eletrônicos", icon: Cpu },
+  MODA: { label: "Moda", icon: Shirt },
+  CASA: { label: "Casa", icon: Home },
+  SAUDE: { label: "Saúde", icon: HeartPulse },
+  SERVICOS: { label: "Serviços", icon: Wrench },
+  OUTROS: { label: "Outros", icon: Package },
+};
+
+export { CATEGORY_MAP };
+
 export default function OffersMarketplace() {
   const { data: offers, isLoading } = useOffers();
   const [selectedOffer, setSelectedOffer] = useState<OfferWithVendor | null>(null);
@@ -40,6 +61,7 @@ export default function OffersMarketplace() {
   const [deliveryFilter, setDeliveryFilter] = useState<DeliveryFilter>("all");
   const [onlyGoalReached, setOnlyGoalReached] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
+  const [categoryFilter, setCategoryFilter] = useState<string>("all");
 
   const filtered = useMemo(() => {
     if (!offers) return [];
@@ -59,6 +81,9 @@ export default function OffersMarketplace() {
     // Delivery filter
     if (deliveryFilter === "delivery") result = result.filter((o) => o.delivery_available);
     if (deliveryFilter === "pickup") result = result.filter((o) => o.pickup_available);
+
+    // Category filter
+    if (categoryFilter !== "all") result = result.filter((o) => o.category === categoryFilter);
 
     // Goal reached
     if (onlyGoalReached) result = result.filter((o) => o.sold_quantity >= o.min_quantity);
@@ -83,15 +108,16 @@ export default function OffersMarketplace() {
     });
 
     return result;
-  }, [offers, search, sort, deliveryFilter, onlyGoalReached]);
+  }, [offers, search, sort, deliveryFilter, onlyGoalReached, categoryFilter]);
 
-  const hasActiveFilters = search.trim() || deliveryFilter !== "all" || onlyGoalReached || sort !== "ending_soon";
+  const hasActiveFilters = search.trim() || deliveryFilter !== "all" || onlyGoalReached || sort !== "ending_soon" || categoryFilter !== "all";
 
   const clearFilters = () => {
     setSearch("");
     setSort("ending_soon");
     setDeliveryFilter("all");
     setOnlyGoalReached(false);
+    setCategoryFilter("all");
   };
 
   return (
@@ -136,6 +162,30 @@ export default function OffersMarketplace() {
             >
               <SlidersHorizontal className="h-4 w-4" />
             </Button>
+          </div>
+
+          {/* Category chips */}
+          <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
+            <Button
+              variant={categoryFilter === "all" ? "default" : "outline"}
+              size="sm"
+              className="text-xs shrink-0 gap-1.5"
+              onClick={() => setCategoryFilter("all")}
+            >
+              Todas
+            </Button>
+            {Object.entries(CATEGORY_MAP).map(([key, { label, icon: Icon }]) => (
+              <Button
+                key={key}
+                variant={categoryFilter === key ? "default" : "outline"}
+                size="sm"
+                className="text-xs shrink-0 gap-1.5"
+                onClick={() => setCategoryFilter(key)}
+              >
+                <Icon className="h-3.5 w-3.5" />
+                {label}
+              </Button>
+            ))}
           </div>
 
           {showFilters && (
@@ -298,12 +348,21 @@ function OfferCard({ offer, onReserve }: { offer: OfferWithVendor; onReserve: (o
 
       {/* Content */}
       <div className="p-4 space-y-3">
-        {offer.vendors?.company_name && (
-          <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-            <Store className="h-3 w-3" />
-            {offer.vendors.company_name}
-          </div>
-        )}
+        <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+          {offer.vendors?.company_name && (
+            <>
+              <Store className="h-3 w-3" />
+              {offer.vendors.company_name}
+            </>
+          )}
+          {offer.category && CATEGORY_MAP[offer.category] && (
+            <>
+              {offer.vendors?.company_name && <span>·</span>}
+              {(() => { const CatIcon = CATEGORY_MAP[offer.category].icon; return <CatIcon className="h-3 w-3" />; })()}
+              {CATEGORY_MAP[offer.category].label}
+            </>
+          )}
+        </div>
 
         <h3 className="font-display text-lg font-bold leading-tight line-clamp-2">
           {offer.title}
