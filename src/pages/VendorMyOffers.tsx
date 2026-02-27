@@ -14,7 +14,7 @@ import {
 import { toast } from "@/hooks/use-toast";
 import {
   ArrowLeft, Plus, ShoppingBag, Clock, CheckCircle, XCircle, Ban,
-  Eye, MoreVertical,
+  Eye, MoreVertical, Pencil,
 } from "lucide-react";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,
@@ -88,6 +88,7 @@ export default function VendorMyOffers() {
                 key={offer.id}
                 offer={offer}
                 onView={() => navigate(`/offers/${offer.id}`)}
+                onEdit={() => navigate(`/vendor/edit-offer/${offer.id}`)}
                 onCancel={() => setCancelId(offer.id)}
               />
             ))}
@@ -122,10 +123,12 @@ export default function VendorMyOffers() {
 function OfferRow({
   offer,
   onView,
+  onEdit,
   onCancel,
 }: {
   offer: VendorOffer;
   onView: () => void;
+  onEdit: () => void;
   onCancel: () => void;
 }) {
   const statusCfg = STATUS_CONFIG[offer.status] ?? STATUS_CONFIG.ATIVA;
@@ -179,6 +182,11 @@ function OfferRow({
                 <DropdownMenuItem onClick={onView} className="gap-2">
                   <Eye className="h-4 w-4" /> Ver oferta
                 </DropdownMenuItem>
+                {offer.status === "ATIVA" && (
+                  <DropdownMenuItem onClick={onEdit} className="gap-2">
+                    <Pencil className="h-4 w-4" /> Editar oferta
+                  </DropdownMenuItem>
+                )}
                 {offer.status === "ATIVA" && (
                   <DropdownMenuItem onClick={onCancel} className="gap-2 text-destructive focus:text-destructive">
                     <XCircle className="h-4 w-4" /> Cancelar oferta
