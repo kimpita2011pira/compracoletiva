@@ -35,6 +35,7 @@ function AnimatedRoutes() {
         <Route path="/vendor/onboarding" element={<ProtectedRoute requiredRole="VENDEDOR"><VendorOnboarding /></ProtectedRoute>} />
         <Route path="/vendor/create-offer" element={<ProtectedRoute requiredRole="VENDEDOR"><VendorCreateOffer /></ProtectedRoute>} />
         <Route path="/vendor/my-offers" element={<ProtectedRoute requiredRole="VENDEDOR"><VendorMyOffers /></ProtectedRoute>} />
+        <Route path="/vendor/edit-offer/:id" element={<ProtectedRoute requiredRole="VENDEDOR"><VendorCreateOffer /></ProtectedRoute>} />
         <Route path="/admin" element={<ProtectedRoute requiredRole="ADMIN"><AdminDashboard /></ProtectedRoute>} />
         <Route path="/offers" element={<ProtectedRoute><OffersMarketplace /></ProtectedRoute>} />
         <Route path="/offers/:id" element={<ProtectedRoute><OfferDetailPage /></ProtectedRoute>} />

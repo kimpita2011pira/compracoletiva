@@ -1,9 +1,9 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useVendor } from "@/hooks/useVendor";
 import { AppLayout } from "@/components/AppLayout";
@@ -46,10 +46,32 @@ const formSchema = z.object({
 
 type FormValues = z.infer<typeof formSchema>;
 
+function toLocalDatetime(iso: string) {
+  const d = new Date(iso);
+  const pad = (n: number) => n.toString().padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
 export default function VendorCreateOffer() {
   const navigate = useNavigate();
+  const { id: offerId } = useParams<{ id: string }>();
+  const isEdit = !!offerId;
   const { vendor } = useVendor();
   const queryClient = useQueryClient();
+
+  const { data: existingOffer, isLoading: loadingOffer } = useQuery({
+    queryKey: ["offer-edit", offerId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("offers")
+        .select("*")
+        .eq("id", offerId!)
+        .single();
+      if (error) throw error;
+      return data;
+    },
+    enabled: isEdit,
+  });
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -70,11 +92,31 @@ export default function VendorCreateOffer() {
     },
   });
 
-  const createOffer = useMutation({
+  // Populate form when editing
+  useEffect(() => {
+    if (existingOffer) {
+      form.reset({
+        title: existingOffer.title,
+        description: existingOffer.description ?? "",
+        category: existingOffer.category ?? "OUTROS",
+        original_price: Number(existingOffer.original_price),
+        offer_price: Number(existingOffer.offer_price),
+        min_quantity: existingOffer.min_quantity,
+        max_per_user: existingOffer.max_per_user ?? undefined,
+        end_date: toLocalDatetime(existingOffer.end_date),
+        image_url: existingOffer.image_url ?? "",
+        delivery_available: existingOffer.delivery_available ?? false,
+        delivery_fee: Number(existingOffer.delivery_fee ?? 0),
+        pickup_available: existingOffer.pickup_available ?? true,
+        estimated_delivery_time: existingOffer.estimated_delivery_time ?? "",
+      });
+    }
+  }, [existingOffer, form]);
+
+  const saveMutation = useMutation({
     mutationFn: async (values: FormValues) => {
       if (!vendor) throw new Error("Vendor not found");
-      const { data, error } = await supabase.from("offers").insert({
-        vendor_id: vendor.id,
+      const payload = {
         title: values.title,
         description: values.description || null,
         category: values.category as OfferCategory,
@@ -88,37 +130,64 @@ export default function VendorCreateOffer() {
         delivery_fee: values.delivery_fee || 0,
         pickup_available: values.pickup_available,
         estimated_delivery_time: values.estimated_delivery_time || null,
-      }).select().single();
-      if (error) throw error;
-      return data;
+      };
+
+      if (isEdit) {
+        const { error } = await supabase
+          .from("offers")
+          .update(payload)
+          .eq("id", offerId!);
+        if (error) throw error;
+      } else {
+        const { error } = await supabase
+          .from("offers")
+          .insert({ ...payload, vendor_id: vendor.id })
+          .select()
+          .single();
+        if (error) throw error;
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["offers-active"] });
-      toast({ title: "Oferta criada com sucesso! 🎉" });
-      navigate("/vendor");
+      queryClient.invalidateQueries({ queryKey: ["vendor-offers"] });
+      queryClient.invalidateQueries({ queryKey: ["offer-edit", offerId] });
+      toast({ title: isEdit ? "Oferta atualizada! ✅" : "Oferta criada com sucesso! 🎉" });
+      navigate("/vendor/my-offers");
     },
     onError: (err: any) => {
-      toast({ title: "Erro ao criar oferta", description: err.message, variant: "destructive" });
+      toast({ title: isEdit ? "Erro ao atualizar oferta" : "Erro ao criar oferta", description: err.message, variant: "destructive" });
     },
   });
 
-  const onSubmit = (values: FormValues) => createOffer.mutate(values);
+  const onSubmit = (values: FormValues) => saveMutation.mutate(values);
 
   if (!vendor || vendor.status !== "APROVADO") {
     navigate("/vendor", { replace: true });
     return null;
   }
 
+  if (isEdit && loadingOffer) {
+    return (
+      <AppLayout title="Carregando...">
+        <div className="flex justify-center py-20">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+        </div>
+      </AppLayout>
+    );
+  }
+
   return (
-    <AppLayout title="Nova Oferta">
+    <AppLayout title={isEdit ? "Editar Oferta" : "Nova Oferta"}>
       <main className="container max-w-2xl py-6 space-y-6">
-        <Button variant="ghost" size="sm" className="gap-1" onClick={() => navigate("/vendor")}>
+        <Button variant="ghost" size="sm" className="gap-1" onClick={() => navigate("/vendor/my-offers")}>
           <ArrowLeft className="h-4 w-4" /> Voltar
         </Button>
 
         <div>
-          <h1 className="font-display text-2xl font-bold">Criar Oferta</h1>
-          <p className="text-sm text-muted-foreground mt-1">Preencha os dados da sua oferta coletiva</p>
+          <h1 className="font-display text-2xl font-bold">{isEdit ? "Editar Oferta" : "Criar Oferta"}</h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            {isEdit ? "Atualize os dados da sua oferta" : "Preencha os dados da sua oferta coletiva"}
+          </p>
         </div>
 
         <Form {...form}>
@@ -145,7 +214,7 @@ export default function VendorCreateOffer() {
             <FormField control={form.control} name="category" render={({ field }) => (
               <FormItem>
                 <FormLabel>Categoria *</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <Select onValueChange={field.onChange} value={field.value}>
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder="Selecione uma categoria" />
@@ -264,9 +333,9 @@ export default function VendorCreateOffer() {
               )}
             </div>
 
-            <Button type="submit" className="w-full font-bold" size="lg" disabled={createOffer.isPending}>
-              {createOffer.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Publicar Oferta
+            <Button type="submit" className="w-full font-bold" size="lg" disabled={saveMutation.isPending}>
+              {saveMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {isEdit ? "Salvar Alterações" : "Publicar Oferta"}
             </Button>
           </form>
         </Form>
