@@ -75,7 +75,7 @@ const VendorDashboard = () => {
 
         {isApproved && (
           <div className="grid gap-4 sm:grid-cols-2">
-            <Card className="cursor-pointer border-2 border-transparent transition-all hover:border-primary/30 hover:shadow-md">
+            <Card className="cursor-pointer border-2 border-transparent transition-all hover:border-primary/30 hover:shadow-md" onClick={() => navigate("/vendor/create-offer")}>
               <CardContent className="flex items-center gap-4 p-6">
                 <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
                   <Plus className="h-6 w-6 text-primary" />
