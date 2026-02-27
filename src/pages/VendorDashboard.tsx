@@ -86,7 +86,7 @@ const VendorDashboard = () => {
                 </div>
               </CardContent>
             </Card>
-            <Card className="cursor-pointer border-2 border-transparent transition-all hover:border-secondary/30 hover:shadow-md">
+            <Card className="cursor-pointer border-2 border-transparent transition-all hover:border-secondary/30 hover:shadow-md" onClick={() => navigate("/vendor/my-offers")}>
               <CardContent className="flex items-center gap-4 p-6">
                 <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-secondary/10">
                   <Package className="h-6 w-6 text-secondary" />

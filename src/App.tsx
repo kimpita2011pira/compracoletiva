@@ -9,6 +9,7 @@ import Auth from "./pages/Auth";
 import VendorDashboard from "./pages/VendorDashboard";
 import VendorOnboarding from "./pages/VendorOnboarding";
 import VendorCreateOffer from "./pages/VendorCreateOffer";
+import VendorMyOffers from "./pages/VendorMyOffers";
 import AdminDashboard from "./pages/AdminDashboard";
 import OffersMarketplace from "./pages/OffersMarketplace";
 import OfferDetailPage from "./pages/OfferDetailPage";
@@ -33,6 +34,7 @@ function AnimatedRoutes() {
         <Route path="/vendor" element={<ProtectedRoute requiredRole="VENDEDOR"><VendorDashboard /></ProtectedRoute>} />
         <Route path="/vendor/onboarding" element={<ProtectedRoute requiredRole="VENDEDOR"><VendorOnboarding /></ProtectedRoute>} />
         <Route path="/vendor/create-offer" element={<ProtectedRoute requiredRole="VENDEDOR"><VendorCreateOffer /></ProtectedRoute>} />
+        <Route path="/vendor/my-offers" element={<ProtectedRoute requiredRole="VENDEDOR"><VendorMyOffers /></ProtectedRoute>} />
         <Route path="/admin" element={<ProtectedRoute requiredRole="ADMIN"><AdminDashboard /></ProtectedRoute>} />
         <Route path="/offers" element={<ProtectedRoute><OffersMarketplace /></ProtectedRoute>} />
         <Route path="/offers/:id" element={<ProtectedRoute><OfferDetailPage /></ProtectedRoute>} />
