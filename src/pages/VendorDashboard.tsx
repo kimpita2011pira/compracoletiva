@@ -1,9 +1,11 @@
 import { useNavigate } from "react-router-dom";
 import { useVendor } from "@/hooks/useVendor";
-import { useVendorMetrics } from "@/hooks/useVendorMetrics";
+import { useVendorMetrics, useVendorSalesHistory } from "@/hooks/useVendorMetrics";
 import { AppLayout } from "@/components/AppLayout";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
+import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import { Store, Clock, CheckCircle, XCircle, Package, Plus, TrendingUp, ShoppingCart, DollarSign, BarChart3 } from "lucide-react";
 
 const statusConfig = {
@@ -15,6 +17,7 @@ const statusConfig = {
 const VendorDashboard = () => {
   const { vendor, isLoading } = useVendor();
   const { data: metrics } = useVendorMetrics();
+  const { data: salesHistory } = useVendorSalesHistory(14);
   const navigate = useNavigate();
 
   if (isLoading) {
@@ -108,6 +111,58 @@ const VendorDashboard = () => {
               </CardContent>
             </Card>
           </div>
+        )}
+
+        {isApproved && salesHistory && salesHistory.length > 0 && (
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="font-display text-base flex items-center gap-2">
+                <TrendingUp className="h-4 w-4 text-primary" />
+                Evolução de Vendas (14 dias)
+              </CardTitle>
+              <CardDescription>Unidades vendidas e receita por dia</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ChartContainer
+                config={{
+                  vendas: { label: "Vendas", color: "hsl(var(--primary))" },
+                  receita: { label: "Receita (R$)", color: "hsl(var(--secondary))" },
+                }}
+                className="h-[250px] w-full"
+              >
+                <AreaChart data={salesHistory} margin={{ top: 5, right: 10, left: 0, bottom: 0 }}>
+                  <defs>
+                    <linearGradient id="fillVendas" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="var(--color-vendas)" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="var(--color-vendas)" stopOpacity={0} />
+                    </linearGradient>
+                    <linearGradient id="fillReceita" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="var(--color-receita)" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="var(--color-receita)" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
+                  <XAxis dataKey="date" tick={{ fontSize: 11 }} className="fill-muted-foreground" />
+                  <YAxis tick={{ fontSize: 11 }} className="fill-muted-foreground" />
+                  <ChartTooltip content={<ChartTooltipContent />} />
+                  <Area
+                    type="monotone"
+                    dataKey="vendas"
+                    stroke="var(--color-vendas)"
+                    fill="url(#fillVendas)"
+                    strokeWidth={2}
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="receita"
+                    stroke="var(--color-receita)"
+                    fill="url(#fillReceita)"
+                    strokeWidth={2}
+                  />
+                </AreaChart>
+              </ChartContainer>
+            </CardContent>
+          </Card>
         )}
 
         {isApproved && (
