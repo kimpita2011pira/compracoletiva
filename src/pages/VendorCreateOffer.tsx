@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -19,7 +19,7 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 import { toast } from "@/hooks/use-toast";
-import { ArrowLeft, Loader2 } from "lucide-react";
+import { ArrowLeft, Loader2, Upload, X, ImageIcon } from "lucide-react";
 import { CATEGORY_MAP } from "./OffersMarketplace";
 import type { Database } from "@/integrations/supabase/types";
 
@@ -34,7 +34,7 @@ const formSchema = z.object({
   min_quantity: z.coerce.number().int().min(1, "Mínimo de 1"),
   max_per_user: z.coerce.number().int().min(1).optional(),
   end_date: z.string().min(1, "Informe a data de encerramento"),
-  image_url: z.string().url("URL inválida").optional().or(z.literal("")),
+  image_url: z.string().optional(),
   delivery_available: z.boolean().default(false),
   delivery_fee: z.coerce.number().min(0).optional(),
   pickup_available: z.boolean().default(true),
@@ -58,6 +58,10 @@ export default function VendorCreateOffer() {
   const isEdit = !!offerId;
   const { vendor } = useVendor();
   const queryClient = useQueryClient();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
 
   const { data: existingOffer, isLoading: loadingOffer } = useQuery({
     queryKey: ["offer-edit", offerId],
@@ -110,12 +114,37 @@ export default function VendorCreateOffer() {
         pickup_available: existingOffer.pickup_available ?? true,
         estimated_delivery_time: existingOffer.estimated_delivery_time ?? "",
       });
+      if (existingOffer.image_url) {
+        setImagePreview(existingOffer.image_url);
+      }
     }
   }, [existingOffer, form]);
+
+  const uploadImage = async (): Promise<string | null> => {
+    if (!imageFile || !vendor) return form.getValues("image_url") || null;
+    setUploading(true);
+    try {
+      const ext = imageFile.name.split(".").pop();
+      const path = `${vendor.user_id}/${crypto.randomUUID()}.${ext}`;
+      const { error } = await supabase.storage
+        .from("offer-images")
+        .upload(path, imageFile, { upsert: true });
+      if (error) throw error;
+      const { data: urlData } = supabase.storage
+        .from("offer-images")
+        .getPublicUrl(path);
+      return urlData.publicUrl;
+    } finally {
+      setUploading(false);
+    }
+  };
 
   const saveMutation = useMutation({
     mutationFn: async (values: FormValues) => {
       if (!vendor) throw new Error("Vendor not found");
+
+      const imageUrl = await uploadImage();
+
       const payload = {
         title: values.title,
         description: values.description || null,
@@ -125,7 +154,7 @@ export default function VendorCreateOffer() {
         min_quantity: values.min_quantity,
         max_per_user: values.max_per_user || null,
         end_date: new Date(values.end_date).toISOString(),
-        image_url: values.image_url || null,
+        image_url: imageUrl,
         delivery_available: values.delivery_available,
         delivery_fee: values.delivery_fee || 0,
         pickup_available: values.pickup_available,
@@ -160,6 +189,24 @@ export default function VendorCreateOffer() {
   });
 
   const onSubmit = (values: FormValues) => saveMutation.mutate(values);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+      toast({ title: "Arquivo muito grande", description: "Máximo de 5MB", variant: "destructive" });
+      return;
+    }
+    setImageFile(file);
+    setImagePreview(URL.createObjectURL(file));
+  };
+
+  const removeImage = () => {
+    setImageFile(null);
+    setImagePreview(null);
+    form.setValue("image_url", "");
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
 
   if (!vendor || vendor.status !== "APROVADO") {
     navigate("/vendor", { replace: true });
@@ -235,15 +282,43 @@ export default function VendorCreateOffer() {
               </FormItem>
             )} />
 
-            {/* Image URL */}
-            <FormField control={form.control} name="image_url" render={({ field }) => (
-              <FormItem>
-                <FormLabel>URL da Imagem</FormLabel>
-                <FormControl><Input placeholder="https://exemplo.com/imagem.jpg" {...field} /></FormControl>
-                <FormDescription>Insira o link de uma imagem para sua oferta</FormDescription>
-                <FormMessage />
-              </FormItem>
-            )} />
+            {/* Image Upload */}
+            <div className="space-y-2">
+              <Label>Imagem da Oferta</Label>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handleFileChange}
+              />
+              {imagePreview ? (
+                <div className="relative rounded-lg overflow-hidden border bg-muted">
+                  <img
+                    src={imagePreview}
+                    alt="Preview"
+                    className="w-full h-48 object-cover"
+                  />
+                  <button
+                    type="button"
+                    onClick={removeImage}
+                    className="absolute top-2 right-2 rounded-full bg-background/80 p-1.5 hover:bg-background transition-colors"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="w-full h-48 rounded-lg border-2 border-dashed border-muted-foreground/30 flex flex-col items-center justify-center gap-2 text-muted-foreground hover:border-primary/50 hover:text-primary transition-colors"
+                >
+                  <ImageIcon className="h-8 w-8" />
+                  <span className="text-sm font-medium">Clique para enviar uma imagem</span>
+                  <span className="text-xs">PNG, JPG ou WEBP (máx. 5MB)</span>
+                </button>
+              )}
+            </div>
 
             {/* Prices */}
             <div className="grid grid-cols-2 gap-4">
@@ -333,9 +408,9 @@ export default function VendorCreateOffer() {
               )}
             </div>
 
-            <Button type="submit" className="w-full font-bold" size="lg" disabled={saveMutation.isPending}>
-              {saveMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {isEdit ? "Salvar Alterações" : "Publicar Oferta"}
+            <Button type="submit" className="w-full font-bold" size="lg" disabled={saveMutation.isPending || uploading}>
+              {(saveMutation.isPending || uploading) && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {uploading ? "Enviando imagem..." : isEdit ? "Salvar Alterações" : "Publicar Oferta"}
             </Button>
           </form>
         </Form>
