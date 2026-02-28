@@ -1,9 +1,10 @@
 import { useNavigate } from "react-router-dom";
 import { useVendor } from "@/hooks/useVendor";
+import { useVendorMetrics } from "@/hooks/useVendorMetrics";
 import { AppLayout } from "@/components/AppLayout";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Store, Clock, CheckCircle, XCircle, Package, Plus } from "lucide-react";
+import { Store, Clock, CheckCircle, XCircle, Package, Plus, TrendingUp, ShoppingCart, DollarSign, BarChart3 } from "lucide-react";
 
 const statusConfig = {
   PENDENTE: { label: "Pendente", icon: Clock, variant: "secondary" as const, color: "text-yellow-600", bg: "bg-yellow-50" },
@@ -13,6 +14,7 @@ const statusConfig = {
 
 const VendorDashboard = () => {
   const { vendor, isLoading } = useVendor();
+  const { data: metrics } = useVendorMetrics();
   const navigate = useNavigate();
 
   if (isLoading) {
@@ -72,6 +74,41 @@ const VendorDashboard = () => {
             </div>
           </CardContent>
         </Card>
+
+        {isApproved && metrics && (
+          <div className="grid gap-4 grid-cols-2 sm:grid-cols-4">
+            <Card>
+              <CardContent className="p-4 flex flex-col items-center text-center gap-1">
+                <ShoppingCart className="h-5 w-5 text-primary" />
+                <p className="text-2xl font-bold text-foreground">{metrics.totalSold}</p>
+                <p className="text-xs text-muted-foreground">Unidades Vendidas</p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent className="p-4 flex flex-col items-center text-center gap-1">
+                <DollarSign className="h-5 w-5 text-primary" />
+                <p className="text-2xl font-bold text-foreground">
+                  R$ {metrics.totalRevenue.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
+                </p>
+                <p className="text-xs text-muted-foreground">Receita Total</p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent className="p-4 flex flex-col items-center text-center gap-1">
+                <TrendingUp className="h-5 w-5 text-primary" />
+                <p className="text-2xl font-bold text-foreground">{metrics.activeOffers}</p>
+                <p className="text-xs text-muted-foreground">Ofertas Ativas</p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent className="p-4 flex flex-col items-center text-center gap-1">
+                <BarChart3 className="h-5 w-5 text-primary" />
+                <p className="text-2xl font-bold text-foreground">{metrics.pendingOrders}</p>
+                <p className="text-xs text-muted-foreground">Reservas Pendentes</p>
+              </CardContent>
+            </Card>
+          </div>
+        )}
 
         {isApproved && (
           <div className="grid gap-4 sm:grid-cols-2">
