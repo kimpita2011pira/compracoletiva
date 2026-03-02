@@ -19,11 +19,13 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 import { toast } from "@/hooks/use-toast";
-import { ArrowLeft, Loader2, Upload, X, ImageIcon } from "lucide-react";
+import { ArrowLeft, Loader2, X, ImageIcon, GripVertical } from "lucide-react";
 import { CATEGORY_MAP } from "./OffersMarketplace";
 import type { Database } from "@/integrations/supabase/types";
 
 type OfferCategory = Database["public"]["Enums"]["offer_category"];
+
+const MAX_IMAGES = 6;
 
 const formSchema = z.object({
   title: z.string().min(3, "Título deve ter pelo menos 3 caracteres"),
@@ -34,7 +36,6 @@ const formSchema = z.object({
   min_quantity: z.coerce.number().int().min(1, "Mínimo de 1"),
   max_per_user: z.coerce.number().int().min(1).optional(),
   end_date: z.string().min(1, "Informe a data de encerramento"),
-  image_url: z.string().optional(),
   delivery_available: z.boolean().default(false),
   delivery_fee: z.coerce.number().min(0).optional(),
   pickup_available: z.boolean().default(true),
@@ -45,6 +46,13 @@ const formSchema = z.object({
 });
 
 type FormValues = z.infer<typeof formSchema>;
+
+interface ImageItem {
+  id: string;
+  file?: File;
+  preview: string;
+  existingUrl?: string;
+}
 
 function toLocalDatetime(iso: string) {
   const d = new Date(iso);
@@ -59,8 +67,7 @@ export default function VendorCreateOffer() {
   const { vendor } = useVendor();
   const queryClient = useQueryClient();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [images, setImages] = useState<ImageItem[]>([]);
   const [uploading, setUploading] = useState(false);
 
   const { data: existingOffer, isLoading: loadingOffer } = useQuery({
@@ -71,6 +78,21 @@ export default function VendorCreateOffer() {
         .select("*")
         .eq("id", offerId!)
         .single();
+      if (error) throw error;
+      return data;
+    },
+    enabled: isEdit,
+  });
+
+  // Load existing gallery images when editing
+  const { data: existingImages } = useQuery({
+    queryKey: ["offer-images-edit", offerId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("offer_images")
+        .select("*")
+        .eq("offer_id", offerId!)
+        .order("position", { ascending: true });
       if (error) throw error;
       return data;
     },
@@ -88,7 +110,6 @@ export default function VendorCreateOffer() {
       min_quantity: 1,
       max_per_user: 5,
       end_date: "",
-      image_url: "",
       delivery_available: false,
       delivery_fee: 0,
       pickup_available: true,
@@ -108,17 +129,32 @@ export default function VendorCreateOffer() {
         min_quantity: existingOffer.min_quantity,
         max_per_user: existingOffer.max_per_user ?? undefined,
         end_date: toLocalDatetime(existingOffer.end_date),
-        image_url: existingOffer.image_url ?? "",
         delivery_available: existingOffer.delivery_available ?? false,
         delivery_fee: Number(existingOffer.delivery_fee ?? 0),
         pickup_available: existingOffer.pickup_available ?? true,
         estimated_delivery_time: existingOffer.estimated_delivery_time ?? "",
       });
-      if (existingOffer.image_url) {
-        setImagePreview(existingOffer.image_url);
-      }
     }
   }, [existingOffer, form]);
+
+  // Populate images from existing offer + gallery
+  useEffect(() => {
+    if (!isEdit) return;
+    const loaded: ImageItem[] = [];
+    // Main image from offer
+    if (existingOffer?.image_url) {
+      loaded.push({ id: "main", preview: existingOffer.image_url, existingUrl: existingOffer.image_url });
+    }
+    // Gallery images
+    if (existingImages) {
+      for (const img of existingImages) {
+        if (!loaded.some((l) => l.existingUrl === img.image_url)) {
+          loaded.push({ id: img.id, preview: img.image_url, existingUrl: img.image_url });
+        }
+      }
+    }
+    if (loaded.length > 0) setImages(loaded);
+  }, [existingOffer, existingImages, isEdit]);
 
   const compressImage = async (file: File, maxWidth = 1200, quality = 0.8): Promise<File> => {
     return new Promise((resolve, reject) => {
@@ -138,8 +174,7 @@ export default function VendorCreateOffer() {
         canvas.toBlob(
           (blob) => {
             if (!blob) return reject(new Error("Compression failed"));
-            const compressed = new File([blob], file.name, { type: "image/webp" });
-            resolve(compressed);
+            resolve(new File([blob], file.name, { type: "image/webp" }));
           },
           "image/webp",
           quality,
@@ -150,66 +185,95 @@ export default function VendorCreateOffer() {
     });
   };
 
-  const uploadImage = async (): Promise<string | null> => {
-    if (!imageFile || !vendor) return form.getValues("image_url") || null;
-    setUploading(true);
-    try {
-      const compressed = await compressImage(imageFile);
-      const path = `${vendor.user_id}/${crypto.randomUUID()}.webp`;
-      const { error } = await supabase.storage
-        .from("offer-images")
-        .upload(path, imageFile, { upsert: true });
-      if (error) throw error;
-      const { data: urlData } = supabase.storage
-        .from("offer-images")
-        .getPublicUrl(path);
-      return urlData.publicUrl;
-    } finally {
-      setUploading(false);
-    }
+  const uploadSingleImage = async (file: File): Promise<string> => {
+    if (!vendor) throw new Error("Vendor not found");
+    const compressed = await compressImage(file);
+    const path = `${vendor.user_id}/${crypto.randomUUID()}.webp`;
+    const { error } = await supabase.storage
+      .from("offer-images")
+      .upload(path, compressed, { upsert: true });
+    if (error) throw error;
+    const { data: urlData } = supabase.storage
+      .from("offer-images")
+      .getPublicUrl(path);
+    return urlData.publicUrl;
   };
 
   const saveMutation = useMutation({
     mutationFn: async (values: FormValues) => {
       if (!vendor) throw new Error("Vendor not found");
+      setUploading(true);
 
-      const imageUrl = await uploadImage();
+      try {
+        // Upload any new images
+        const resolvedImages: string[] = [];
+        for (const img of images) {
+          if (img.file) {
+            const url = await uploadSingleImage(img.file);
+            resolvedImages.push(url);
+          } else if (img.existingUrl) {
+            resolvedImages.push(img.existingUrl);
+          }
+        }
 
-      const payload = {
-        title: values.title,
-        description: values.description || null,
-        category: values.category as OfferCategory,
-        original_price: values.original_price,
-        offer_price: values.offer_price,
-        min_quantity: values.min_quantity,
-        max_per_user: values.max_per_user || null,
-        end_date: new Date(values.end_date).toISOString(),
-        image_url: imageUrl,
-        delivery_available: values.delivery_available,
-        delivery_fee: values.delivery_fee || 0,
-        pickup_available: values.pickup_available,
-        estimated_delivery_time: values.estimated_delivery_time || null,
-      };
+        const mainImageUrl = resolvedImages[0] || null;
 
-      if (isEdit) {
-        const { error } = await supabase
-          .from("offers")
-          .update(payload)
-          .eq("id", offerId!);
-        if (error) throw error;
-      } else {
-        const { error } = await supabase
-          .from("offers")
-          .insert({ ...payload, vendor_id: vendor.id })
-          .select()
-          .single();
-        if (error) throw error;
+        const payload = {
+          title: values.title,
+          description: values.description || null,
+          category: values.category as OfferCategory,
+          original_price: values.original_price,
+          offer_price: values.offer_price,
+          min_quantity: values.min_quantity,
+          max_per_user: values.max_per_user || null,
+          end_date: new Date(values.end_date).toISOString(),
+          image_url: mainImageUrl,
+          delivery_available: values.delivery_available,
+          delivery_fee: values.delivery_fee || 0,
+          pickup_available: values.pickup_available,
+          estimated_delivery_time: values.estimated_delivery_time || null,
+        };
+
+        let savedOfferId = offerId;
+
+        if (isEdit) {
+          const { error } = await supabase
+            .from("offers")
+            .update(payload)
+            .eq("id", offerId!);
+          if (error) throw error;
+        } else {
+          const { data, error } = await supabase
+            .from("offers")
+            .insert({ ...payload, vendor_id: vendor.id })
+            .select("id")
+            .single();
+          if (error) throw error;
+          savedOfferId = data.id;
+        }
+
+        // Save gallery images (delete old, insert new)
+        if (savedOfferId) {
+          await supabase.from("offer_images").delete().eq("offer_id", savedOfferId);
+          if (resolvedImages.length > 0) {
+            const rows = resolvedImages.map((url, i) => ({
+              offer_id: savedOfferId!,
+              image_url: url,
+              position: i,
+            }));
+            const { error: imgError } = await supabase.from("offer_images").insert(rows);
+            if (imgError) throw imgError;
+          }
+        }
+      } finally {
+        setUploading(false);
       }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["offers-active"] });
       queryClient.invalidateQueries({ queryKey: ["vendor-offers"] });
       queryClient.invalidateQueries({ queryKey: ["offer-edit", offerId] });
+      queryClient.invalidateQueries({ queryKey: ["offer-images"] });
       toast({ title: isEdit ? "Oferta atualizada! ✅" : "Oferta criada com sucesso! 🎉" });
       navigate("/vendor/my-offers");
     },
@@ -220,22 +284,47 @@ export default function VendorCreateOffer() {
 
   const onSubmit = (values: FormValues) => saveMutation.mutate(values);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    if (file.size > 5 * 1024 * 1024) {
-      toast({ title: "Arquivo muito grande", description: "Máximo de 5MB", variant: "destructive" });
+  const handleFilesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files ?? []);
+    if (!files.length) return;
+
+    const available = MAX_IMAGES - images.length;
+    if (available <= 0) {
+      toast({ title: `Máximo de ${MAX_IMAGES} imagens`, variant: "destructive" });
       return;
     }
-    setImageFile(file);
-    setImagePreview(URL.createObjectURL(file));
+
+    const toAdd = files.slice(0, available);
+    const newItems: ImageItem[] = [];
+
+    for (const file of toAdd) {
+      if (file.size > 5 * 1024 * 1024) {
+        toast({ title: "Arquivo muito grande", description: `${file.name} excede 5MB`, variant: "destructive" });
+        continue;
+      }
+      newItems.push({
+        id: crypto.randomUUID(),
+        file,
+        preview: URL.createObjectURL(file),
+      });
+    }
+
+    setImages((prev) => [...prev, ...newItems]);
+    if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
-  const removeImage = () => {
-    setImageFile(null);
-    setImagePreview(null);
-    form.setValue("image_url", "");
-    if (fileInputRef.current) fileInputRef.current.value = "";
+  const removeImage = (id: string) => {
+    setImages((prev) => prev.filter((img) => img.id !== id));
+  };
+
+  const moveImage = (index: number, direction: -1 | 1) => {
+    setImages((prev) => {
+      const next = [...prev];
+      const targetIndex = index + direction;
+      if (targetIndex < 0 || targetIndex >= next.length) return prev;
+      [next[index], next[targetIndex]] = [next[targetIndex], next[index]];
+      return next;
+    });
   };
 
   if (!vendor || vendor.status !== "APROVADO") {
@@ -312,40 +401,68 @@ export default function VendorCreateOffer() {
               </FormItem>
             )} />
 
-            {/* Image Upload */}
-            <div className="space-y-2">
-              <Label>Imagem da Oferta</Label>
+            {/* Multi-Image Upload */}
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <Label>Imagens da Oferta</Label>
+                <span className="text-xs text-muted-foreground">{images.length}/{MAX_IMAGES}</span>
+              </div>
               <input
                 ref={fileInputRef}
                 type="file"
                 accept="image/*"
+                multiple
                 className="hidden"
-                onChange={handleFileChange}
+                onChange={handleFilesChange}
               />
-              {imagePreview ? (
-                <div className="relative rounded-lg overflow-hidden border bg-muted">
-                  <img
-                    src={imagePreview}
-                    alt="Preview"
-                    className="w-full h-48 object-cover"
-                  />
-                  <button
-                    type="button"
-                    onClick={removeImage}
-                    className="absolute top-2 right-2 rounded-full bg-background/80 p-1.5 hover:bg-background transition-colors"
-                  >
-                    <X className="h-4 w-4" />
-                  </button>
+
+              {/* Image grid */}
+              {images.length > 0 && (
+                <div className="grid grid-cols-3 gap-2">
+                  {images.map((img, index) => (
+                    <div key={img.id} className="relative group rounded-lg overflow-hidden border bg-muted aspect-square">
+                      <img src={img.preview} alt={`Imagem ${index + 1}`} className="h-full w-full object-cover" />
+                      {index === 0 && (
+                        <span className="absolute left-1 top-1 rounded bg-primary px-1.5 py-0.5 text-[10px] font-bold text-primary-foreground">
+                          Principal
+                        </span>
+                      )}
+                      <div className="absolute inset-0 bg-background/0 group-hover:bg-background/40 transition-colors flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100">
+                        {index > 0 && (
+                          <button type="button" onClick={() => moveImage(index, -1)} className="rounded-full bg-background/80 p-1 hover:bg-background">
+                            <ChevronLeftIcon className="h-4 w-4" />
+                          </button>
+                        )}
+                        {index < images.length - 1 && (
+                          <button type="button" onClick={() => moveImage(index, 1)} className="rounded-full bg-background/80 p-1 hover:bg-background">
+                            <ChevronRightIcon className="h-4 w-4" />
+                          </button>
+                        )}
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => removeImage(img.id)}
+                        className="absolute top-1 right-1 rounded-full bg-background/80 p-1 hover:bg-background transition-colors opacity-0 group-hover:opacity-100"
+                      >
+                        <X className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
+                  ))}
                 </div>
-              ) : (
+              )}
+
+              {/* Add button */}
+              {images.length < MAX_IMAGES && (
                 <button
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
-                  className="w-full h-48 rounded-lg border-2 border-dashed border-muted-foreground/30 flex flex-col items-center justify-center gap-2 text-muted-foreground hover:border-primary/50 hover:text-primary transition-colors"
+                  className="w-full h-32 rounded-lg border-2 border-dashed border-muted-foreground/30 flex flex-col items-center justify-center gap-2 text-muted-foreground hover:border-primary/50 hover:text-primary transition-colors"
                 >
-                  <ImageIcon className="h-8 w-8" />
-                  <span className="text-sm font-medium">Clique para enviar uma imagem</span>
-                  <span className="text-xs">PNG, JPG ou WEBP (máx. 5MB)</span>
+                  <ImageIcon className="h-7 w-7" />
+                  <span className="text-sm font-medium">
+                    {images.length === 0 ? "Clique para enviar imagens" : "Adicionar mais imagens"}
+                  </span>
+                  <span className="text-xs">PNG, JPG ou WEBP (máx. 5MB cada) — até {MAX_IMAGES} imagens</span>
                 </button>
               )}
             </div>
@@ -440,11 +557,28 @@ export default function VendorCreateOffer() {
 
             <Button type="submit" className="w-full font-bold" size="lg" disabled={saveMutation.isPending || uploading}>
               {(saveMutation.isPending || uploading) && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {uploading ? "Enviando imagem..." : isEdit ? "Salvar Alterações" : "Publicar Oferta"}
+              {uploading ? "Enviando imagens..." : isEdit ? "Salvar Alterações" : "Publicar Oferta"}
             </Button>
           </form>
         </Form>
       </main>
     </AppLayout>
+  );
+}
+
+// Simple arrow icons for reordering
+function ChevronLeftIcon({ className }: { className?: string }) {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+      <path d="m15 18-6-6 6-6"/>
+    </svg>
+  );
+}
+
+function ChevronRightIcon({ className }: { className?: string }) {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+      <path d="m9 18 6-6-6-6"/>
+    </svg>
   );
 }

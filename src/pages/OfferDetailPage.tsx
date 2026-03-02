@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useOfferDetail, useOfferReviews, useSubmitReview, type Review } from "@/hooks/useOfferDetail";
+import { useOfferImages } from "@/hooks/useOfferImages";
 import { useAuth } from "@/hooks/useAuth";
 import ReserveOfferModal from "@/components/ReserveOfferModal";
+import { OfferImageGallery } from "@/components/OfferImageGallery";
 import { AppLayout } from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -21,6 +23,7 @@ export default function OfferDetailPage() {
   const { user } = useAuth();
   const { data: offer, isLoading } = useOfferDetail(id);
   const { data: reviews } = useOfferReviews(id);
+  const { data: galleryImages } = useOfferImages(id);
   const submitReview = useSubmitReview();
   const [showReserve, setShowReserve] = useState(false);
   const [rating, setRating] = useState(0);
@@ -81,25 +84,23 @@ export default function OfferDetailPage() {
           <ArrowLeft className="h-4 w-4" /> Voltar
         </Button>
 
-        {/* Image */}
-        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary/10 via-secondary/10 to-accent/10">
-          {offer.image_url ? (
-            <img src={offer.image_url} alt={offer.title} className="h-64 w-full object-cover sm:h-80" />
-          ) : (
-            <div className="flex h-64 items-center justify-center sm:h-80">
-              <ShoppingBag className="h-20 w-20 text-primary/20" />
-            </div>
-          )}
-          <Badge className="absolute left-4 top-4 gap-1 bg-accent text-accent-foreground shadow-md text-sm px-3 py-1.5">
+        {/* Image Gallery */}
+        <div className="relative">
+          <OfferImageGallery
+            mainImage={offer.image_url}
+            galleryImages={galleryImages ?? []}
+            title={offer.title}
+          />
+          <Badge className="absolute left-4 top-4 gap-1 bg-accent text-accent-foreground shadow-md text-sm px-3 py-1.5 z-10">
             <Tag className="h-4 w-4" />-{discount}%
           </Badge>
           {isAlmostDone && !isGoalReached && (
-            <Badge variant="outline" className="absolute right-4 top-4 gap-1 border-destructive/50 bg-destructive/90 text-destructive-foreground">
+            <Badge variant="outline" className="absolute right-4 top-4 gap-1 border-destructive/50 bg-destructive/90 text-destructive-foreground z-10">
               <Flame className="h-3.5 w-3.5" /> Últimas horas!
             </Badge>
           )}
           {isGoalReached && (
-            <Badge className="absolute right-4 top-4 gap-1 bg-success text-success-foreground">
+            <Badge className="absolute right-4 top-4 gap-1 bg-success text-success-foreground z-10">
               ✅ Meta atingida!
             </Badge>
           )}

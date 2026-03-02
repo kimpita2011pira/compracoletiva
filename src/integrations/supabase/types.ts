@@ -119,6 +119,38 @@ export type Database = {
         }
         Relationships: []
       }
+      offer_images: {
+        Row: {
+          created_at: string
+          id: string
+          image_url: string
+          offer_id: string
+          position: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          image_url: string
+          offer_id: string
+          position?: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          image_url?: string
+          offer_id?: string
+          position?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "offer_images_offer_id_fkey"
+            columns: ["offer_id"]
+            isOneToOne: false
+            referencedRelation: "offers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       offers: {
         Row: {
           category: Database["public"]["Enums"]["offer_category"] | null
