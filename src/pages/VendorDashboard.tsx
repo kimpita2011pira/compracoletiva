@@ -7,6 +7,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import { Store, Clock, CheckCircle, XCircle, Package, Plus, TrendingUp, ShoppingCart, DollarSign, BarChart3 } from "lucide-react";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { useState } from "react";
 
 const statusConfig = {
   PENDENTE: { label: "Pendente", icon: Clock, variant: "secondary" as const, color: "text-yellow-600", bg: "bg-yellow-50" },
@@ -14,10 +16,17 @@ const statusConfig = {
   REJEITADO: { label: "Rejeitado", icon: XCircle, variant: "destructive" as const, color: "text-destructive", bg: "bg-red-50" },
 };
 
+const periodOptions = [
+  { value: "7", label: "7 dias" },
+  { value: "14", label: "14 dias" },
+  { value: "30", label: "30 dias" },
+];
+
 const VendorDashboard = () => {
   const { vendor, isLoading } = useVendor();
   const { data: metrics } = useVendorMetrics();
-  const { data: salesHistory } = useVendorSalesHistory(14);
+  const [salesPeriod, setSalesPeriod] = useState("14");
+  const { data: salesHistory } = useVendorSalesHistory(Number(salesPeriod));
   const navigate = useNavigate();
 
   if (isLoading) {
@@ -116,10 +125,19 @@ const VendorDashboard = () => {
         {isApproved && salesHistory && salesHistory.length > 0 && (
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="font-display text-base flex items-center gap-2">
-                <TrendingUp className="h-4 w-4 text-primary" />
-                Evolução de Vendas (14 dias)
-              </CardTitle>
+              <div className="flex items-center justify-between flex-wrap gap-2">
+                <CardTitle className="font-display text-base flex items-center gap-2">
+                  <TrendingUp className="h-4 w-4 text-primary" />
+                  Evolução de Vendas
+                </CardTitle>
+                <ToggleGroup type="single" value={salesPeriod} onValueChange={(v) => v && setSalesPeriod(v)} size="sm" className="gap-0 border rounded-md overflow-hidden">
+                  {periodOptions.map((opt) => (
+                    <ToggleGroupItem key={opt.value} value={opt.value} className="rounded-none text-xs px-3 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">
+                      {opt.label}
+                    </ToggleGroupItem>
+                  ))}
+                </ToggleGroup>
+              </div>
               <CardDescription>Unidades vendidas e receita por dia</CardDescription>
             </CardHeader>
             <CardContent>
