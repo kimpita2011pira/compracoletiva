@@ -1,11 +1,12 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import { Home, ShoppingBag, Wallet, Package } from "lucide-react";
+import { Home, ShoppingBag, Wallet, Package, Heart } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 const items = [
   { path: "/", label: "Home", icon: Home },
   { path: "/offers", label: "Ofertas", icon: ShoppingBag },
+  { path: "/favorites", label: "Favoritos", icon: Heart },
   { path: "/wallet", label: "Carteira", icon: Wallet },
   { path: "/orders", label: "Pedidos", icon: Package },
 ];
@@ -16,7 +17,7 @@ export function BottomNav() {
 
   return (
     <nav className="fixed bottom-0 inset-x-0 z-50 border-t bg-card/95 backdrop-blur-sm md:hidden">
-      <div className="grid grid-cols-4 h-16">
+      <div className="grid grid-cols-5 h-16">
         {items.map(({ path, label, icon: Icon }) => {
           const active = pathname === path;
           return (
