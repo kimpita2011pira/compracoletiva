@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useOffers } from "@/hooks/useOffers";
 import type { OfferWithVendor } from "@/hooks/useOffers";
 import ReserveOfferModal from "@/components/ReserveOfferModal";
+import { FavoriteButton } from "@/components/FavoriteButton";
 import { AppLayout } from "@/components/AppLayout";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -329,6 +330,8 @@ function OfferCard({ offer, onReserve }: { offer: OfferWithVendor; onReserve: (o
         <Badge className="absolute left-3 top-3 gap-1 bg-accent text-accent-foreground shadow-md text-sm px-2.5 py-1">
           <Tag className="h-3.5 w-3.5" />-{discount}%
         </Badge>
+
+        <FavoriteButton offerId={offer.id} className="absolute right-3 bottom-3 z-10" />
 
         {isAlmostDone && !isGoalReached && (
           <Badge

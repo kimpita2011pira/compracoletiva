@@ -13,6 +13,7 @@ import VendorMyOffers from "./pages/VendorMyOffers";
 import AdminDashboard from "./pages/AdminDashboard";
 import OffersMarketplace from "./pages/OffersMarketplace";
 import OfferDetailPage from "./pages/OfferDetailPage";
+import FavoritesPage from "./pages/FavoritesPage";
 import WalletPage from "./pages/WalletPage";
 import MyOrders from "./pages/MyOrders";
 import NotificationsPage from "./pages/NotificationsPage";
@@ -39,6 +40,7 @@ function AnimatedRoutes() {
         <Route path="/admin" element={<ProtectedRoute requiredRole="ADMIN"><AdminDashboard /></ProtectedRoute>} />
         <Route path="/offers" element={<ProtectedRoute><OffersMarketplace /></ProtectedRoute>} />
         <Route path="/offers/:id" element={<ProtectedRoute><OfferDetailPage /></ProtectedRoute>} />
+        <Route path="/favorites" element={<ProtectedRoute><FavoritesPage /></ProtectedRoute>} />
         <Route path="/wallet" element={<ProtectedRoute><WalletPage /></ProtectedRoute>} />
         <Route path="/orders" element={<ProtectedRoute><MyOrders /></ProtectedRoute>} />
         <Route path="/notifications" element={<ProtectedRoute><NotificationsPage /></ProtectedRoute>} />

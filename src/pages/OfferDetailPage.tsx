@@ -5,6 +5,7 @@ import { useOfferImages } from "@/hooks/useOfferImages";
 import { useAuth } from "@/hooks/useAuth";
 import ReserveOfferModal from "@/components/ReserveOfferModal";
 import { OfferImageGallery } from "@/components/OfferImageGallery";
+import { FavoriteButton } from "@/components/FavoriteButton";
 import { AppLayout } from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -191,9 +192,12 @@ export default function OfferDetailPage() {
             )}
           </div>
 
-          <Button className="w-full gap-2 font-bold" size="lg" onClick={() => setShowReserve(true)}>
-            <ShoppingBag className="h-5 w-5" /> Reservar Agora
-          </Button>
+          <div className="flex gap-2">
+            <Button className="flex-1 gap-2 font-bold" size="lg" onClick={() => setShowReserve(true)}>
+              <ShoppingBag className="h-5 w-5" /> Reservar Agora
+            </Button>
+            <FavoriteButton offerId={offer.id} size="md" />
+          </div>
         </div>
 
         {/* Reviews Section */}
