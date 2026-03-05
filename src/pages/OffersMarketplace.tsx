@@ -28,6 +28,7 @@ import {
   HeartPulse,
   Wrench,
   Package,
+  Share2,
 } from "lucide-react";
 import {
   Select,
@@ -310,6 +311,13 @@ function OfferCard({ offer, onReserve }: { offer: OfferWithVendor; onReserve: (o
   const isAlmostDone = hoursLeft <= 24;
   const isGoalReached = offer.sold_quantity >= offer.min_quantity;
 
+  const handleShare = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const url = `${window.location.origin}/offers/${offer.id}`;
+    const text = `🔥 ${offer.title} com ${discount}% OFF! De R$ ${offer.original_price.toFixed(2).replace(".", ",")} por R$ ${offer.offer_price.toFixed(2).replace(".", ",")}. Confira:`;
+    window.open(`https://wa.me/?text=${encodeURIComponent(`${text} ${url}`)}`, "_blank");
+  };
+
   return (
     <div className="group relative overflow-hidden rounded-2xl border bg-card shadow-sm transition-all hover:shadow-lg hover:-translate-y-1 cursor-pointer" onClick={() => navigate(`/offers/${offer.id}`)}>
       {/* Image area */}
@@ -331,7 +339,14 @@ function OfferCard({ offer, onReserve }: { offer: OfferWithVendor; onReserve: (o
           <Tag className="h-3.5 w-3.5" />-{discount}%
         </Badge>
 
-        <FavoriteButton offerId={offer.id} className="absolute right-3 bottom-3 z-10" />
+        <FavoriteButton offerId={offer.id} className="absolute right-12 bottom-3 z-10" />
+        <button
+          onClick={handleShare}
+          className="absolute right-3 bottom-3 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-card/80 backdrop-blur-sm shadow-md transition-colors hover:bg-card"
+          title="Compartilhar"
+        >
+          <Share2 className="h-4 w-4 text-foreground" />
+        </button>
 
         {isAlmostDone && !isGoalReached && (
           <Badge
