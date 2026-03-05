@@ -14,7 +14,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "@/hooks/use-toast";
 import {
-  ArrowLeft, Clock, Flame, MapPin, ShoppingBag, Star, Store, Tag, Truck,
+  ArrowLeft, Clock, Flame, Link2, MapPin, ShoppingBag, Star, Store, Tag, Truck,
 } from "lucide-react";
 import { CATEGORY_MAP } from "./OffersMarketplace";
 
