@@ -146,7 +146,6 @@ export default function VendorCreateOffer() {
       form.setValue("city", (vendor as any).city);
     }
   }, [vendor, isEdit, form]);
-  }, [existingOffer, form]);
 
   // Populate images from existing offer + gallery
   useEffect(() => {
