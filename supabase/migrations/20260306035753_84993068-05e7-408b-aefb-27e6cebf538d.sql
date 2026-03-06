@@ -1,0 +1,1 @@
+ALTER TABLE public.vendors ADD COLUMN city character varying DEFAULT NULL;

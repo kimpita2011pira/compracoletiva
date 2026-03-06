@@ -417,6 +417,7 @@ export type Database = {
       }
       vendors: {
         Row: {
+          city: string | null
           cnpj: string | null
           company_name: string
           created_at: string
@@ -427,6 +428,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          city?: string | null
           cnpj?: string | null
           company_name: string
           created_at?: string
@@ -437,6 +439,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          city?: string | null
           cnpj?: string | null
           company_name?: string
           created_at?: string
