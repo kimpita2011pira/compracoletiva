@@ -139,6 +139,13 @@ export default function OfferDetailPage() {
                 {CATEGORY_MAP[offer.category].label}
               </>
             )}
+            {(offer as any).city && (
+              <>
+                {(offer.vendors?.company_name || (offer.category && CATEGORY_MAP[offer.category])) && <span>·</span>}
+                <MapPin className="h-4 w-4" />
+                {(offer as any).city}
+              </>
+            )}
           </div>
 
           <h1 className="font-display text-2xl font-bold sm:text-3xl">{offer.title}</h1>
