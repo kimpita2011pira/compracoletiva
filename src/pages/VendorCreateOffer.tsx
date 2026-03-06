@@ -40,6 +40,7 @@ const formSchema = z.object({
   delivery_fee: z.coerce.number().min(0).optional(),
   pickup_available: z.boolean().default(true),
   estimated_delivery_time: z.string().optional(),
+  city: z.string().optional(),
 }).refine((d) => d.offer_price < d.original_price, {
   message: "Preço da oferta deve ser menor que o preço original",
   path: ["offer_price"],
@@ -114,6 +115,7 @@ export default function VendorCreateOffer() {
       delivery_fee: 0,
       pickup_available: true,
       estimated_delivery_time: "",
+      city: "",
     },
   });
 
@@ -133,6 +135,7 @@ export default function VendorCreateOffer() {
         delivery_fee: Number(existingOffer.delivery_fee ?? 0),
         pickup_available: existingOffer.pickup_available ?? true,
         estimated_delivery_time: existingOffer.estimated_delivery_time ?? "",
+        city: (existingOffer as any).city ?? "",
       });
     }
   }, [existingOffer, form]);
@@ -232,6 +235,7 @@ export default function VendorCreateOffer() {
           delivery_fee: values.delivery_fee || 0,
           pickup_available: values.pickup_available,
           estimated_delivery_time: values.estimated_delivery_time || null,
+          city: values.city || null,
         };
 
         let savedOfferId = offerId;
@@ -466,6 +470,16 @@ export default function VendorCreateOffer() {
                 </button>
               )}
             </div>
+
+            {/* City */}
+            <FormField control={form.control} name="city" render={({ field }) => (
+              <FormItem>
+                <FormLabel>Cidade / Localização</FormLabel>
+                <FormControl><Input placeholder="Ex: São Paulo, SP" {...field} /></FormControl>
+                <FormDescription>Informe a cidade onde a oferta está disponível</FormDescription>
+                <FormMessage />
+              </FormItem>
+            )} />
 
             {/* Prices */}
             <div className="grid grid-cols-2 gap-4">
