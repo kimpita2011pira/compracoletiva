@@ -183,6 +183,7 @@ export type Database = {
       offers: {
         Row: {
           category: Database["public"]["Enums"]["offer_category"] | null
+          city: string | null
           created_at: string
           delivery_available: boolean | null
           delivery_fee: number | null
@@ -204,6 +205,7 @@ export type Database = {
         }
         Insert: {
           category?: Database["public"]["Enums"]["offer_category"] | null
+          city?: string | null
           created_at?: string
           delivery_available?: boolean | null
           delivery_fee?: number | null
@@ -225,6 +227,7 @@ export type Database = {
         }
         Update: {
           category?: Database["public"]["Enums"]["offer_category"] | null
+          city?: string | null
           created_at?: string
           delivery_available?: boolean | null
           delivery_fee?: number | null

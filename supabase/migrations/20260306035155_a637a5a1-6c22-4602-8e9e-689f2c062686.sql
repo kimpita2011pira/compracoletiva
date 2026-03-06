@@ -1,0 +1,1 @@
+ALTER TABLE public.offers ADD COLUMN city character varying DEFAULT NULL;
