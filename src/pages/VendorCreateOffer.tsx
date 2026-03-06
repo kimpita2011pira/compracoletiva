@@ -140,6 +140,14 @@ export default function VendorCreateOffer() {
     }
   }, [existingOffer, form]);
 
+  // Auto-fill city from vendor when creating new offer
+  useEffect(() => {
+    if (!isEdit && vendor && (vendor as any).city && !form.getValues("city")) {
+      form.setValue("city", (vendor as any).city);
+    }
+  }, [vendor, isEdit, form]);
+  }, [existingOffer, form]);
+
   // Populate images from existing offer + gallery
   useEffect(() => {
     if (!isEdit) return;
