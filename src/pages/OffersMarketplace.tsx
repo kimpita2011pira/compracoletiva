@@ -64,6 +64,17 @@ export default function OffersMarketplace() {
   const [onlyGoalReached, setOnlyGoalReached] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
+  const [cityFilter, setCityFilter] = useState<string>("all");
+
+  // Extract unique cities from offers
+  const cities = useMemo(() => {
+    if (!offers) return [];
+    const set = new Set<string>();
+    for (const o of offers) {
+      if ((o as any).city) set.add((o as any).city);
+    }
+    return Array.from(set).sort();
+  }, [offers]);
 
   const filtered = useMemo(() => {
     if (!offers) return [];
@@ -86,6 +97,9 @@ export default function OffersMarketplace() {
 
     // Category filter
     if (categoryFilter !== "all") result = result.filter((o) => o.category === categoryFilter);
+
+    // City filter
+    if (cityFilter !== "all") result = result.filter((o) => (o as any).city === cityFilter);
 
     // Goal reached
     if (onlyGoalReached) result = result.filter((o) => o.sold_quantity >= o.min_quantity);
@@ -110,9 +124,9 @@ export default function OffersMarketplace() {
     });
 
     return result;
-  }, [offers, search, sort, deliveryFilter, onlyGoalReached, categoryFilter]);
+  }, [offers, search, sort, deliveryFilter, onlyGoalReached, categoryFilter, cityFilter]);
 
-  const hasActiveFilters = search.trim() || deliveryFilter !== "all" || onlyGoalReached || sort !== "ending_soon" || categoryFilter !== "all";
+  const hasActiveFilters = search.trim() || deliveryFilter !== "all" || onlyGoalReached || sort !== "ending_soon" || categoryFilter !== "all" || cityFilter !== "all";
 
   const clearFilters = () => {
     setSearch("");
@@ -120,6 +134,7 @@ export default function OffersMarketplace() {
     setDeliveryFilter("all");
     setOnlyGoalReached(false);
     setCategoryFilter("all");
+    setCityFilter("all");
   };
 
   return (
@@ -214,6 +229,20 @@ export default function OffersMarketplace() {
                   <SelectItem value="pickup">Com retirada</SelectItem>
                 </SelectContent>
               </Select>
+
+              {cities.length > 0 && (
+                <Select value={cityFilter} onValueChange={setCityFilter}>
+                  <SelectTrigger className="w-[160px] text-xs">
+                    <SelectValue placeholder="Cidade" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Todas as cidades</SelectItem>
+                    {cities.map((city) => (
+                      <SelectItem key={city} value={city}>{city}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
 
               <Button
                 variant={onlyGoalReached ? "default" : "outline"}
@@ -373,9 +402,16 @@ function OfferCard({ offer, onReserve }: { offer: OfferWithVendor; onReserve: (o
               {offer.vendors.company_name}
             </>
           )}
+          {(offer as any).city && (
+            <>
+              {(offer.vendors?.company_name || (offer.category && CATEGORY_MAP[offer.category])) && <span>·</span>}
+              <MapPin className="h-3 w-3" />
+              {(offer as any).city}
+            </>
+          )}
           {offer.category && CATEGORY_MAP[offer.category] && (
             <>
-              {offer.vendors?.company_name && <span>·</span>}
+              {(offer.vendors?.company_name || (offer as any).city) && <span>·</span>}
               {(() => { const CatIcon = CATEGORY_MAP[offer.category].icon; return <CatIcon className="h-3 w-3" />; })()}
               {CATEGORY_MAP[offer.category].label}
             </>
