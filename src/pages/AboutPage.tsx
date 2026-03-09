@@ -2,7 +2,7 @@ import { AppLayout } from "@/components/AppLayout";
 
 const AboutPage = () => {
   return (
-    <AppLayout title="Sobre o OfertaJá" isPublic>
+    <AppLayout title="Sobre o Compra Coletiva" isPublic>
       <main className="container max-w-3xl py-10 space-y-8">
         <section>
           <h2 className="font-display text-3xl font-bold">🛒 O que é o OfertaJá?</h2>
