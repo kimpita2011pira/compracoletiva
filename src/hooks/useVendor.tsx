@@ -35,12 +35,13 @@ export function useVendor() {
   });
 
   const registerVendor = useMutation({
-    mutationFn: async (input: { company_name: string; cnpj: string; description: string }) => {
+    mutationFn: async (input: { company_name: string; cnpj: string; city?: string; description: string }) => {
       if (!user) throw new Error("Not authenticated");
       const payload: TablesInsert<"vendors"> = {
         user_id: user.id,
         company_name: input.company_name.trim(),
         cnpj: input.cnpj.trim() || null,
+        city: input.city?.trim() || null,
         description: input.description.trim() || null,
       };
       const { data, error } = await supabase.from("vendors").insert(payload).select().single();
