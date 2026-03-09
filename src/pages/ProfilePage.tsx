@@ -39,7 +39,7 @@ const ProfilePage = () => {
     if (!user) return;
     supabase
       .from("profiles")
-      .select("name, phone, whatsapp, avatar_url")
+      .select("name, phone, whatsapp, avatar_url, state, city")
       .eq("id", user.id)
       .single()
       .then(({ data, error }) => {
@@ -48,6 +48,8 @@ const ProfilePage = () => {
           setPhone(formatPhone(data.phone || ""));
           setWhatsapp(formatPhone(data.whatsapp || ""));
           setAvatarUrl(data.avatar_url || null);
+          setSelectedState(data.state || "");
+          setSelectedCity(data.city || "");
         }
         if (error) console.error("Error loading profile:", error);
         setLoading(false);
