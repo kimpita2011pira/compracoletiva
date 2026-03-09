@@ -36,7 +36,7 @@ const VendorOnboarding = () => {
     e.preventDefault();
     setErrors({});
 
-    const result = vendorSchema.safeParse({ company_name: companyName, cnpj, city, description });
+    const result = vendorSchema.safeParse({ company_name: companyName, cnpj, state: selectedState, city: selectedCity, description });
     if (!result.success) {
       const fieldErrors: Record<string, string> = {};
       result.error.errors.forEach((err) => {
