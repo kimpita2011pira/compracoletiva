@@ -24,8 +24,34 @@ export interface AdminMetrics {
 }
 
 export function useAdminMetrics() {
-  return useQuery<AdminMetrics>({
+  const queryClient = useQueryClient();
+
+  // Realtime subscriptions to invalidate metrics on changes
+  useEffect(() => {
+    const channel = supabase
+      .channel('admin-metrics-realtime')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, () => {
+        queryClient.invalidateQueries({ queryKey: ["admin-metrics"] });
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'offers' }, () => {
+        queryClient.invalidateQueries({ queryKey: ["admin-metrics"] });
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'vendors' }, () => {
+        queryClient.invalidateQueries({ queryKey: ["admin-metrics"] });
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' }, () => {
+        queryClient.invalidateQueries({ queryKey: ["admin-metrics"] });
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [queryClient]);
+
+  const query = useQuery<AdminMetrics>({
     queryKey: ["admin-metrics"],
+    refetchInterval: 30000, // fallback: refetch every 30s
     queryFn: async () => {
       // Parallel queries
       const [
