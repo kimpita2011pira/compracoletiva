@@ -7,7 +7,7 @@ const AboutPage = () => {
         <section>
           <h2 className="font-display text-3xl font-bold">🛒 O que é o Compra Coletiva?</h2>
           <p className="mt-4 text-muted-foreground leading-relaxed">
-            O OfertaJá é uma plataforma de compra coletiva que conecta consumidores e vendedores locais.
+            O Compra Coletiva é uma plataforma de compra coletiva que conecta consumidores e vendedores locais.
             Quanto mais pessoas participam de uma oferta, mais todo mundo economiza! Nossa missão é
             democratizar o acesso a produtos e serviços de qualidade com preços justos.
           </p>

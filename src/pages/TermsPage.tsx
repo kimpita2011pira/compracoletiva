@@ -13,7 +13,7 @@ const TermsPage = () => {
           <div>
             <h3 className="font-semibold text-foreground text-lg">1. Aceitação dos Termos</h3>
             <p className="mt-2">
-              Ao acessar e utilizar a plataforma OfertaJá, você concorda com estes Termos de Uso.
+              Ao acessar e utilizar a plataforma Compra Coletiva, você concorda com estes Termos de Uso.
               Caso não concorde, não utilize nossos serviços.
             </p>
           </div>

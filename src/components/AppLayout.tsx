@@ -223,7 +223,7 @@ function Footer() {
           </div>
         </div>
         <div className="mt-8 border-t pt-4 text-center text-xs text-muted-foreground">
-          © {new Date().getFullYear()} OfertaJá. Todos os direitos reservados.
+          © {new Date().getFullYear()} Compra Coletiva. Todos os direitos reservados.
         </div>
       </div>
     </footer>
