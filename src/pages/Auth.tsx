@@ -40,6 +40,10 @@ const Auth = () => {
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!roleChoice) return;
+    if (password !== confirmPassword) {
+      toast({ title: "Senhas não coincidem", description: "A confirmação de senha deve ser igual à senha.", variant: "destructive" });
+      return;
+    }
     setLoading(true);
     const { error } = await supabase.auth.signUp({
       email,
