@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import type { OfferWithVendor } from "@/hooks/useOffers";
 import { useReserveOffer, useWalletBalance, useUserAddresses } from "@/hooks/useReserveOffer";
 import { useAuth } from "@/hooks/useAuth";
