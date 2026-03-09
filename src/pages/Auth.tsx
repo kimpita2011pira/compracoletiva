@@ -23,9 +23,12 @@ const Auth = () => {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [whatsapp, setWhatsapp] = useState("");
+  const [selectedState, setSelectedState] = useState("");
+  const [selectedCity, setSelectedCity] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { states, cities, loadingStates, loadingCities } = useBrazilLocations(selectedState);
 
   const formatPhone = useCallback((value: string) => {
     const digits = value.replace(/\D/g, "").slice(0, 11);
