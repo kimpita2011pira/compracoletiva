@@ -35,22 +35,35 @@ export function useAuth() {
   });
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (_event, session) => {
-        const user = session?.user ?? null;
-        const roles = user ? await fetchRoles(user.id) : [];
-        setState({ user, session, loading: false, roles });
-      }
-    );
-
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
+    // Get initial session first
+    supabase.auth.getSession().then(({ data: { session } }) => {
       const user = session?.user ?? null;
-      const roles = user ? await fetchRoles(user.id) : [];
-      setState({ user, session, loading: false, roles });
+      // Set user immediately to avoid loading stuck, fetch roles in background
+      setState(prev => ({ ...prev, user, session, loading: false }));
+      if (user) {
+        fetchRoles(user.id).then(roles => {
+          setState(prev => ({ ...prev, roles }));
+        });
+      }
     }).catch((err) => {
       console.error("getSession failed:", err);
       setState({ user: null, session: null, loading: false, roles: [] });
     });
+
+    // Listen for auth changes - DO NOT await inside callback to avoid deadlocks
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        const user = session?.user ?? null;
+        setState(prev => ({ ...prev, user, session, loading: false }));
+        if (user) {
+          fetchRoles(user.id).then(roles => {
+            setState(prev => ({ ...prev, roles }));
+          });
+        } else {
+          setState(prev => ({ ...prev, roles: [] }));
+        }
+      }
+    );
 
     return () => subscription.unsubscribe();
   }, []);
