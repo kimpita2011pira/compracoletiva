@@ -20,6 +20,7 @@ const vendorSchema = z.object({
 const VendorOnboarding = () => {
   const [companyName, setCompanyName] = useState("");
   const [cnpj, setCnpj] = useState("");
+  const [city, setCity] = useState("");
   const [description, setDescription] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
   const { registerVendor } = useVendor();
