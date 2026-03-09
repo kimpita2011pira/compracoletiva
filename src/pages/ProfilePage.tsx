@@ -98,7 +98,13 @@ const ProfilePage = () => {
     setSaving(true);
     const { error } = await supabase
       .from("profiles")
-      .update({ name: name.trim(), phone: phone.trim() || null, whatsapp: whatsapp.trim() || null })
+      .update({ 
+        name: name.trim(), 
+        phone: phone.trim() || null, 
+        whatsapp: whatsapp.trim() || null,
+        state: selectedState || null,
+        city: selectedCity || null,
+      })
       .eq("id", user.id);
     setSaving(false);
     if (error) {
