@@ -27,6 +27,11 @@ serve(async (req) => {
     const old_record = payload.old_record;
 
     let message = '';
+    let zapierPayload: any = {
+      event,
+      created_at: record.created_at,
+    };
+
     if (event === 'vendor_status_change') {
       const statusLabels: Record<string, string> = {
         APROVADO: '✅ Aprovado',
@@ -34,22 +39,45 @@ serve(async (req) => {
       };
       const label = statusLabels[record.status] || record.status;
       message = `${label}: ${record.company_name}${record.city ? ` (${record.city})` : ''}${record.cnpj ? ` — CNPJ: ${record.cnpj}` : ''}`;
+      
+      zapierPayload = {
+        ...zapierPayload,
+        vendor_id: record.id,
+        company_name: record.company_name,
+        cnpj: record.cnpj,
+        city: record.city,
+        description: record.description,
+        status: record.status,
+        previous_status: old_record?.status || null,
+        message,
+      };
+    } else if (event === 'new_offer_published') {
+      const vendorName = payload.vendor_name || 'Vendedor';
+      message = `📣 Nova oferta publicada: ${record.title} por ${vendorName} — Preço: R$ ${record.offer_price}`;
+      
+      zapierPayload = {
+        ...zapierPayload,
+        offer_id: record.id,
+        offer_title: record.title,
+        offer_price: record.offer_price,
+        vendor_id: record.vendor_id,
+        vendor_name: vendorName,
+        message,
+      };
     } else {
       message = `🆕 Novo vendedor cadastrado: ${record.company_name}${record.city ? ` (${record.city})` : ''}${record.cnpj ? ` — CNPJ: ${record.cnpj}` : ''}`;
+      
+      zapierPayload = {
+        ...zapierPayload,
+        vendor_id: record.id,
+        company_name: record.company_name,
+        cnpj: record.cnpj,
+        city: record.city,
+        description: record.description,
+        status: record.status,
+        message,
+      };
     }
-
-    const zapierPayload = {
-      event,
-      vendor_id: record.id,
-      company_name: record.company_name,
-      cnpj: record.cnpj,
-      city: record.city,
-      description: record.description,
-      status: record.status,
-      previous_status: old_record?.status || null,
-      created_at: record.created_at,
-      message,
-    };
 
     console.log('Sending to Zapier:', JSON.stringify(zapierPayload));
 
