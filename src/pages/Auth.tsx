@@ -5,9 +5,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { ShoppingBag, Store, ArrowLeft } from "lucide-react";
 import { PasswordStrengthIndicator } from "@/components/PasswordStrengthIndicator";
+import { useBrazilLocations } from "@/hooks/useBrazilLocations";
 
 type AuthMode = "login" | "register";
 type RoleChoice = "CLIENTE" | "VENDEDOR" | null;
@@ -21,9 +23,12 @@ const Auth = () => {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [whatsapp, setWhatsapp] = useState("");
+  const [selectedState, setSelectedState] = useState("");
+  const [selectedCity, setSelectedCity] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { states, cities, loadingStates, loadingCities } = useBrazilLocations(selectedState);
 
   const formatPhone = useCallback((value: string) => {
     const digits = value.replace(/\D/g, "").slice(0, 11);
@@ -76,7 +81,7 @@ const Auth = () => {
       password,
       options: {
         emailRedirectTo: window.location.origin,
-        data: { name, phone, whatsapp, role: roleChoice },
+        data: { name, phone, whatsapp, state: selectedState, city: selectedCity, role: roleChoice },
       },
     });
     setLoading(false);
@@ -213,6 +218,34 @@ const Auth = () => {
                     <Label htmlFor="whatsapp">WhatsApp</Label>
                     <Input id="whatsapp" value={whatsapp} onChange={(e) => { setWhatsapp(formatPhone(e.target.value)); setWhatsappError(""); }} placeholder="(00) 00000-0000" maxLength={15} />
                     {whatsappError && <p className="text-xs text-destructive">{whatsappError}</p>}
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-2">
+                    <Label htmlFor="state">Estado</Label>
+                    <Select value={selectedState} onValueChange={(v) => { setSelectedState(v); setSelectedCity(""); }}>
+                      <SelectTrigger id="state">
+                        <SelectValue placeholder={loadingStates ? "Carregando..." : "Selecione"} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {states.map((s) => (
+                          <SelectItem key={s.sigla} value={s.sigla}>{s.nome}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="city">Cidade</Label>
+                    <Select value={selectedCity} onValueChange={setSelectedCity} disabled={!selectedState}>
+                      <SelectTrigger id="city">
+                        <SelectValue placeholder={loadingCities ? "Carregando..." : "Selecione"} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {cities.map((c) => (
+                          <SelectItem key={c.id} value={c.nome}>{c.nome}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
                 </div>
               </>

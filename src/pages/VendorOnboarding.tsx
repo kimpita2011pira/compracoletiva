@@ -2,36 +2,41 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useVendor } from "@/hooks/useVendor";
 import { useToast } from "@/hooks/use-toast";
+import { useBrazilLocations } from "@/hooks/useBrazilLocations";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ArrowLeft, Store } from "lucide-react";
 import { z } from "zod";
 
 const vendorSchema = z.object({
   company_name: z.string().trim().min(2, "Nome da empresa deve ter pelo menos 2 caracteres").max(120, "Máximo 120 caracteres"),
   cnpj: z.string().trim().regex(/^(\d{11}|\d{3}\.\d{3}\.\d{3}-\d{2}|\d{14}|\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2})?$/, "CPF ou CNPJ inválido"),
-  city: z.string().trim().min(2, "Cidade deve ter pelo menos 2 caracteres").max(100, "Máximo 100 caracteres"),
+  state: z.string().min(2, "Selecione um estado"),
+  city: z.string().min(2, "Selecione uma cidade"),
   description: z.string().trim().max(500, "Máximo 500 caracteres").optional(),
 });
 
 const VendorOnboarding = () => {
   const [companyName, setCompanyName] = useState("");
   const [cnpj, setCnpj] = useState("");
-  const [city, setCity] = useState("");
+  const [selectedState, setSelectedState] = useState("");
+  const [selectedCity, setSelectedCity] = useState("");
   const [description, setDescription] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
   const { registerVendor } = useVendor();
   const { toast } = useToast();
   const navigate = useNavigate();
+  const { states, cities, loadingStates, loadingCities } = useBrazilLocations(selectedState);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrors({});
 
-    const result = vendorSchema.safeParse({ company_name: companyName, cnpj, city, description });
+    const result = vendorSchema.safeParse({ company_name: companyName, cnpj, state: selectedState, city: selectedCity, description });
     if (!result.success) {
       const fieldErrors: Record<string, string> = {};
       result.error.errors.forEach((err) => {
@@ -114,17 +119,35 @@ const VendorOnboarding = () => {
               {errors.cnpj && <p className="text-sm text-destructive">{errors.cnpj}</p>}
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="city">Cidade *</Label>
-              <Input
-                id="city"
-                value={city}
-                onChange={(e) => setCity(e.target.value)}
-                placeholder="Ex: São Paulo"
-                maxLength={100}
-                required
-              />
-              {errors.city && <p className="text-sm text-destructive">{errors.city}</p>}
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-2">
+                <Label htmlFor="state">Estado *</Label>
+                <Select value={selectedState} onValueChange={(v) => { setSelectedState(v); setSelectedCity(""); }}>
+                  <SelectTrigger id="state">
+                    <SelectValue placeholder={loadingStates ? "Carregando..." : "Selecione"} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {states.map((s) => (
+                      <SelectItem key={s.sigla} value={s.sigla}>{s.nome}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {errors.state && <p className="text-sm text-destructive">{errors.state}</p>}
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="city">Cidade *</Label>
+                <Select value={selectedCity} onValueChange={setSelectedCity} disabled={!selectedState}>
+                  <SelectTrigger id="city">
+                    <SelectValue placeholder={loadingCities ? "Carregando..." : "Selecione"} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {cities.map((c) => (
+                      <SelectItem key={c.id} value={c.nome}>{c.nome}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {errors.city && <p className="text-sm text-destructive">{errors.city}</p>}
+              </div>
             </div>
 
             <div className="space-y-2">
