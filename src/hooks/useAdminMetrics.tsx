@@ -142,4 +142,6 @@ export function useAdminMetrics() {
       };
     },
   });
+
+  return query;
 }
