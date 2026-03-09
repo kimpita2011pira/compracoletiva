@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { ShoppingBag, Store, ArrowLeft } from "lucide-react";
+import { PasswordStrengthIndicator } from "@/components/PasswordStrengthIndicator";
 
 type AuthMode = "login" | "register";
 type RoleChoice = "CLIENTE" | "VENDEDOR" | null;
@@ -197,6 +198,7 @@ const Auth = () => {
                 required
                 minLength={6}
               />
+              {mode === "register" && <PasswordStrengthIndicator password={password} />}
             </div>
             {mode === "login" && (
               <div className="text-right">
