@@ -221,7 +221,6 @@ const Auth = () => {
                 )}
               </div>
             )}
-            </div>
             {mode === "login" && (
               <div className="text-right">
                 <button
