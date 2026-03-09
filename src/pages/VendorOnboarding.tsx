@@ -42,7 +42,7 @@ const VendorOnboarding = () => {
     }
 
     try {
-      await registerVendor.mutateAsync(result.data as { company_name: string; cnpj: string; description: string });
+      await registerVendor.mutateAsync(result.data as { company_name: string; cnpj: string; city: string; description: string });
       toast({ title: "Empresa cadastrada!", description: "Aguarde a aprovação do administrador." });
       navigate("/vendor");
     } catch (err: any) {
