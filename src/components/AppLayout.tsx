@@ -217,8 +217,8 @@ function Footer() {
           <div>
             <h4 className="font-semibold text-foreground">Contato</h4>
             <ul className="mt-2 space-y-1 text-sm text-muted-foreground">
-              <li>📧 contato@ofertaja.com</li>
-              <li>📱 (11) 99999-9999</li>
+              <li>📧 kimpita2011@gmail.com</li>
+              <li>📱 (19) 99197-3737 (WhatsApp)</li>
             </ul>
           </div>
         </div>
