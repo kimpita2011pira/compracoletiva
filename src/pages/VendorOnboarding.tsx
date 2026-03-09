@@ -84,12 +84,12 @@ const VendorOnboarding = () => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="cnpj">CNPJ</Label>
+              <Label htmlFor="cnpj">CPF ou CNPJ</Label>
               <Input
                 id="cnpj"
                 value={cnpj}
                 onChange={(e) => setCnpj(e.target.value)}
-                placeholder="00.000.000/0000-00"
+                placeholder="000.000.000-00 ou 00.000.000/0000-00"
                 maxLength={18}
               />
               {errors.cnpj && <p className="text-sm text-destructive">{errors.cnpj}</p>}
