@@ -32,6 +32,7 @@ interface Props {
 
 export default function ReserveOfferModal({ offer, open, onOpenChange }: Props) {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const { data: balance, isLoading: balanceLoading } = useWalletBalance();
   const { data: addresses } = useUserAddresses();
   const reserve = useReserveOffer();
