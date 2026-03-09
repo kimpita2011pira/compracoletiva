@@ -13,6 +13,7 @@ import { z } from "zod";
 const vendorSchema = z.object({
   company_name: z.string().trim().min(2, "Nome da empresa deve ter pelo menos 2 caracteres").max(120, "Máximo 120 caracteres"),
   cnpj: z.string().trim().regex(/^(\d{14}|\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2})?$/, "CNPJ inválido (somente números ou formato XX.XXX.XXX/XXXX-XX)"),
+  city: z.string().trim().min(2, "Cidade deve ter pelo menos 2 caracteres").max(100, "Máximo 100 caracteres"),
   description: z.string().trim().max(500, "Máximo 500 caracteres").optional(),
 });
 
