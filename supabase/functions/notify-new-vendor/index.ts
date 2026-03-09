@@ -104,6 +104,20 @@ serve(async (req) => {
         delivery_type: record.delivery_type,
         message,
       };
+    } else if (event === 'offer_min_reached') {
+      const vendorName = payload.vendor_name || 'Vendedor';
+      message = `🎯 Meta atingida! A oferta "${record.title}" de ${vendorName} atingiu ${record.sold_quantity}/${record.min_quantity} reservas`;
+      
+      zapierPayload = {
+        ...zapierPayload,
+        offer_id: record.id,
+        offer_title: record.title,
+        sold_quantity: record.sold_quantity,
+        min_quantity: record.min_quantity,
+        vendor_id: record.vendor_id,
+        vendor_name: vendorName,
+        message,
+      };
     } else {
       message = `🆕 Novo vendedor cadastrado: ${record.company_name}${record.city ? ` (${record.city})` : ''}${record.cnpj ? ` — CNPJ: ${record.cnpj}` : ''}`;
       
