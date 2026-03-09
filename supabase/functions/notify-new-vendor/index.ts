@@ -85,6 +85,25 @@ serve(async (req) => {
         vendor_name: vendorName,
         message,
       };
+    } else if (event === 'new_order_reservation') {
+      const buyerName = payload.buyer_name || 'Cliente';
+      const offerTitle = payload.offer_title || 'oferta';
+      const vendorName = payload.vendor_name || 'Vendedor';
+      message = `🛒 Nova reserva: ${buyerName} reservou ${record.quantity}x "${offerTitle}" — R$ ${record.total_price} (${record.delivery_type === 'DELIVERY' ? 'Entrega' : 'Retirada'})`;
+      
+      zapierPayload = {
+        ...zapierPayload,
+        order_id: record.id,
+        offer_id: record.offer_id,
+        offer_title: offerTitle,
+        buyer_name: buyerName,
+        vendor_name: vendorName,
+        quantity: record.quantity,
+        unit_price: record.unit_price,
+        total_price: record.total_price,
+        delivery_type: record.delivery_type,
+        message,
+      };
     } else {
       message = `🆕 Novo vendedor cadastrado: ${record.company_name}${record.city ? ` (${record.city})` : ''}${record.cnpj ? ` — CNPJ: ${record.cnpj}` : ''}`;
       
