@@ -17,6 +17,7 @@ const Auth = () => {
   const [roleChoice, setRoleChoice] = useState<RoleChoice>(null);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [whatsapp, setWhatsapp] = useState("");
@@ -39,6 +40,10 @@ const Auth = () => {
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!roleChoice) return;
+    if (password !== confirmPassword) {
+      toast({ title: "Senhas não coincidem", description: "A confirmação de senha deve ser igual à senha.", variant: "destructive" });
+      return;
+    }
     setLoading(true);
     const { error } = await supabase.auth.signUp({
       email,
@@ -200,6 +205,22 @@ const Auth = () => {
               />
               {mode === "register" && <PasswordStrengthIndicator password={password} />}
             </div>
+            {mode === "register" && (
+              <div className="space-y-2">
+                <Label htmlFor="confirmPassword">Confirmar senha</Label>
+                <Input
+                  id="confirmPassword"
+                  type="password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  required
+                  minLength={6}
+                />
+                {confirmPassword && password !== confirmPassword && (
+                  <p className="text-sm text-destructive">As senhas não coincidem</p>
+                )}
+              </div>
+            )}
             {mode === "login" && (
               <div className="text-right">
                 <button
