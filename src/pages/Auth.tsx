@@ -81,7 +81,7 @@ const Auth = () => {
       password,
       options: {
         emailRedirectTo: window.location.origin,
-        data: { name, phone, whatsapp, role: roleChoice },
+        data: { name, phone, whatsapp, state: selectedState, city: selectedCity, role: roleChoice },
       },
     });
     setLoading(false);
