@@ -17,6 +17,7 @@ const Auth = () => {
   const [roleChoice, setRoleChoice] = useState<RoleChoice>(null);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [whatsapp, setWhatsapp] = useState("");
