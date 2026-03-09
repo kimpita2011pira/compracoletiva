@@ -101,10 +101,10 @@ export function useAdminMetrics(days: number = 14) {
         offerStatusCounts[o.status] = (offerStatusCounts[o.status] || 0) + 1;
       });
 
-      // Daily revenue (last 14 days)
+      // Daily revenue (last N days)
       const dailyMap: Record<string, { revenue: number; orders: number }> = {};
       const now = new Date();
-      for (let i = 13; i >= 0; i--) {
+      for (let i = days - 1; i >= 0; i--) {
         const d = new Date(now);
         d.setDate(d.getDate() - i);
         const key = d.toISOString().split("T")[0];
