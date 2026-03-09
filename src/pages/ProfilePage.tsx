@@ -195,6 +195,7 @@ const ProfilePage = () => {
                     placeholder="(00) 00000-0000"
                   />
                 </div>
+              </div>
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-2">
                   <Label htmlFor="profile-state">Estado</Label>
