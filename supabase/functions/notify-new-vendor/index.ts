@@ -64,6 +64,27 @@ serve(async (req) => {
         vendor_name: vendorName,
         message,
       };
+    } else if (event === 'offer_status_change') {
+      const vendorName = payload.vendor_name || 'Vendedor';
+      const statusLabels: Record<string, string> = {
+        VALIDADA: '✅ Validada',
+        CANCELADA: '❌ Cancelada',
+        ENCERRADA: '🏁 Encerrada',
+        ATIVA: '🟢 Ativa'
+      };
+      const label = statusLabels[record.status] || record.status;
+      message = `🔄 Status da oferta alterado: ${record.title} (${vendorName}) mudou para ${label}`;
+      
+      zapierPayload = {
+        ...zapierPayload,
+        offer_id: record.id,
+        offer_title: record.title,
+        status: record.status,
+        previous_status: old_record?.status || null,
+        vendor_id: record.vendor_id,
+        vendor_name: vendorName,
+        message,
+      };
     } else {
       message = `🆕 Novo vendedor cadastrado: ${record.company_name}${record.city ? ` (${record.city})` : ''}${record.cnpj ? ` — CNPJ: ${record.cnpj}` : ''}`;
       
