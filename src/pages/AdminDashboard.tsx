@@ -127,7 +127,24 @@ export default function AdminDashboard() {
                 </div>
 
                 <div className="rounded-xl border bg-card p-5 shadow-sm">
-                  <h3 className="mb-4 font-display text-lg font-bold">Receita dos últimos 14 dias</h3>
+                  <div className="mb-4 flex items-center justify-between">
+                    <h3 className="font-display text-lg font-bold">Receita</h3>
+                    <div className="flex gap-1 rounded-lg border bg-muted/50 p-0.5">
+                      {[7, 14, 30].map((d) => (
+                        <button
+                          key={d}
+                          onClick={() => setChartDays(d)}
+                          className={`rounded-md px-3 py-1 text-xs font-medium transition-colors ${
+                            chartDays === d
+                              ? "bg-primary text-primary-foreground shadow-sm"
+                              : "text-muted-foreground hover:text-foreground"
+                          }`}
+                        >
+                          {d}d
+                        </button>
+                      ))}
+                    </div>
+                  </div>
                   <ResponsiveContainer width="100%" height={300}>
                     <BarChart data={metrics.dailyRevenue}>
                       <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
