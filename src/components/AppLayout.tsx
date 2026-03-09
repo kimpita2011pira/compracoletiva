@@ -217,8 +217,8 @@ function Footer() {
           <div>
             <h4 className="font-semibold text-foreground">Contato</h4>
             <ul className="mt-2 space-y-1 text-sm text-muted-foreground">
-              <li>📧 kimpita2011@gmail.com</li>
-              <li>📱 (19) 99197-3737 (WhatsApp)</li>
+              <li><a href="mailto:kimpita2011@gmail.com" className="hover:text-primary transition-colors">📧 kimpita2011@gmail.com</a></li>
+              <li><a href="https://wa.me/5519991973737" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">📱 (19) 99197-3737 (WhatsApp)</a></li>
             </ul>
           </div>
         </div>
