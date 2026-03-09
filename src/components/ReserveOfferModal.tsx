@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import type { OfferWithVendor } from "@/hooks/useOffers";
 import { useReserveOffer, useWalletBalance, useUserAddresses } from "@/hooks/useReserveOffer";
 import { useAuth } from "@/hooks/useAuth";
@@ -31,6 +32,7 @@ interface Props {
 
 export default function ReserveOfferModal({ offer, open, onOpenChange }: Props) {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const { data: balance, isLoading: balanceLoading } = useWalletBalance();
   const { data: addresses } = useUserAddresses();
   const reserve = useReserveOffer();
@@ -205,6 +207,21 @@ export default function ReserveOfferModal({ offer, open, onOpenChange }: Props) 
               </span>
             )}
           </div>
+
+          {/* Insufficient balance CTA */}
+          {!balanceLoading && !hasEnoughBalance && (
+            <Button
+              variant="outline"
+              className="w-full gap-2 border-destructive/30 text-destructive hover:bg-destructive/5"
+              onClick={() => {
+                onOpenChange(false);
+                navigate("/wallet");
+              }}
+            >
+              <Wallet className="h-4 w-4" />
+              Adicionar saldo na carteira
+            </Button>
+          )}
         </div>
 
         <DialogFooter>
