@@ -113,7 +113,7 @@ function AuthHeader({
               className="font-display text-2xl font-bold text-primary cursor-pointer"
               onClick={() => navigate("/")}
             >
-              🛒 OfertaJá
+              🛒 Compra Coletiva
             </h1>
           )}
         </div>
