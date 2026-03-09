@@ -198,6 +198,7 @@ const Auth = () => {
                 required
                 minLength={6}
               />
+              {mode === "register" && <PasswordStrengthIndicator password={password} />}
             </div>
             {mode === "login" && (
               <div className="text-right">
