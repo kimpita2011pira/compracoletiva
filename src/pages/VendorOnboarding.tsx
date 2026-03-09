@@ -88,7 +88,26 @@ const VendorOnboarding = () => {
               <Input
                 id="cnpj"
                 value={cnpj}
-                onChange={(e) => setCnpj(e.target.value)}
+                onChange={(e) => {
+                  const digits = e.target.value.replace(/\D/g, "");
+                  let masked = digits;
+                  if (digits.length <= 11) {
+                    // CPF: 000.000.000-00
+                    masked = digits
+                      .replace(/(\d{3})(\d)/, "$1.$2")
+                      .replace(/(\d{3})(\d)/, "$1.$2")
+                      .replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+                  } else {
+                    // CNPJ: 00.000.000/0000-00
+                    masked = digits
+                      .slice(0, 14)
+                      .replace(/(\d{2})(\d)/, "$1.$2")
+                      .replace(/(\d{3})(\d)/, "$1.$2")
+                      .replace(/(\d{3})(\d)/, "$1/$2")
+                      .replace(/(\d{4})(\d{1,2})$/, "$1-$2");
+                  }
+                  setCnpj(masked);
+                }}
                 placeholder="000.000.000-00 ou 00.000.000/0000-00"
                 maxLength={18}
               />
