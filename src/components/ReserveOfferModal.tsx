@@ -207,6 +207,21 @@ export default function ReserveOfferModal({ offer, open, onOpenChange }: Props) 
               </span>
             )}
           </div>
+
+          {/* Insufficient balance CTA */}
+          {!balanceLoading && !hasEnoughBalance && (
+            <Button
+              variant="outline"
+              className="w-full gap-2 border-destructive/30 text-destructive hover:bg-destructive/5"
+              onClick={() => {
+                onOpenChange(false);
+                navigate("/wallet");
+              }}
+            >
+              <Wallet className="h-4 w-4" />
+              Adicionar saldo na carteira
+            </Button>
+          )}
         </div>
 
         <DialogFooter>
