@@ -70,6 +70,7 @@ const ResetPassword = () => {
                 required
                 disabled={!isRecoveryFlow || loading}
               />
+              <PasswordStrengthIndicator password={password} />
             </div>
             <div className="space-y-2">
               <Label htmlFor="confirm-password">Confirmar nova senha</Label>
