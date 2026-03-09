@@ -171,6 +171,22 @@ export default function OffersMarketplace() {
                 </button>
               )}
             </div>
+
+            {cities.length > 0 && (
+              <Select value={cityFilter} onValueChange={setCityFilter}>
+                <SelectTrigger className="w-[180px] shrink-0 text-xs gap-1">
+                  <MapPin className="h-3.5 w-3.5 text-muted-foreground" />
+                  <SelectValue placeholder="Cidade" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Todas as cidades</SelectItem>
+                  {cities.map((city) => (
+                    <SelectItem key={city} value={city}>{city}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+
             <Button
               variant={showFilters ? "default" : "outline"}
               size="icon"
@@ -230,19 +246,6 @@ export default function OffersMarketplace() {
                 </SelectContent>
               </Select>
 
-              {cities.length > 0 && (
-                <Select value={cityFilter} onValueChange={setCityFilter}>
-                  <SelectTrigger className="w-[160px] text-xs">
-                    <SelectValue placeholder="Cidade" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">Todas as cidades</SelectItem>
-                    {cities.map((city) => (
-                      <SelectItem key={city} value={city}>{city}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              )}
 
               <Button
                 variant={onlyGoalReached ? "default" : "outline"}
