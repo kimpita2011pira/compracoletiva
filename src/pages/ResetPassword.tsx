@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import { PasswordStrengthIndicator } from "@/components/PasswordStrengthIndicator";
 
 const ResetPassword = () => {
   const [password, setPassword] = useState("");
@@ -69,6 +70,7 @@ const ResetPassword = () => {
                 required
                 disabled={!isRecoveryFlow || loading}
               />
+              <PasswordStrengthIndicator password={password} />
             </div>
             <div className="space-y-2">
               <Label htmlFor="confirm-password">Confirmar nova senha</Label>
