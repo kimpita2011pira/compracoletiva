@@ -87,6 +87,13 @@ export default function AdminDashboard() {
 
           {/* ===== MÉTRICAS TAB ===== */}
           <TabsContent value="metricas" className="space-y-6">
+            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+              <span className="relative flex h-2.5 w-2.5">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-success opacity-75" />
+                <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-success" />
+              </span>
+              Dados em tempo real — atualização automática
+            </div>
             {metricsLoading ? (
               <div className="flex justify-center py-16">
                 <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
