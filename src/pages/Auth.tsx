@@ -59,6 +59,33 @@ const Auth = () => {
     }
   };
 
+  const handleForgotPassword = async () => {
+    if (!email.trim()) {
+      toast({
+        title: "Informe seu e-mail",
+        description: "Digite seu e-mail no campo acima para recuperar a senha.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setLoading(true);
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/reset-password`,
+    });
+    setLoading(false);
+
+    if (error) {
+      toast({ title: "Erro ao enviar recuperação", description: error.message, variant: "destructive" });
+      return;
+    }
+
+    toast({
+      title: "E-mail enviado",
+      description: "Confira sua caixa de entrada para redefinir sua senha.",
+    });
+  };
+
   // Step 1 of register: choose role
   if (mode === "register" && !roleChoice) {
     return (
@@ -171,6 +198,18 @@ const Auth = () => {
                 minLength={6}
               />
             </div>
+            {mode === "login" && (
+              <div className="text-right">
+                <button
+                  type="button"
+                  onClick={handleForgotPassword}
+                  disabled={loading}
+                  className="text-sm font-semibold text-primary hover:underline disabled:opacity-50"
+                >
+                  Esqueci minha senha
+                </button>
+              </div>
+            )}
             <Button type="submit" className="w-full text-base font-bold" size="lg" disabled={loading}>
               {loading ? "Aguarde..." : mode === "login" ? "Entrar" : "Criar conta"}
             </Button>
@@ -199,3 +238,4 @@ const Auth = () => {
 };
 
 export default Auth;
+
