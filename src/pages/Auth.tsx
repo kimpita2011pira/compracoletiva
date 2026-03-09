@@ -60,6 +60,16 @@ const Auth = () => {
       toast({ title: "Senhas não coincidem", description: "A confirmação de senha deve ser igual à senha.", variant: "destructive" });
       return;
     }
+    // Validate phone formats
+    const phoneValid = isPhoneValid(phone);
+    const whatsappValid = isPhoneValid(whatsapp);
+    setPhoneError(phoneValid ? "" : "Telefone deve ter 10 ou 11 dígitos");
+    setWhatsappError(whatsappValid ? "" : "WhatsApp deve ter 10 ou 11 dígitos");
+    if (!phoneValid || !whatsappValid) {
+      setLoading(false);
+      return;
+    }
+
     setLoading(true);
     const { error } = await supabase.auth.signUp({
       email,
