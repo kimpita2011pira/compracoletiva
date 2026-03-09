@@ -335,28 +335,34 @@ export type Database = {
       profiles: {
         Row: {
           avatar_url: string | null
+          city: string | null
           created_at: string
           id: string
           name: string
           phone: string | null
+          state: string | null
           updated_at: string
           whatsapp: string | null
         }
         Insert: {
           avatar_url?: string | null
+          city?: string | null
           created_at?: string
           id: string
           name: string
           phone?: string | null
+          state?: string | null
           updated_at?: string
           whatsapp?: string | null
         }
         Update: {
           avatar_url?: string | null
+          city?: string | null
           created_at?: string
           id?: string
           name?: string
           phone?: string | null
+          state?: string | null
           updated_at?: string
           whatsapp?: string | null
         }
