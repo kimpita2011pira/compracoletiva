@@ -50,8 +50,8 @@ export function useAdminMetrics(days: number = 14) {
   }, [queryClient]);
 
   const query = useQuery<AdminMetrics>({
-    queryKey: ["admin-metrics"],
-    refetchInterval: 30000, // fallback: refetch every 30s
+    queryKey: ["admin-metrics", days],
+    refetchInterval: 30000,
     queryFn: async () => {
       // Parallel queries
       const [
