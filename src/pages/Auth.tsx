@@ -32,6 +32,15 @@ const Auth = () => {
     return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
   }, []);
 
+  const isPhoneValid = (value: string) => {
+    if (!value) return true; // optional field
+    const digits = value.replace(/\D/g, "");
+    return digits.length === 10 || digits.length === 11;
+  };
+
+  const [phoneError, setPhoneError] = useState("");
+  const [whatsappError, setWhatsappError] = useState("");
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -51,6 +60,16 @@ const Auth = () => {
       toast({ title: "Senhas não coincidem", description: "A confirmação de senha deve ser igual à senha.", variant: "destructive" });
       return;
     }
+    // Validate phone formats
+    const phoneValid = isPhoneValid(phone);
+    const whatsappValid = isPhoneValid(whatsapp);
+    setPhoneError(phoneValid ? "" : "Telefone deve ter 10 ou 11 dígitos");
+    setWhatsappError(whatsappValid ? "" : "WhatsApp deve ter 10 ou 11 dígitos");
+    if (!phoneValid || !whatsappValid) {
+      setLoading(false);
+      return;
+    }
+
     setLoading(true);
     const { error } = await supabase.auth.signUp({
       email,
@@ -187,11 +206,13 @@ const Auth = () => {
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-2">
                     <Label htmlFor="phone">Telefone</Label>
-                    <Input id="phone" value={phone} onChange={(e) => setPhone(formatPhone(e.target.value))} placeholder="(00) 00000-0000" maxLength={15} />
+                    <Input id="phone" value={phone} onChange={(e) => { setPhone(formatPhone(e.target.value)); setPhoneError(""); }} placeholder="(00) 00000-0000" maxLength={15} />
+                    {phoneError && <p className="text-xs text-destructive">{phoneError}</p>}
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="whatsapp">WhatsApp</Label>
-                    <Input id="whatsapp" value={whatsapp} onChange={(e) => setWhatsapp(formatPhone(e.target.value))} placeholder="(00) 00000-0000" maxLength={15} />
+                    <Input id="whatsapp" value={whatsapp} onChange={(e) => { setWhatsapp(formatPhone(e.target.value)); setWhatsappError(""); }} placeholder="(00) 00000-0000" maxLength={15} />
+                    {whatsappError && <p className="text-xs text-destructive">{whatsappError}</p>}
                   </div>
                 </div>
               </>
