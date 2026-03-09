@@ -124,7 +124,7 @@ const Auth = () => {
       <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-primary/10 via-background to-secondary/10 p-4">
         <div className="w-full max-w-md space-y-6">
           <div className="text-center">
-            <h1 className="font-display text-4xl font-bold text-primary">🛒 OfertaJá</h1>
+            <h1 className="font-display text-4xl font-bold text-primary">🛒 Compra Coletiva</h1>
             <p className="mt-2 text-muted-foreground">Como você quer usar a plataforma?</p>
           </div>
           <div className="grid gap-4">
