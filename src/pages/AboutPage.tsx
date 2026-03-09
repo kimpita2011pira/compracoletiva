@@ -5,7 +5,7 @@ const AboutPage = () => {
     <AppLayout title="Sobre o Compra Coletiva" isPublic>
       <main className="container max-w-3xl py-10 space-y-8">
         <section>
-          <h2 className="font-display text-3xl font-bold">🛒 O que é o OfertaJá?</h2>
+          <h2 className="font-display text-3xl font-bold">🛒 O que é o Compra Coletiva?</h2>
           <p className="mt-4 text-muted-foreground leading-relaxed">
             O OfertaJá é uma plataforma de compra coletiva que conecta consumidores e vendedores locais.
             Quanto mais pessoas participam de uma oferta, mais todo mundo economiza! Nossa missão é
