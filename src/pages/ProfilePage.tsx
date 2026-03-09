@@ -2,11 +2,13 @@ import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
+import { useBrazilLocations } from "@/hooks/useBrazilLocations";
 import { AppLayout } from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Save, User, Camera } from "lucide-react";
 
 function formatPhone(value: string): string {
@@ -28,13 +30,16 @@ const ProfilePage = () => {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [whatsapp, setWhatsapp] = useState("");
+  const [selectedState, setSelectedState] = useState("");
+  const [selectedCity, setSelectedCity] = useState("");
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const { states, cities, loadingStates, loadingCities } = useBrazilLocations(selectedState);
 
   useEffect(() => {
     if (!user) return;
     supabase
       .from("profiles")
-      .select("name, phone, whatsapp, avatar_url")
+      .select("name, phone, whatsapp, avatar_url, state, city")
       .eq("id", user.id)
       .single()
       .then(({ data, error }) => {
@@ -43,6 +48,8 @@ const ProfilePage = () => {
           setPhone(formatPhone(data.phone || ""));
           setWhatsapp(formatPhone(data.whatsapp || ""));
           setAvatarUrl(data.avatar_url || null);
+          setSelectedState(data.state || "");
+          setSelectedCity(data.city || "");
         }
         if (error) console.error("Error loading profile:", error);
         setLoading(false);
@@ -91,7 +98,13 @@ const ProfilePage = () => {
     setSaving(true);
     const { error } = await supabase
       .from("profiles")
-      .update({ name: name.trim(), phone: phone.trim() || null, whatsapp: whatsapp.trim() || null })
+      .update({ 
+        name: name.trim(), 
+        phone: phone.trim() || null, 
+        whatsapp: whatsapp.trim() || null,
+        state: selectedState || null,
+        city: selectedCity || null,
+      })
       .eq("id", user.id);
     setSaving(false);
     if (error) {
@@ -181,6 +194,34 @@ const ProfilePage = () => {
                     maxLength={15}
                     placeholder="(00) 00000-0000"
                   />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-2">
+                  <Label htmlFor="profile-state">Estado</Label>
+                  <Select value={selectedState} onValueChange={(v) => { setSelectedState(v); setSelectedCity(""); }}>
+                    <SelectTrigger id="profile-state">
+                      <SelectValue placeholder={loadingStates ? "Carregando..." : "Selecione"} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {states.map((s) => (
+                        <SelectItem key={s.sigla} value={s.sigla}>{s.nome}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="profile-city">Cidade</Label>
+                  <Select value={selectedCity} onValueChange={setSelectedCity} disabled={!selectedState}>
+                    <SelectTrigger id="profile-city">
+                      <SelectValue placeholder={loadingCities ? "Carregando..." : "Selecione"} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {cities.map((c) => (
+                        <SelectItem key={c.id} value={c.nome}>{c.nome}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
               <Button type="submit" className="w-full" size="lg" disabled={saving}>
