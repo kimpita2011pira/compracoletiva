@@ -157,7 +157,7 @@ export default function AdminDashboard() {
                 </div>
 
                 <div className="rounded-xl border bg-card p-5 shadow-sm">
-                  <h3 className="mb-4 font-display text-lg font-bold">Pedidos dos últimos 14 dias</h3>
+                  <h3 className="mb-4 font-display text-lg font-bold">Pedidos — últimos {chartDays} dias</h3>
                   <ResponsiveContainer width="100%" height={250}>
                     <LineChart data={metrics.dailyRevenue}>
                       <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
