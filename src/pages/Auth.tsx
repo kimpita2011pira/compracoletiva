@@ -32,6 +32,15 @@ const Auth = () => {
     return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
   }, []);
 
+  const isPhoneValid = (value: string) => {
+    if (!value) return true; // optional field
+    const digits = value.replace(/\D/g, "");
+    return digits.length === 10 || digits.length === 11;
+  };
+
+  const [phoneError, setPhoneError] = useState("");
+  const [whatsappError, setWhatsappError] = useState("");
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
