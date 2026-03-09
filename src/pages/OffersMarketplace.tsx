@@ -246,19 +246,6 @@ export default function OffersMarketplace() {
                 </SelectContent>
               </Select>
 
-              {cities.length > 0 && (
-                <Select value={cityFilter} onValueChange={setCityFilter}>
-                  <SelectTrigger className="w-[160px] text-xs">
-                    <SelectValue placeholder="Cidade" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">Todas as cidades</SelectItem>
-                    {cities.map((city) => (
-                      <SelectItem key={city} value={city}>{city}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              )}
 
               <Button
                 variant={onlyGoalReached ? "default" : "outline"}
