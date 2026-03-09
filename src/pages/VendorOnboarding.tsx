@@ -23,12 +23,14 @@ const vendorSchema = z.object({
 const VendorOnboarding = () => {
   const [companyName, setCompanyName] = useState("");
   const [cnpj, setCnpj] = useState("");
-  const [city, setCity] = useState("");
+  const [selectedState, setSelectedState] = useState("");
+  const [selectedCity, setSelectedCity] = useState("");
   const [description, setDescription] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
   const { registerVendor } = useVendor();
   const { toast } = useToast();
   const navigate = useNavigate();
+  const { states, cities, loadingStates, loadingCities } = useBrazilLocations(selectedState);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
