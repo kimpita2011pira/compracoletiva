@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useAdminVendors } from "@/hooks/useAdminVendors";
 import { useAdminMetrics } from "@/hooks/useAdminMetrics";
 import { AppLayout } from "@/components/AppLayout";
@@ -47,8 +48,9 @@ const statusConfig: Record<VendorStatus, { label: string; color: string; icon: R
 const PIE_COLORS = ["hsl(24, 95%, 53%)", "hsl(142, 70%, 45%)", "hsl(0, 84%, 60%)", "hsl(45, 100%, 51%)"];
 
 export default function AdminDashboard() {
+  const [chartDays, setChartDays] = useState(14);
   const { vendors, isLoading, updateStatus } = useAdminVendors();
-  const { data: metrics, isLoading: metricsLoading } = useAdminMetrics();
+  const { data: metrics, isLoading: metricsLoading } = useAdminMetrics(chartDays);
 
   const pending = vendors.filter((v) => v.status === "PENDENTE");
   const approved = vendors.filter((v) => v.status === "APROVADO");
@@ -125,7 +127,24 @@ export default function AdminDashboard() {
                 </div>
 
                 <div className="rounded-xl border bg-card p-5 shadow-sm">
-                  <h3 className="mb-4 font-display text-lg font-bold">Receita dos últimos 14 dias</h3>
+                  <div className="mb-4 flex items-center justify-between">
+                    <h3 className="font-display text-lg font-bold">Receita</h3>
+                    <div className="flex gap-1 rounded-lg border bg-muted/50 p-0.5">
+                      {[7, 14, 30].map((d) => (
+                        <button
+                          key={d}
+                          onClick={() => setChartDays(d)}
+                          className={`rounded-md px-3 py-1 text-xs font-medium transition-colors ${
+                            chartDays === d
+                              ? "bg-primary text-primary-foreground shadow-sm"
+                              : "text-muted-foreground hover:text-foreground"
+                          }`}
+                        >
+                          {d}d
+                        </button>
+                      ))}
+                    </div>
+                  </div>
                   <ResponsiveContainer width="100%" height={300}>
                     <BarChart data={metrics.dailyRevenue}>
                       <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
@@ -138,7 +157,7 @@ export default function AdminDashboard() {
                 </div>
 
                 <div className="rounded-xl border bg-card p-5 shadow-sm">
-                  <h3 className="mb-4 font-display text-lg font-bold">Pedidos dos últimos 14 dias</h3>
+                  <h3 className="mb-4 font-display text-lg font-bold">Pedidos — últimos {chartDays} dias</h3>
                   <ResponsiveContainer width="100%" height={250}>
                     <LineChart data={metrics.dailyRevenue}>
                       <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />

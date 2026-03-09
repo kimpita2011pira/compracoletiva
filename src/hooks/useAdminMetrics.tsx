@@ -23,7 +23,7 @@ export interface AdminMetrics {
   dailyRevenue: { date: string; revenue: number; orders: number }[];
 }
 
-export function useAdminMetrics() {
+export function useAdminMetrics(days: number = 14) {
   const queryClient = useQueryClient();
 
   // Realtime subscriptions to invalidate metrics on changes
@@ -50,8 +50,8 @@ export function useAdminMetrics() {
   }, [queryClient]);
 
   const query = useQuery<AdminMetrics>({
-    queryKey: ["admin-metrics"],
-    refetchInterval: 30000, // fallback: refetch every 30s
+    queryKey: ["admin-metrics", days],
+    refetchInterval: 30000,
     queryFn: async () => {
       // Parallel queries
       const [
@@ -101,10 +101,10 @@ export function useAdminMetrics() {
         offerStatusCounts[o.status] = (offerStatusCounts[o.status] || 0) + 1;
       });
 
-      // Daily revenue (last 14 days)
+      // Daily revenue (last N days)
       const dailyMap: Record<string, { revenue: number; orders: number }> = {};
       const now = new Date();
-      for (let i = 13; i >= 0; i--) {
+      for (let i = days - 1; i >= 0; i--) {
         const d = new Date(now);
         d.setDate(d.getDate() - i);
         const key = d.toISOString().split("T")[0];
