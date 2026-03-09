@@ -48,8 +48,9 @@ const statusConfig: Record<VendorStatus, { label: string; color: string; icon: R
 const PIE_COLORS = ["hsl(24, 95%, 53%)", "hsl(142, 70%, 45%)", "hsl(0, 84%, 60%)", "hsl(45, 100%, 51%)"];
 
 export default function AdminDashboard() {
+  const [chartDays, setChartDays] = useState(14);
   const { vendors, isLoading, updateStatus } = useAdminVendors();
-  const { data: metrics, isLoading: metricsLoading } = useAdminMetrics();
+  const { data: metrics, isLoading: metricsLoading } = useAdminMetrics(chartDays);
 
   const pending = vendors.filter((v) => v.status === "PENDENTE");
   const approved = vendors.filter((v) => v.status === "APROVADO");
