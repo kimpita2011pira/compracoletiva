@@ -206,11 +206,13 @@ const Auth = () => {
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-2">
                     <Label htmlFor="phone">Telefone</Label>
-                    <Input id="phone" value={phone} onChange={(e) => setPhone(formatPhone(e.target.value))} placeholder="(00) 00000-0000" maxLength={15} />
+                    <Input id="phone" value={phone} onChange={(e) => { setPhone(formatPhone(e.target.value)); setPhoneError(""); }} placeholder="(00) 00000-0000" maxLength={15} />
+                    {phoneError && <p className="text-xs text-destructive">{phoneError}</p>}
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="whatsapp">WhatsApp</Label>
-                    <Input id="whatsapp" value={whatsapp} onChange={(e) => setWhatsapp(formatPhone(e.target.value))} placeholder="(00) 00000-0000" maxLength={15} />
+                    <Input id="whatsapp" value={whatsapp} onChange={(e) => { setWhatsapp(formatPhone(e.target.value)); setWhatsappError(""); }} placeholder="(00) 00000-0000" maxLength={15} />
+                    {whatsappError && <p className="text-xs text-destructive">{whatsappError}</p>}
                   </div>
                 </div>
               </>
