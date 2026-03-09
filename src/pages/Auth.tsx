@@ -220,6 +220,34 @@ const Auth = () => {
                     {whatsappError && <p className="text-xs text-destructive">{whatsappError}</p>}
                   </div>
                 </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-2">
+                    <Label htmlFor="state">Estado</Label>
+                    <Select value={selectedState} onValueChange={(v) => { setSelectedState(v); setSelectedCity(""); }}>
+                      <SelectTrigger id="state">
+                        <SelectValue placeholder={loadingStates ? "Carregando..." : "Selecione"} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {states.map((s) => (
+                          <SelectItem key={s.sigla} value={s.sigla}>{s.nome}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="city">Cidade</Label>
+                    <Select value={selectedCity} onValueChange={setSelectedCity} disabled={!selectedState}>
+                      <SelectTrigger id="city">
+                        <SelectValue placeholder={loadingCities ? "Carregando..." : "Selecione"} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {cities.map((c) => (
+                          <SelectItem key={c.id} value={c.nome}>{c.nome}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
               </>
             )}
             <div className="space-y-2">
