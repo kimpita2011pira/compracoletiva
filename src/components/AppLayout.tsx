@@ -174,7 +174,7 @@ function Footer() {
       <div className="container py-10">
         <div className="grid gap-8 md:grid-cols-3">
           <div>
-            <h3 className="font-display text-lg font-bold text-primary">🛒 OfertaJá</h3>
+            <h3 className="font-display text-lg font-bold text-primary">🛒 Compra Coletiva</h3>
             <p className="mt-2 text-sm text-muted-foreground">
               A plataforma de compra coletiva que conecta você às melhores ofertas da sua cidade.
             </p>
