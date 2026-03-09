@@ -64,7 +64,7 @@ function PublicHeader({ title }: { title?: string }) {
           <ArrowLeft className="h-5 w-5" />
         </Button>
         <h1 className="font-display text-xl font-bold text-primary">
-          {title || "🛒 OfertaJá"}
+          {title || "🛒 Compra Coletiva"}
         </h1>
       </div>
     </header>
@@ -113,7 +113,7 @@ function AuthHeader({
               className="font-display text-2xl font-bold text-primary cursor-pointer"
               onClick={() => navigate("/")}
             >
-              🛒 OfertaJá
+              🛒 Compra Coletiva
             </h1>
           )}
         </div>
@@ -174,7 +174,7 @@ function Footer() {
       <div className="container py-10">
         <div className="grid gap-8 md:grid-cols-3">
           <div>
-            <h3 className="font-display text-lg font-bold text-primary">🛒 OfertaJá</h3>
+            <h3 className="font-display text-lg font-bold text-primary">🛒 Compra Coletiva</h3>
             <p className="mt-2 text-sm text-muted-foreground">
               A plataforma de compra coletiva que conecta você às melhores ofertas da sua cidade.
             </p>
@@ -223,7 +223,7 @@ function Footer() {
           </div>
         </div>
         <div className="mt-8 border-t pt-4 text-center text-xs text-muted-foreground">
-          © {new Date().getFullYear()} OfertaJá. Todos os direitos reservados.
+          © {new Date().getFullYear()} Compra Coletiva. Todos os direitos reservados.
         </div>
       </div>
     </footer>
