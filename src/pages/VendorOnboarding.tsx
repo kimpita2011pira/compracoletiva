@@ -119,17 +119,35 @@ const VendorOnboarding = () => {
               {errors.cnpj && <p className="text-sm text-destructive">{errors.cnpj}</p>}
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="city">Cidade *</Label>
-              <Input
-                id="city"
-                value={city}
-                onChange={(e) => setCity(e.target.value)}
-                placeholder="Ex: São Paulo"
-                maxLength={100}
-                required
-              />
-              {errors.city && <p className="text-sm text-destructive">{errors.city}</p>}
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-2">
+                <Label htmlFor="state">Estado *</Label>
+                <Select value={selectedState} onValueChange={(v) => { setSelectedState(v); setSelectedCity(""); }}>
+                  <SelectTrigger id="state">
+                    <SelectValue placeholder={loadingStates ? "Carregando..." : "Selecione"} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {states.map((s) => (
+                      <SelectItem key={s.sigla} value={s.sigla}>{s.nome}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {errors.state && <p className="text-sm text-destructive">{errors.state}</p>}
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="city">Cidade *</Label>
+                <Select value={selectedCity} onValueChange={setSelectedCity} disabled={!selectedState}>
+                  <SelectTrigger id="city">
+                    <SelectValue placeholder={loadingCities ? "Carregando..." : "Selecione"} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {cities.map((c) => (
+                      <SelectItem key={c.id} value={c.nome}>{c.nome}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {errors.city && <p className="text-sm text-destructive">{errors.city}</p>}
+              </div>
             </div>
 
             <div className="space-y-2">
