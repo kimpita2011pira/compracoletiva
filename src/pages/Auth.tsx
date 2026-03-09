@@ -205,6 +205,23 @@ const Auth = () => {
               />
               {mode === "register" && <PasswordStrengthIndicator password={password} />}
             </div>
+            {mode === "register" && (
+              <div className="space-y-2">
+                <Label htmlFor="confirmPassword">Confirmar senha</Label>
+                <Input
+                  id="confirmPassword"
+                  type="password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  required
+                  minLength={6}
+                />
+                {confirmPassword && password !== confirmPassword && (
+                  <p className="text-sm text-destructive">As senhas não coincidem</p>
+                )}
+              </div>
+            )}
+            </div>
             {mode === "login" && (
               <div className="text-right">
                 <button
