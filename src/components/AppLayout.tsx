@@ -64,7 +64,7 @@ function PublicHeader({ title }: { title?: string }) {
           <ArrowLeft className="h-5 w-5" />
         </Button>
         <h1 className="font-display text-xl font-bold text-primary">
-          {title || "🛒 OfertaJá"}
+          {title || "🛒 Compra Coletiva"}
         </h1>
       </div>
     </header>
