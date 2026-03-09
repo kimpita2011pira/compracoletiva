@@ -23,7 +23,7 @@ export interface AdminMetrics {
   dailyRevenue: { date: string; revenue: number; orders: number }[];
 }
 
-export function useAdminMetrics() {
+export function useAdminMetrics(days: number = 14) {
   const queryClient = useQueryClient();
 
   // Realtime subscriptions to invalidate metrics on changes
