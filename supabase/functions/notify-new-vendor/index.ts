@@ -23,17 +23,32 @@ serve(async (req) => {
       throw new Error('No record in payload');
     }
 
-    // Forward vendor data to Zapier
+    const event = payload.event || 'new_vendor_registration';
+    const old_record = payload.old_record;
+
+    let message = '';
+    if (event === 'vendor_status_change') {
+      const statusLabels: Record<string, string> = {
+        APROVADO: '✅ Aprovado',
+        REJEITADO: '❌ Rejeitado',
+      };
+      const label = statusLabels[record.status] || record.status;
+      message = `${label}: ${record.company_name}${record.city ? ` (${record.city})` : ''}${record.cnpj ? ` — CNPJ: ${record.cnpj}` : ''}`;
+    } else {
+      message = `🆕 Novo vendedor cadastrado: ${record.company_name}${record.city ? ` (${record.city})` : ''}${record.cnpj ? ` — CNPJ: ${record.cnpj}` : ''}`;
+    }
+
     const zapierPayload = {
-      event: 'new_vendor_registration',
+      event,
       vendor_id: record.id,
       company_name: record.company_name,
       cnpj: record.cnpj,
       city: record.city,
       description: record.description,
       status: record.status,
+      previous_status: old_record?.status || null,
       created_at: record.created_at,
-      message: `🆕 Novo vendedor cadastrado: ${record.company_name}${record.city ? ` (${record.city})` : ''}${record.cnpj ? ` — CNPJ: ${record.cnpj}` : ''}`,
+      message,
     };
 
     console.log('Sending to Zapier:', JSON.stringify(zapierPayload));
