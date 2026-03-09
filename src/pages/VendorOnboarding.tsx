@@ -96,6 +96,19 @@ const VendorOnboarding = () => {
             </div>
 
             <div className="space-y-2">
+              <Label htmlFor="city">Cidade *</Label>
+              <Input
+                id="city"
+                value={city}
+                onChange={(e) => setCity(e.target.value)}
+                placeholder="Ex: São Paulo"
+                maxLength={100}
+                required
+              />
+              {errors.city && <p className="text-sm text-destructive">{errors.city}</p>}
+            </div>
+
+            <div className="space-y-2">
               <Label htmlFor="description">Descrição da Empresa</Label>
               <Textarea
                 id="description"
