@@ -23,6 +23,7 @@ import {
 import { toast } from "sonner";
 import type { Tables } from "@/integrations/supabase/types";
 import type { Database } from "@/integrations/supabase/types";
+import { AdminBannerManager } from "@/components/AdminBannerManager";
 import {
   BarChart,
   Bar,
