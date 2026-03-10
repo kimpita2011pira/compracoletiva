@@ -38,8 +38,13 @@ const VendorDashboard = () => {
     );
   }
 
+  useEffect(() => {
+    if (!isLoading && !vendor) {
+      navigate("/vendor/onboarding", { replace: true });
+    }
+  }, [vendor, isLoading, navigate]);
+
   if (!vendor) {
-    navigate("/vendor/onboarding", { replace: true });
     return null;
   }
 
