@@ -39,6 +39,7 @@ export function AppLayout({
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
+      <PromoBanner />
       {isPublic ? (
         <PublicHeader title={title} />
       ) : (
