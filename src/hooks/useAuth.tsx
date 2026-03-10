@@ -36,15 +36,13 @@ export function useAuth() {
 
   useEffect(() => {
     // Get initial session first
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
       const user = session?.user ?? null;
-      // Set user immediately to avoid loading stuck, fetch roles in background
-      setState(prev => ({ ...prev, user, session, loading: false }));
+      let roles: string[] = [];
       if (user) {
-        fetchRoles(user.id).then(roles => {
-          setState(prev => ({ ...prev, roles }));
-        });
+        roles = await fetchRoles(user.id);
       }
+      setState({ user, session, loading: false, roles });
     }).catch((err) => {
       console.error("getSession failed:", err);
       setState({ user: null, session: null, loading: false, roles: [] });
