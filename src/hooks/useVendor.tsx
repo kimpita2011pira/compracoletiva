@@ -4,7 +4,7 @@ import { useAuth } from "@/hooks/useAuth";
 import type { Tables, TablesInsert } from "@/integrations/supabase/types";
 
 export function useVendor() {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const queryClient = useQueryClient();
 
   const vendorQuery = useQuery({
@@ -55,7 +55,7 @@ export function useVendor() {
 
   return {
     vendor: vendorQuery.data ?? null,
-    isLoading: vendorQuery.isLoading,
+    isLoading: authLoading || vendorQuery.isLoading,
     registerVendor,
   };
 }
