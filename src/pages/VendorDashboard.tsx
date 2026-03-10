@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useVendor } from "@/hooks/useVendor";
 import { useVendorMetrics, useVendorSalesHistory } from "@/hooks/useVendorMetrics";
