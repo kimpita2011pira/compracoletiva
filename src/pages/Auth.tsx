@@ -10,6 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { ShoppingBag, Store, ArrowLeft } from "lucide-react";
 import { PasswordStrengthIndicator } from "@/components/PasswordStrengthIndicator";
 import { useBrazilLocations } from "@/hooks/useBrazilLocations";
+import { PromoBanner } from "@/components/PromoBanner";
 
 type AuthMode = "login" | "register";
 type RoleChoice = "CLIENTE" | "VENDEDOR" | null;
@@ -126,7 +127,9 @@ const Auth = () => {
   // Step 1 of register: choose role
   if (mode === "register" && !roleChoice) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-primary/10 via-background to-secondary/10 p-4">
+      <div className="flex min-h-screen flex-col bg-gradient-to-br from-primary/10 via-background to-secondary/10">
+        <PromoBanner />
+        <div className="flex flex-1 items-center justify-center p-4">
         <div className="w-full max-w-md space-y-6">
           <div className="text-center">
             <h1 className="font-display text-4xl font-bold text-primary">🛒 Compra Coletiva</h1>
@@ -173,12 +176,15 @@ const Auth = () => {
             </button>
           </p>
         </div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-primary/10 via-background to-secondary/10 p-4">
+    <div className="flex min-h-screen flex-col bg-gradient-to-br from-primary/10 via-background to-secondary/10">
+      <PromoBanner />
+      <div className="flex flex-1 items-center justify-center p-4">
       <Card className="w-full max-w-md border-0 shadow-xl">
         <CardHeader className="text-center">
           <h1 className="font-display text-3xl font-bold text-primary">🛒 Compra Coletiva</h1>
@@ -317,6 +323,7 @@ const Auth = () => {
           </div>
         </CardContent>
       </Card>
+      </div>
     </div>
   );
 };
