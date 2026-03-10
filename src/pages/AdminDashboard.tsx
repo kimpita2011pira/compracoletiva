@@ -80,12 +80,15 @@ export default function AdminDashboard() {
     <AppLayout title="🛡️ Painel Admin">
       <main className="container py-8">
         <Tabs defaultValue="metricas" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-2">
+          <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="metricas" className="gap-2">
               <BarChart3 className="h-4 w-4" /> Métricas
             </TabsTrigger>
             <TabsTrigger value="vendedores" className="gap-2">
               <Building2 className="h-4 w-4" /> Vendedores ({vendors.length})
+            </TabsTrigger>
+            <TabsTrigger value="banners" className="gap-2">
+              <Megaphone className="h-4 w-4" /> Banners
             </TabsTrigger>
           </TabsList>
 
