@@ -30,6 +30,12 @@ const VendorDashboard = () => {
   const { data: salesHistory } = useVendorSalesHistory(Number(salesPeriod));
   const navigate = useNavigate();
 
+  useEffect(() => {
+    if (!isLoading && !vendor) {
+      navigate("/vendor/onboarding", { replace: true });
+    }
+  }, [vendor, isLoading, navigate]);
+
   if (isLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
@@ -37,12 +43,6 @@ const VendorDashboard = () => {
       </div>
     );
   }
-
-  useEffect(() => {
-    if (!isLoading && !vendor) {
-      navigate("/vendor/onboarding", { replace: true });
-    }
-  }, [vendor, isLoading, navigate]);
 
   if (!vendor) {
     return null;
