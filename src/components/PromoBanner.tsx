@@ -24,7 +24,7 @@ export function PromoBanner() {
   return (
     <div className="relative overflow-hidden bg-primary text-primary-foreground">
       <div className="container flex h-8 items-center justify-center text-sm font-medium">
-        <div className="animate-marquee whitespace-nowrap">
+        <div key={currentIndex} className="animate-marquee whitespace-nowrap">
           {promoMessages[currentIndex]}
         </div>
       </div>
