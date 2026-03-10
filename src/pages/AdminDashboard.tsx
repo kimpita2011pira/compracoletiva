@@ -18,10 +18,12 @@ import {
   TrendingUp,
   Package,
   Wallet,
+  Megaphone,
 } from "lucide-react";
 import { toast } from "sonner";
 import type { Tables } from "@/integrations/supabase/types";
 import type { Database } from "@/integrations/supabase/types";
+import { AdminBannerManager } from "@/components/AdminBannerManager";
 import {
   BarChart,
   Bar,
@@ -78,12 +80,15 @@ export default function AdminDashboard() {
     <AppLayout title="🛡️ Painel Admin">
       <main className="container py-8">
         <Tabs defaultValue="metricas" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-2">
+          <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="metricas" className="gap-2">
               <BarChart3 className="h-4 w-4" /> Métricas
             </TabsTrigger>
             <TabsTrigger value="vendedores" className="gap-2">
               <Building2 className="h-4 w-4" /> Vendedores ({vendors.length})
+            </TabsTrigger>
+            <TabsTrigger value="banners" className="gap-2">
+              <Megaphone className="h-4 w-4" /> Banners
             </TabsTrigger>
           </TabsList>
 
@@ -275,6 +280,17 @@ export default function AdminDashboard() {
                 )}
               </TabsContent>
             </Tabs>
+          </TabsContent>
+
+          {/* ===== BANNERS TAB ===== */}
+          <TabsContent value="banners" className="space-y-6">
+            <div className="rounded-xl border bg-card p-5 shadow-sm">
+              <h3 className="mb-4 font-display text-lg font-bold">Gerenciar Banners Promocionais</h3>
+              <p className="mb-4 text-sm text-muted-foreground">
+                Adicione, edite ou desative mensagens que aparecem no topo do site para todos os visitantes.
+              </p>
+              <AdminBannerManager />
+            </div>
           </TabsContent>
         </Tabs>
       </main>
