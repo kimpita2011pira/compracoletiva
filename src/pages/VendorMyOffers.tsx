@@ -33,16 +33,26 @@ const STATUS_CONFIG: Record<string, { label: string; icon: React.ElementType; va
 
 export default function VendorMyOffers() {
   const navigate = useNavigate();
-  const { vendor } = useVendor();
+  const { vendor, isLoading: vendorLoading } = useVendor();
   const { offers, isLoading } = useVendorOffers();
   const cancelOffer = useCancelOffer();
   const [cancelId, setCancelId] = useState<string | null>(null);
 
   useEffect(() => {
-    if (vendor && vendor.status !== "APROVADO") {
+    if (!vendorLoading && vendor && vendor.status !== "APROVADO") {
       navigate("/vendor", { replace: true });
     }
-  }, [vendor, navigate]);
+  }, [vendor, vendorLoading, navigate]);
+
+  if (vendorLoading) {
+    return (
+      <AppLayout title="📦 Minhas Ofertas">
+        <div className="flex justify-center py-20">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+        </div>
+      </AppLayout>
+    );
+  }
 
   if (!vendor || vendor.status !== "APROVADO") {
     return null;

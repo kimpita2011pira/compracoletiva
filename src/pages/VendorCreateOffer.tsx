@@ -65,7 +65,7 @@ export default function VendorCreateOffer() {
   const navigate = useNavigate();
   const { id: offerId } = useParams<{ id: string }>();
   const isEdit = !!offerId;
-  const { vendor } = useVendor();
+  const { vendor, isLoading: vendorLoading } = useVendor();
   const queryClient = useQueryClient();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [images, setImages] = useState<ImageItem[]>([]);
@@ -339,12 +339,12 @@ export default function VendorCreateOffer() {
   };
 
   useEffect(() => {
-    if (vendor && vendor.status !== "APROVADO") {
+    if (!vendorLoading && vendor && vendor.status !== "APROVADO") {
       navigate("/vendor", { replace: true });
     }
-  }, [vendor, navigate]);
+  }, [vendor, vendorLoading, navigate]);
 
-  if (!vendor || vendor.status !== "APROVADO") {
+  if (vendorLoading) {
     return (
       <AppLayout title="Carregando...">
         <div className="flex justify-center py-20">
@@ -352,6 +352,10 @@ export default function VendorCreateOffer() {
         </div>
       </AppLayout>
     );
+  }
+
+  if (!vendor || vendor.status !== "APROVADO") {
+    return null;
   }
 
   if (isEdit && loadingOffer) {
