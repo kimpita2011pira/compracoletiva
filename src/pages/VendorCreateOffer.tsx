@@ -65,7 +65,7 @@ export default function VendorCreateOffer() {
   const navigate = useNavigate();
   const { id: offerId } = useParams<{ id: string }>();
   const isEdit = !!offerId;
-  const { vendor } = useVendor();
+  const { vendor, isLoading: vendorLoading } = useVendor();
   const queryClient = useQueryClient();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [images, setImages] = useState<ImageItem[]>([]);

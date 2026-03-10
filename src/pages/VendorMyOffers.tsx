@@ -33,7 +33,7 @@ const STATUS_CONFIG: Record<string, { label: string; icon: React.ElementType; va
 
 export default function VendorMyOffers() {
   const navigate = useNavigate();
-  const { vendor } = useVendor();
+  const { vendor, isLoading: vendorLoading } = useVendor();
   const { offers, isLoading } = useVendorOffers();
   const cancelOffer = useCancelOffer();
   const [cancelId, setCancelId] = useState<string | null>(null);
