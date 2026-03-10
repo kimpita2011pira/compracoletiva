@@ -55,7 +55,7 @@ export function useVendor() {
 
   return {
     vendor: vendorQuery.data ?? null,
-    isLoading: vendorQuery.isLoading,
+    isLoading: authLoading || vendorQuery.isLoading,
     registerVendor,
   };
 }
