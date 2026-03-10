@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useVendor } from "@/hooks/useVendor";
 import { useVendorMetrics, useVendorSalesHistory } from "@/hooks/useVendorMetrics";
@@ -29,6 +30,12 @@ const VendorDashboard = () => {
   const { data: salesHistory } = useVendorSalesHistory(Number(salesPeriod));
   const navigate = useNavigate();
 
+  useEffect(() => {
+    if (!isLoading && !vendor) {
+      navigate("/vendor/onboarding", { replace: true });
+    }
+  }, [vendor, isLoading, navigate]);
+
   if (isLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
@@ -38,7 +45,6 @@ const VendorDashboard = () => {
   }
 
   if (!vendor) {
-    navigate("/vendor/onboarding", { replace: true });
     return null;
   }
 

@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useVendorOffers, useCancelOffer } from "@/hooks/useVendorOffers";
 import { useVendor } from "@/hooks/useVendor";
@@ -37,8 +38,13 @@ export default function VendorMyOffers() {
   const cancelOffer = useCancelOffer();
   const [cancelId, setCancelId] = useState<string | null>(null);
 
+  useEffect(() => {
+    if (vendor && vendor.status !== "APROVADO") {
+      navigate("/vendor", { replace: true });
+    }
+  }, [vendor, navigate]);
+
   if (!vendor || vendor.status !== "APROVADO") {
-    navigate("/vendor", { replace: true });
     return null;
   }
 

@@ -338,9 +338,20 @@ export default function VendorCreateOffer() {
     });
   };
 
+  useEffect(() => {
+    if (vendor && vendor.status !== "APROVADO") {
+      navigate("/vendor", { replace: true });
+    }
+  }, [vendor, navigate]);
+
   if (!vendor || vendor.status !== "APROVADO") {
-    navigate("/vendor", { replace: true });
-    return null;
+    return (
+      <AppLayout title="Carregando...">
+        <div className="flex justify-center py-20">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+        </div>
+      </AppLayout>
+    );
   }
 
   if (isEdit && loadingOffer) {
