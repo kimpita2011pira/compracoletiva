@@ -281,6 +281,17 @@ export default function AdminDashboard() {
               </TabsContent>
             </Tabs>
           </TabsContent>
+
+          {/* ===== BANNERS TAB ===== */}
+          <TabsContent value="banners" className="space-y-6">
+            <div className="rounded-xl border bg-card p-5 shadow-sm">
+              <h3 className="mb-4 font-display text-lg font-bold">Gerenciar Banners Promocionais</h3>
+              <p className="mb-4 text-sm text-muted-foreground">
+                Adicione, edite ou desative mensagens que aparecem no topo do site para todos os visitantes.
+              </p>
+              <AdminBannerManager />
+            </div>
+          </TabsContent>
         </Tabs>
       </main>
     </AppLayout>
