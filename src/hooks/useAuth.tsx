@@ -35,35 +35,53 @@ export function useAuth() {
   });
 
   useEffect(() => {
-    // Get initial session first
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
-      const user = session?.user ?? null;
-      let roles: string[] = [];
-      if (user) {
-        roles = await fetchRoles(user.id);
-      }
-      setState({ user, session, loading: false, roles });
-    }).catch((err) => {
-      console.error("getSession failed:", err);
-      setState({ user: null, session: null, loading: false, roles: [] });
-    });
+    let isMounted = true;
 
-    // Listen for auth changes - DO NOT await inside callback to avoid deadlocks
+    async function loadSession() {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        const user = session?.user ?? null;
+        let roles: string[] = [];
+        if (user) {
+          roles = await fetchRoles(user.id);
+        }
+        if (isMounted) {
+          setState({ user, session, loading: false, roles });
+        }
+      } catch (err) {
+        console.error("getSession failed:", err);
+        if (isMounted) {
+          setState({ user: null, session: null, loading: false, roles: [] });
+        }
+      }
+    }
+
+    loadSession();
+
+    // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (_event, session) => {
         const user = session?.user ?? null;
-        setState(prev => ({ ...prev, user, session, loading: false }));
         if (user) {
+          // Keep loading true until roles are fetched
+          setState(prev => ({ ...prev, user, session }));
           fetchRoles(user.id).then(roles => {
-            setState(prev => ({ ...prev, roles }));
+            if (isMounted) {
+              setState(prev => ({ ...prev, roles, loading: false }));
+            }
           });
         } else {
-          setState(prev => ({ ...prev, roles: [] }));
+          if (isMounted) {
+            setState({ user: null, session: null, loading: false, roles: [] });
+          }
         }
       }
     );
 
-    return () => subscription.unsubscribe();
+    return () => {
+      isMounted = false;
+      subscription.unsubscribe();
+    };
   }, []);
 
   const signOut = async () => {
