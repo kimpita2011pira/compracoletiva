@@ -15,6 +15,7 @@ import {
 import { NotificationBell } from "@/components/NotificationBell";
 import { ArrowLeft, Store, Shield, LogOut, Wallet, Package, User } from "lucide-react";
 import { BottomNav } from "@/components/BottomNav";
+import { PromoBanner } from "@/components/PromoBanner";
 
 interface AppLayoutProps {
   children: React.ReactNode;
@@ -39,6 +40,7 @@ export function AppLayout({
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
+      <PromoBanner />
       {isPublic ? (
         <PublicHeader title={title} />
       ) : (
