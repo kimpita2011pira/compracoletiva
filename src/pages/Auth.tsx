@@ -10,6 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { ShoppingBag, Store, ArrowLeft } from "lucide-react";
 import { PasswordStrengthIndicator } from "@/components/PasswordStrengthIndicator";
 import { useBrazilLocations } from "@/hooks/useBrazilLocations";
+import { PromoBanner } from "@/components/PromoBanner";
 
 type AuthMode = "login" | "register";
 type RoleChoice = "CLIENTE" | "VENDEDOR" | null;
