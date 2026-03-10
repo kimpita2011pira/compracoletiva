@@ -368,6 +368,30 @@ export type Database = {
         }
         Relationships: []
       }
+      promo_banners: {
+        Row: {
+          active: boolean
+          created_at: string
+          id: string
+          message: string
+          position: number
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          id?: string
+          message: string
+          position?: number
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          id?: string
+          message?: string
+          position?: number
+        }
+        Relationships: []
+      }
       reviews: {
         Row: {
           comment: string | null
