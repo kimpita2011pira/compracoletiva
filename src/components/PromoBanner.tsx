@@ -1,31 +1,29 @@
 import { useState, useEffect } from "react";
 import { X } from "lucide-react";
-
-const promoMessages = [
-  "🔥 Ofertas imperdíveis com até 60% de desconto!",
-  "🛒 Quanto mais gente compra, mais todo mundo economiza!",
-  "🎉 Novos produtos adicionados diariamente — confira!",
-  "💰 Cadastre-se e ganhe bônus na sua primeira compra!",
-];
+import { usePromoBanners } from "@/hooks/usePromoBanners";
 
 export function PromoBanner() {
+  const { banners, isLoading } = usePromoBanners(true);
   const [visible, setVisible] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
+    if (banners.length <= 1) return;
     const interval = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % promoMessages.length);
+      setCurrentIndex((prev) => (prev + 1) % banners.length);
     }, 4000);
     return () => clearInterval(interval);
-  }, []);
+  }, [banners.length]);
 
-  if (!visible) return null;
+  if (!visible || isLoading || banners.length === 0) return null;
+
+  const safeIndex = currentIndex % banners.length;
 
   return (
     <div className="relative overflow-hidden bg-primary text-primary-foreground">
       <div className="container flex h-8 items-center justify-center text-sm font-medium">
-        <div key={currentIndex} className="animate-marquee whitespace-nowrap">
-          {promoMessages[currentIndex]}
+        <div key={banners[safeIndex].id} className="animate-marquee whitespace-nowrap">
+          {banners[safeIndex].message}
         </div>
       </div>
       <button
