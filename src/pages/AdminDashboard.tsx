@@ -373,6 +373,14 @@ function KpiCard({ label, value, icon, color }: { label: string; value: number; 
 
 function VendorCard({ vendor, onApprove, onReject, isPending }: { vendor: Tables<"vendors">; onApprove?: () => void; onReject?: () => void; isPending?: boolean }) {
   const cfg = statusConfig[vendor.status];
+  const previousData = (vendor as any).previous_data as Record<string, { de: string; para: string }> | null;
+  const fieldLabels: Record<string, string> = {
+    company_name: "Razão Social",
+    cnpj: "CPF/CNPJ",
+    city: "Cidade",
+    description: "Descrição",
+  };
+
   return (
     <div className="rounded-xl border bg-card p-5 shadow-sm">
       <div className="flex items-start justify-between gap-4">
@@ -391,6 +399,23 @@ function VendorCard({ vendor, onApprove, onReject, isPending }: { vendor: Tables
           {cfg.icon} {cfg.label}
         </Badge>
       </div>
+
+      {previousData && Object.keys(previousData).length > 0 && (
+        <div className="mt-4 rounded-lg border-2 border-warning/40 bg-warning/5 p-3 space-y-2">
+          <p className="text-xs font-bold text-warning-foreground flex items-center gap-1">
+            ✏️ Alterações solicitadas pelo vendedor:
+          </p>
+          {Object.entries(previousData).map(([field, { de, para }]) => (
+            <div key={field} className="text-xs">
+              <span className="font-medium text-foreground">{fieldLabels[field] || field}:</span>{" "}
+              <span className="line-through text-muted-foreground">{de || "(vazio)"}</span>
+              {" → "}
+              <span className="font-semibold text-foreground">{para || "(vazio)"}</span>
+            </div>
+          ))}
+        </div>
+      )}
+
       {(onApprove || onReject) && (
         <div className="mt-4 flex gap-2 border-t pt-4">
           {onApprove && (
