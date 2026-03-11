@@ -22,7 +22,8 @@ function formatPhone(value: string): string {
 }
 
 const ProfilePage = () => {
-  const { user } = useAuth();
+  const { user, roles } = useAuth();
+  const isOnlyCliente = roles.length > 0 && roles.every((r) => r === "CLIENTE");
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [loading, setLoading] = useState(true);
