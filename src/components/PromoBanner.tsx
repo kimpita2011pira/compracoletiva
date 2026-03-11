@@ -5,6 +5,8 @@ import { usePromoBanners } from "@/hooks/usePromoBanners";
 export function PromoBanner() {
   const { banners, isLoading } = usePromoBanners(true);
   const [visible, setVisible] = useState(true);
+  const { banners, isLoading } = usePromoBanners(true);
+  const [visible, setVisible] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
