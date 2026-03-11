@@ -1,10 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, createContext, useContext } from "react";
 import { X } from "lucide-react";
 import { usePromoBanners } from "@/hooks/usePromoBanners";
 
+const BannerVisibleContext = createContext(true);
+export const useBannerVisible = () => useContext(BannerVisibleContext);
+
 export function PromoBanner() {
-  const { banners, isLoading } = usePromoBanners(true);
-  const [visible, setVisible] = useState(true);
   const { banners, isLoading } = usePromoBanners(true);
   const [visible, setVisible] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -23,7 +24,7 @@ export function PromoBanner() {
 
   return (
     <>
-      <div className="fixed top-0 left-0 right-0 z-50 overflow-hidden bg-primary text-primary-foreground">
+      <div className="fixed top-0 left-0 right-0 z-[60] overflow-hidden bg-primary text-primary-foreground">
         <div className="container flex h-8 items-center justify-center text-sm font-medium">
           <div key={banners[safeIndex].id} className="animate-marquee whitespace-nowrap">
             {banners[safeIndex].message}
@@ -37,8 +38,7 @@ export function PromoBanner() {
           <X className="h-3.5 w-3.5" />
         </button>
       </div>
-      {/* Spacer to prevent content from going behind the fixed banner */}
-      <div className="h-8" />
+      <div className="h-8 shrink-0" />
     </>
   );
 }
