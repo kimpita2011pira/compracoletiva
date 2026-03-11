@@ -346,6 +346,13 @@ export default function AdminDashboard() {
             </Tabs>
           </TabsContent>
 
+          {/* ===== SAQUES TAB ===== */}
+          <TabsContent value="saques" className="space-y-6">
+            <div className="rounded-xl border bg-card p-5 shadow-sm">
+              <AdminWithdrawals />
+            </div>
+          </TabsContent>
+
           {/* ===== BANNERS TAB ===== */}
           <TabsContent value="banners" className="space-y-6">
             <div className="rounded-xl border bg-card p-5 shadow-sm">
