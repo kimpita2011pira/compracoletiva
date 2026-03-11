@@ -61,7 +61,7 @@ export function useAdminWithdrawals() {
         .order("created_at", { ascending: false })
         .limit(100);
       if (error) throw error;
-      return (data ?? []) as WithdrawalRequest[];
+      return (data ?? []) as unknown as WithdrawalRequest[];
     },
   });
 }
