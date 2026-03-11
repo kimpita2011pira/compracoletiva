@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Save, User, Camera } from "lucide-react";
+import { BecomeVendorCard } from "@/components/BecomeVendorCard";
 
 function formatPhone(value: string): string {
   const digits = value.replace(/\D/g, "").slice(0, 11);
@@ -21,7 +22,8 @@ function formatPhone(value: string): string {
 }
 
 const ProfilePage = () => {
-  const { user } = useAuth();
+  const { user, roles } = useAuth();
+  const isOnlyCliente = roles.length > 0 && roles.every((r) => r === "CLIENTE");
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [loading, setLoading] = useState(true);
@@ -231,6 +233,12 @@ const ProfilePage = () => {
             </form>
           </CardContent>
         </Card>
+
+        {isOnlyCliente && (
+          <div className="mt-6">
+            <BecomeVendorCard />
+          </div>
+        )}
       </main>
     </AppLayout>
   );
