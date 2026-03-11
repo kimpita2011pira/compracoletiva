@@ -58,7 +58,13 @@ export default function AdminDashboard() {
   const approved = vendors.filter((v) => v.status === "APROVADO");
   const rejected = vendors.filter((v) => v.status === "REJEITADO");
 
-  const handleStatusChange = (vendorId: string, status: VendorStatus) => {
+  const handleStatusChange = async (vendorId: string, status: VendorStatus) => {
+    // Clear previous_data when approving/rejecting
+    const { error: clearError } = await supabase
+      .from("vendors")
+      .update({ previous_data: null } as any)
+      .eq("id", vendorId);
+
     updateStatus.mutate(
       { vendorId, status },
       {
