@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { X } from "lucide-react";
 import { usePromoBanners } from "@/hooks/usePromoBanners";
 
+export const BANNER_HEIGHT = "2rem"; // h-8 = 32px
+
 export function PromoBanner() {
   const { banners, isLoading } = usePromoBanners(true);
   const [visible, setVisible] = useState(true);
@@ -20,7 +22,7 @@ export function PromoBanner() {
   const safeIndex = currentIndex % banners.length;
 
   return (
-    <div className="relative z-[60] overflow-hidden bg-primary text-primary-foreground shrink-0">
+    <div className="sticky top-0 z-[60] overflow-hidden bg-primary text-primary-foreground" data-promo-banner>
       <div className="container flex h-8 items-center justify-center text-sm font-medium">
         <div key={banners[safeIndex].id} className="animate-marquee whitespace-nowrap">
           {banners[safeIndex].message}
