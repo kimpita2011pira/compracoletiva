@@ -151,6 +151,7 @@ export default function WalletPage() {
       </main>
 
       <DepositModal open={depositOpen} onOpenChange={setDepositOpen} onPollingChange={setPolling} />
+      {isVendor && <WithdrawModal open={withdrawOpen} onOpenChange={setWithdrawOpen} />}
     </AppLayout>
   );
 }
