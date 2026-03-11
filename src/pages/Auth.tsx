@@ -185,7 +185,9 @@ const Auth = () => {
 
   return (
     <div className="flex min-h-screen flex-col bg-gradient-to-br from-primary/10 via-background to-secondary/10">
-      <PromoBanner />
+      <div className="sticky top-0 z-50">
+        <PromoBanner />
+      </div>
       <div className="flex flex-1 items-center justify-center p-4">
       <Card className="w-full max-w-md border-0 shadow-xl">
         <CardHeader className="text-center">
