@@ -7,7 +7,8 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
-import { Store, Clock, CheckCircle, XCircle, Package, Plus, TrendingUp, ShoppingCart, DollarSign, BarChart3 } from "lucide-react";
+import { Store, Clock, CheckCircle, XCircle, Package, Plus, TrendingUp, ShoppingCart, DollarSign, BarChart3, Pencil } from "lucide-react";
+import { VendorEditProfile } from "@/components/VendorEditProfile";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { useState } from "react";
 
