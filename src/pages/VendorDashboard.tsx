@@ -7,7 +7,8 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
-import { Store, Clock, CheckCircle, XCircle, Package, Plus, TrendingUp, ShoppingCart, DollarSign, BarChart3 } from "lucide-react";
+import { Store, Clock, CheckCircle, XCircle, Package, Plus, TrendingUp, ShoppingCart, DollarSign, BarChart3, Pencil } from "lucide-react";
+import { VendorEditProfile } from "@/components/VendorEditProfile";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { useState } from "react";
 
@@ -60,15 +61,20 @@ const VendorDashboard = () => {
     >
       <div className="container max-w-3xl py-8 space-y-6">
         {/* Company Info Card */}
-        <Card>
+         <Card>
           <CardHeader>
-            <CardTitle className="font-display flex items-center gap-2">
-              <Store className="h-5 w-5 text-secondary" />
-              {vendor.company_name}
-            </CardTitle>
-            <CardDescription>
-              {vendor.cnpj ? `CNPJ: ${vendor.cnpj}` : "CNPJ não informado"}
-            </CardDescription>
+            <div className="flex items-start justify-between gap-2">
+              <div>
+                <CardTitle className="font-display flex items-center gap-2">
+                  <Store className="h-5 w-5 text-secondary" />
+                  {vendor.company_name}
+                </CardTitle>
+                <CardDescription>
+                  {vendor.cnpj ? `CNPJ: ${vendor.cnpj}` : "CNPJ não informado"}
+                </CardDescription>
+              </div>
+              <VendorEditProfile />
+            </div>
           </CardHeader>
           <CardContent className="space-y-4">
             {vendor.description && (

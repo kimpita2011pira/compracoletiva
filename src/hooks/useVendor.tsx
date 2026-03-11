@@ -53,9 +53,14 @@ export function useVendor() {
     },
   });
 
+  const updateVendor = () => {
+    queryClient.invalidateQueries({ queryKey: ["vendor", user?.id] });
+  };
+
   return {
     vendor: vendorQuery.data ?? null,
     isLoading: authLoading || vendorQuery.isLoading,
     registerVendor,
+    updateVendor,
   };
 }
