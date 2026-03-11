@@ -1,0 +1,1 @@
+ALTER TABLE public.vendors ADD COLUMN previous_data jsonb DEFAULT NULL;

@@ -453,6 +453,7 @@ export type Database = {
           created_at: string
           description: string | null
           id: string
+          previous_data: Json | null
           status: Database["public"]["Enums"]["vendor_status"]
           updated_at: string
           user_id: string
@@ -464,6 +465,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: string
+          previous_data?: Json | null
           status?: Database["public"]["Enums"]["vendor_status"]
           updated_at?: string
           user_id: string
@@ -475,6 +477,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: string
+          previous_data?: Json | null
           status?: Database["public"]["Enums"]["vendor_status"]
           updated_at?: string
           user_id?: string
