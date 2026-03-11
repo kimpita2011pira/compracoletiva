@@ -74,7 +74,7 @@ function WithdrawalCard({
   const [vendorName, setVendorName] = useState<string | null>(null);
 
   // Fetch vendor name
-  useState(() => {
+  useEffect(() => {
     supabase
       .from("vendors")
       .select("company_name")
@@ -83,7 +83,7 @@ function WithdrawalCard({
       .then(({ data }) => {
         if (data) setVendorName(data.company_name);
       });
-  });
+  }, [w.vendor_id]);
 
   const style = statusStyles[w.status] || statusStyles.PENDENTE;
 
