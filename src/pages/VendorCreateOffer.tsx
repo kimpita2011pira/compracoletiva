@@ -591,6 +591,14 @@ export default function VendorCreateOffer() {
               )}
             </div>
 
+            {/* Commission notice */}
+            <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800 dark:border-amber-800 dark:bg-amber-950/30 dark:text-amber-300">
+              <p className="font-semibold">💰 Comissão da plataforma: 10%</p>
+              <p className="mt-1 text-xs leading-relaxed">
+                Ao validar a oferta (quando a meta mínima for atingida), a plataforma reterá 10% do valor total das vendas como comissão. Você receberá 90% diretamente na sua carteira de vendedor.
+              </p>
+            </div>
+
             <Button type="submit" className="w-full font-bold" size="lg" disabled={saveMutation.isPending || uploading}>
               {(saveMutation.isPending || uploading) && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {uploading ? "Enviando imagens..." : isEdit ? "Salvar Alterações" : "Publicar Oferta"}
