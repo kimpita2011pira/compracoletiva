@@ -30,9 +30,13 @@ const TX_CONFIG: Record<string, { label: string; icon: typeof ArrowDownLeft; col
 
 export default function WalletPage() {
   const [depositOpen, setDepositOpen] = useState(false);
+  const [withdrawOpen, setWithdrawOpen] = useState(false);
   const [polling, setPolling] = useState(false);
   const { data: wallet, isLoading: walletLoading } = useWallet(polling);
   const { data: transactions, isLoading: txLoading } = useWalletTransactions(polling);
+  const { vendor } = useVendor();
+  const { data: withdrawals } = useVendorWithdrawals();
+  const isVendor = !!vendor && vendor.status === "APROVADO";
 
   const balance = wallet?.balance ?? 0;
 
