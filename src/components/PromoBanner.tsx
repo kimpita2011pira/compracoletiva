@@ -20,7 +20,7 @@ export function PromoBanner() {
   const safeIndex = currentIndex % banners.length;
 
   return (
-    <div className="sticky top-0 z-[60] overflow-hidden bg-primary text-primary-foreground">
+    <div className="relative z-[60] overflow-hidden bg-primary text-primary-foreground shrink-0">
       <div className="container flex h-8 items-center justify-center text-sm font-medium">
         <div key={banners[safeIndex].id} className="animate-marquee whitespace-nowrap">
           {banners[safeIndex].message}
