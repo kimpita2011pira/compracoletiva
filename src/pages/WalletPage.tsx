@@ -56,13 +56,25 @@ export default function WalletPage() {
               R$ {Number(balance).toFixed(2).replace(".", ",")}
             </p>
           )}
-          <Button
-            className="mt-4 gap-2 font-bold"
-            size="lg"
-            onClick={() => setDepositOpen(true)}
-          >
-            <Plus className="h-4 w-4" /> Depositar
-          </Button>
+          <div className="flex gap-3 mt-4">
+            <Button
+              className="gap-2 font-bold"
+              size="lg"
+              onClick={() => setDepositOpen(true)}
+            >
+              <Plus className="h-4 w-4" /> Depositar
+            </Button>
+            {isVendor && (
+              <Button
+                variant="outline"
+                className="gap-2 font-bold"
+                size="lg"
+                onClick={() => setWithdrawOpen(true)}
+              >
+                <ArrowUpRight className="h-4 w-4" /> Sacar via Pix
+              </Button>
+            )}
+          </div>
         </div>
 
         {/* Transaction history */}
