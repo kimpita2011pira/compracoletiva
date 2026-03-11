@@ -20,23 +20,19 @@ export function PromoBanner() {
   const safeIndex = currentIndex % banners.length;
 
   return (
-    <>
-      <div className="fixed top-0 left-0 right-0 z-50 overflow-hidden bg-primary text-primary-foreground">
-        <div className="container flex h-8 items-center justify-center text-sm font-medium">
-          <div key={banners[safeIndex].id} className="animate-marquee whitespace-nowrap">
-            {banners[safeIndex].message}
-          </div>
+    <div className="relative overflow-hidden bg-primary text-primary-foreground">
+      <div className="container flex h-8 items-center justify-center text-sm font-medium">
+        <div key={banners[safeIndex].id} className="animate-marquee whitespace-nowrap">
+          {banners[safeIndex].message}
         </div>
-        <button
-          onClick={() => setVisible(false)}
-          className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full p-0.5 hover:bg-primary-foreground/20 transition-colors"
-          aria-label="Fechar banner"
-        >
-          <X className="h-3.5 w-3.5" />
-        </button>
       </div>
-      {/* Spacer to prevent content from going behind the fixed banner */}
-      <div className="h-8" />
-    </>
+      <button
+        onClick={() => setVisible(false)}
+        className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full p-0.5 hover:bg-primary-foreground/20 transition-colors"
+        aria-label="Fechar banner"
+      >
+        <X className="h-3.5 w-3.5" />
+      </button>
+    </div>
   );
 }

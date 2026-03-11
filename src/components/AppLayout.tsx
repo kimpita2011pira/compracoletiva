@@ -40,12 +40,14 @@ export function AppLayout({
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
-      <PromoBanner />
-      {isPublic ? (
-        <PublicHeader title={title} />
-      ) : (
-        <AuthHeader title={title} headerRight={headerRight} />
-      )}
+      <div className="sticky top-0 z-50">
+        <PromoBanner />
+        {isPublic ? (
+          <PublicHeader title={title} />
+        ) : (
+          <AuthHeader title={title} headerRight={headerRight} />
+        )}
+      </div>
 
       <PageTransition>
         <div className="flex-1 pb-16 md:pb-0">{children}</div>
@@ -60,7 +62,7 @@ export function AppLayout({
 function PublicHeader({ title }: { title?: string }) {
   const navigate = useNavigate();
   return (
-    <header className="sticky top-0 z-50 border-b bg-card/80 backdrop-blur-sm">
+    <header className="sticky top-0 z-50 border-b bg-card/80 backdrop-blur-sm [.h-8~&]:top-8">
       <div className="container flex h-16 items-center gap-3">
         <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
           <ArrowLeft className="h-5 w-5" />
@@ -100,7 +102,7 @@ function AuthHeader({
   const isAdmin = roles.includes("ADMIN");
 
   return (
-    <header className="sticky top-0 z-50 border-b bg-card/80 backdrop-blur-sm">
+    <header className="border-b bg-card/80 backdrop-blur-sm">
       <div className="container flex h-16 items-center justify-between">
         <div className="flex items-center gap-3">
           {title ? (
