@@ -92,7 +92,7 @@ const VendorDashboard = () => {
                 <p className="text-sm text-muted-foreground mt-1">
                   {isPending && "Seu cadastro está sendo analisado pela equipe. Você será notificado quando for aprovado."}
                   {isApproved && "Sua empresa está ativa! Você pode criar ofertas para seus clientes."}
-                  {vendor.status === "REJEITADO" && "Entre em contato com o suporte para mais informações."}
+                  {vendor.status === "REJEITADO" && "Seu cadastro foi rejeitado. Você pode editar seus dados e reenviar para uma nova análise."}
                 </p>
               </div>
             </div>
