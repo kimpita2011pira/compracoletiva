@@ -25,6 +25,7 @@ import { toast } from "sonner";
 import type { Tables } from "@/integrations/supabase/types";
 import type { Database } from "@/integrations/supabase/types";
 import { AdminBannerManager } from "@/components/AdminBannerManager";
+import { AdminWithdrawals } from "@/components/AdminWithdrawals";
 import {
   BarChart,
   Bar,
@@ -87,12 +88,15 @@ export default function AdminDashboard() {
     <AppLayout title="🛡️ Painel Admin">
       <main className="container py-8">
         <Tabs defaultValue="metricas" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="metricas" className="gap-2">
               <BarChart3 className="h-4 w-4" /> Métricas
             </TabsTrigger>
             <TabsTrigger value="vendedores" className="gap-2">
               <Building2 className="h-4 w-4" /> Vendedores ({vendors.length})
+            </TabsTrigger>
+            <TabsTrigger value="saques" className="gap-2">
+              <DollarSign className="h-4 w-4" /> Saques
             </TabsTrigger>
             <TabsTrigger value="banners" className="gap-2">
               <Megaphone className="h-4 w-4" /> Banners
@@ -340,6 +344,13 @@ export default function AdminDashboard() {
                 )}
               </TabsContent>
             </Tabs>
+          </TabsContent>
+
+          {/* ===== SAQUES TAB ===== */}
+          <TabsContent value="saques" className="space-y-6">
+            <div className="rounded-xl border bg-card p-5 shadow-sm">
+              <AdminWithdrawals />
+            </div>
           </TabsContent>
 
           {/* ===== BANNERS TAB ===== */}

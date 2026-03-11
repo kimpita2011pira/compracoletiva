@@ -453,6 +453,7 @@ export type Database = {
           created_at: string
           description: string | null
           id: string
+          pix_key: string | null
           previous_data: Json | null
           status: Database["public"]["Enums"]["vendor_status"]
           updated_at: string
@@ -465,6 +466,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: string
+          pix_key?: string | null
           previous_data?: Json | null
           status?: Database["public"]["Enums"]["vendor_status"]
           updated_at?: string
@@ -477,6 +479,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: string
+          pix_key?: string | null
           previous_data?: Json | null
           status?: Database["public"]["Enums"]["vendor_status"]
           updated_at?: string
@@ -542,6 +545,50 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      withdrawal_requests: {
+        Row: {
+          admin_note: string | null
+          amount: number
+          created_at: string
+          id: string
+          pix_key: string
+          processed_at: string | null
+          status: string
+          user_id: string
+          vendor_id: string
+        }
+        Insert: {
+          admin_note?: string | null
+          amount: number
+          created_at?: string
+          id?: string
+          pix_key: string
+          processed_at?: string | null
+          status?: string
+          user_id: string
+          vendor_id: string
+        }
+        Update: {
+          admin_note?: string | null
+          amount?: number
+          created_at?: string
+          id?: string
+          pix_key?: string
+          processed_at?: string | null
+          status?: string
+          user_id?: string
+          vendor_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "withdrawal_requests_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "vendors"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
