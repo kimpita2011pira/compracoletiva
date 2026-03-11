@@ -40,12 +40,14 @@ export function AppLayout({
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
-      <PromoBanner />
-      {isPublic ? (
-        <PublicHeader title={title} />
-      ) : (
-        <AuthHeader title={title} headerRight={headerRight} />
-      )}
+      <div className="sticky top-0 z-50">
+        <PromoBanner />
+        {isPublic ? (
+          <PublicHeader title={title} />
+        ) : (
+          <AuthHeader title={title} headerRight={headerRight} />
+        )}
+      </div>
 
       <PageTransition>
         <div className="flex-1 pb-16 md:pb-0">{children}</div>
