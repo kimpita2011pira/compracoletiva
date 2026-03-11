@@ -1,7 +1,10 @@
 import { useState } from "react";
 import { useWallet, useWalletTransactions } from "@/hooks/useWallet";
 import type { WalletTransaction } from "@/hooks/useWallet";
+import { useVendor } from "@/hooks/useVendor";
+import { useVendorWithdrawals } from "@/hooks/useWithdrawals";
 import DepositModal from "@/components/DepositModal";
+import WithdrawModal from "@/components/WithdrawModal";
 import { AppLayout } from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -12,6 +15,8 @@ import {
   ArrowUpRight,
   RotateCcw,
   Clock,
+  CheckCircle,
+  XCircle,
 } from "lucide-react";
 
 const TX_CONFIG: Record<string, { label: string; icon: typeof ArrowDownLeft; colorClass: string }> = {
