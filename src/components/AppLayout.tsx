@@ -60,7 +60,7 @@ export function AppLayout({
 function PublicHeader({ title }: { title?: string }) {
   const navigate = useNavigate();
   return (
-    <header className="sticky top-0 z-50 border-b bg-card/80 backdrop-blur-sm">
+    <header className="sticky top-0 z-50 border-b bg-card/80 backdrop-blur-sm [.h-8~&]:top-8">
       <div className="container flex h-16 items-center gap-3">
         <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
           <ArrowLeft className="h-5 w-5" />
