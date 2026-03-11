@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import { useAdminVendors } from "@/hooks/useAdminVendors";
 import { useAdminMetrics } from "@/hooks/useAdminMetrics";
 import { AppLayout } from "@/components/AppLayout";
