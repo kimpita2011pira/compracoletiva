@@ -233,6 +233,12 @@ const ProfilePage = () => {
             </form>
           </CardContent>
         </Card>
+
+        {isOnlyCliente && (
+          <div className="mt-6">
+            <BecomeVendorCard />
+          </div>
+        )}
       </main>
     </AppLayout>
   );
