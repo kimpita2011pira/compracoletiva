@@ -77,6 +77,47 @@ export default function WalletPage() {
           </div>
         </div>
 
+        {/* Withdrawal requests (vendor only) */}
+        {isVendor && withdrawals && withdrawals.length > 0 && (
+          <div>
+            <h2 className="font-display text-lg font-bold mb-4">Solicitações de saque</h2>
+            <div className="space-y-2">
+              {withdrawals.map((w) => {
+                const statusMap: Record<string, { label: string; icon: typeof Clock; color: string }> = {
+                  PENDENTE: { label: "Pendente", icon: Clock, color: "text-warning-foreground" },
+                  APROVADO: { label: "Aprovado", icon: CheckCircle, color: "text-success" },
+                  REJEITADO: { label: "Rejeitado", icon: XCircle, color: "text-destructive" },
+                };
+                const s = statusMap[w.status] || statusMap.PENDENTE;
+                const SIcon = s.icon;
+                return (
+                  <div key={w.id} className="flex items-center gap-3 rounded-xl border bg-card p-3">
+                    <div className="rounded-lg p-2 bg-primary/10">
+                      <ArrowUpRight className="h-4 w-4 text-primary" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-semibold">
+                          Saque Pix − R$ {Number(w.amount).toFixed(2).replace(".", ",")}
+                        </span>
+                        <Badge variant="outline" className={`text-[10px] shrink-0 gap-1 ${s.color}`}>
+                          <SIcon className="h-3 w-3" /> {s.label}
+                        </Badge>
+                      </div>
+                      <span className="text-xs text-muted-foreground">
+                        {new Date(w.created_at).toLocaleDateString("pt-BR")}
+                      </span>
+                      {w.admin_note && (
+                        <p className="text-xs text-muted-foreground mt-0.5">Nota: {w.admin_note}</p>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
         {/* Transaction history */}
         <div>
           <h2 className="font-display text-lg font-bold mb-4">Histórico de transações</h2>
