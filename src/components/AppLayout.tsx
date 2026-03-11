@@ -102,7 +102,7 @@ function AuthHeader({
   const isAdmin = roles.includes("ADMIN");
 
   return (
-    <header className="sticky top-0 z-50 border-b bg-card/80 backdrop-blur-sm">
+    <header className="border-b bg-card/80 backdrop-blur-sm">
       <div className="container flex h-16 items-center justify-between">
         <div className="flex items-center gap-3">
           {title ? (
