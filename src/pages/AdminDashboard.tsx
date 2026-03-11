@@ -208,6 +208,42 @@ export default function AdminDashboard() {
                   </div>
                 </div>
 
+                {pending.length > 0 && (
+                  <div className="rounded-xl border-2 border-warning/40 bg-warning/5 p-5 shadow-sm">
+                    <div className="mb-4 flex items-center justify-between">
+                      <h3 className="font-display text-lg font-bold flex items-center gap-2">
+                        <Clock className="h-5 w-5 text-warning-foreground" />
+                        Solicitações Pendentes de Vendedores ({pending.length})
+                      </h3>
+                    </div>
+                    <div className="space-y-3">
+                      {pending.map((v) => (
+                        <div key={v.id} className="flex items-center justify-between gap-3 rounded-lg border bg-card p-4">
+                          <div className="min-w-0 flex-1">
+                            <div className="flex items-center gap-2">
+                              <Store className="h-4 w-4 text-primary shrink-0" />
+                              <span className="font-bold truncate">{v.company_name}</span>
+                            </div>
+                            {v.cnpj && <p className="text-xs text-muted-foreground mt-0.5">CNPJ: {v.cnpj}</p>}
+                            {v.description && <p className="text-xs text-muted-foreground mt-1 line-clamp-1">{v.description}</p>}
+                            <p className="text-[10px] text-muted-foreground mt-1">
+                              {new Date(v.created_at).toLocaleDateString("pt-BR")}
+                            </p>
+                          </div>
+                          <div className="flex gap-2 shrink-0">
+                            <Button size="sm" className="gap-1" onClick={() => handleStatusChange(v.id, "APROVADO")}>
+                              <CheckCircle className="h-3.5 w-3.5" /> Aprovar
+                            </Button>
+                            <Button size="sm" variant="outline" className="gap-1 text-destructive hover:text-destructive" onClick={() => handleStatusChange(v.id, "REJEITADO")}>
+                              <XCircle className="h-3.5 w-3.5" /> Rejeitar
+                            </Button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 <div className="rounded-xl border bg-card p-5 shadow-sm">
                   <h3 className="mb-4 font-display text-lg font-bold">Pedidos Recentes</h3>
                   {metrics.recentOrders.length === 0 ? (
