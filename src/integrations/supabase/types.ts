@@ -580,6 +580,7 @@ export type Database = {
         }
         Returns: string
       }
+      validate_expired_offers: { Args: never; Returns: Json }
     }
     Enums: {
       app_role: "CLIENTE" | "VENDEDOR" | "ADMIN"
