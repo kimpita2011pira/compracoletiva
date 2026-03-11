@@ -224,29 +224,46 @@ export default function AdminDashboard() {
                       </h3>
                     </div>
                     <div className="space-y-3">
-                      {pending.map((v) => (
-                        <div key={v.id} className="flex items-center justify-between gap-3 rounded-lg border bg-card p-4">
-                          <div className="min-w-0 flex-1">
-                            <div className="flex items-center gap-2">
-                              <Store className="h-4 w-4 text-primary shrink-0" />
-                              <span className="font-bold truncate">{v.company_name}</span>
+                      {pending.map((v) => {
+                        const prevData = (v as any).previous_data as Record<string, { de: string; para: string }> | null;
+                        const fieldLabels: Record<string, string> = { company_name: "Razão Social", cnpj: "CPF/CNPJ", city: "Cidade", description: "Descrição" };
+                        return (
+                          <div key={v.id} className="rounded-lg border bg-card p-4 space-y-2">
+                            <div className="flex items-center justify-between gap-3">
+                              <div className="min-w-0 flex-1">
+                                <div className="flex items-center gap-2">
+                                  <Store className="h-4 w-4 text-primary shrink-0" />
+                                  <span className="font-bold truncate">{v.company_name}</span>
+                                </div>
+                                {v.cnpj && <p className="text-xs text-muted-foreground mt-0.5">CNPJ: {v.cnpj}</p>}
+                                {v.description && <p className="text-xs text-muted-foreground mt-1 line-clamp-1">{v.description}</p>}
+                                <p className="text-[10px] text-muted-foreground mt-1">
+                                  {new Date(v.created_at).toLocaleDateString("pt-BR")}
+                                </p>
+                              </div>
+                              <div className="flex gap-2 shrink-0">
+                                <Button size="sm" className="gap-1" onClick={() => handleStatusChange(v.id, "APROVADO")}>
+                                  <CheckCircle className="h-3.5 w-3.5" /> Aprovar
+                                </Button>
+                                <Button size="sm" variant="outline" className="gap-1 text-destructive hover:text-destructive" onClick={() => handleStatusChange(v.id, "REJEITADO")}>
+                                  <XCircle className="h-3.5 w-3.5" /> Rejeitar
+                                </Button>
+                              </div>
                             </div>
-                            {v.cnpj && <p className="text-xs text-muted-foreground mt-0.5">CNPJ: {v.cnpj}</p>}
-                            {v.description && <p className="text-xs text-muted-foreground mt-1 line-clamp-1">{v.description}</p>}
-                            <p className="text-[10px] text-muted-foreground mt-1">
-                              {new Date(v.created_at).toLocaleDateString("pt-BR")}
-                            </p>
+                            {prevData && Object.keys(prevData).length > 0 && (
+                              <div className="rounded-md border border-warning/30 bg-warning/5 p-2 space-y-1">
+                                <p className="text-[10px] font-bold text-warning-foreground">✏️ Alterações:</p>
+                                {Object.entries(prevData).map(([field, { de, para }]) => (
+                                  <p key={field} className="text-[10px]">
+                                    <span className="font-medium">{fieldLabels[field] || field}:</span>{" "}
+                                    <span className="line-through text-muted-foreground">{de || "(vazio)"}</span> → <span className="font-semibold">{para || "(vazio)"}</span>
+                                  </p>
+                                ))}
+                              </div>
+                            )}
                           </div>
-                          <div className="flex gap-2 shrink-0">
-                            <Button size="sm" className="gap-1" onClick={() => handleStatusChange(v.id, "APROVADO")}>
-                              <CheckCircle className="h-3.5 w-3.5" /> Aprovar
-                            </Button>
-                            <Button size="sm" variant="outline" className="gap-1 text-destructive hover:text-destructive" onClick={() => handleStatusChange(v.id, "REJEITADO")}>
-                              <XCircle className="h-3.5 w-3.5" /> Rejeitar
-                            </Button>
-                          </div>
-                        </div>
-                      ))}
+                        );
+                      })}
                     </div>
                   </div>
                 )}
