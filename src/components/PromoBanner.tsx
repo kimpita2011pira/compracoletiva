@@ -19,7 +19,7 @@ export function PromoBanner() {
 
   return (
     <div className="relative overflow-hidden bg-primary text-primary-foreground">
-      <div className="container flex h-16 items-center justify-center text-sm font-medium">
+      <div className="container flex h-16 items-center justify-center text-base font-semibold">
         <div key={banners[safeIndex].id} className="animate-marquee whitespace-nowrap">
           {banners[safeIndex].message}
         </div>
