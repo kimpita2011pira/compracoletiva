@@ -1,10 +1,8 @@
 import { useState, useEffect } from "react";
-import { X } from "lucide-react";
 import { usePromoBanners } from "@/hooks/usePromoBanners";
 
 export function PromoBanner() {
   const { banners, isLoading } = usePromoBanners(true);
-  const [visible, setVisible] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
@@ -15,7 +13,7 @@ export function PromoBanner() {
     return () => clearInterval(interval);
   }, [banners.length]);
 
-  if (!visible || isLoading || banners.length === 0) return null;
+  if (isLoading || banners.length === 0) return null;
 
   const safeIndex = currentIndex % banners.length;
 
@@ -26,13 +24,6 @@ export function PromoBanner() {
           {banners[safeIndex].message}
         </div>
       </div>
-      <button
-        onClick={() => setVisible(false)}
-        className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full p-0.5 hover:bg-primary-foreground/20 transition-colors"
-        aria-label="Fechar banner"
-      >
-        <X className="h-3.5 w-3.5" />
-      </button>
     </div>
   );
 }
