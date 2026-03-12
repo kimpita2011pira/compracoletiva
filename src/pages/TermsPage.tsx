@@ -63,7 +63,7 @@ const TermsPage = () => {
           <div>
             <h3 className="font-semibold text-foreground text-lg">7. Contato</h3>
             <p className="mt-2">
-              Para dúvidas sobre estes termos, entre em contato pelo e-mail contato@ofertaja.com.
+              Para dúvidas sobre estes termos, entre em contato pelo e-mail kimpita2011@gmail.com.
             </p>
           </div>
         </section>
