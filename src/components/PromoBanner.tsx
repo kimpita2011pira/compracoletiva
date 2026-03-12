@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import { usePromoBanners } from "@/hooks/usePromoBanners";
 
 export function PromoBanner() {
@@ -20,9 +21,18 @@ export function PromoBanner() {
   return (
     <div className="relative overflow-hidden bg-primary text-primary-foreground">
       <div className="container flex h-16 items-center justify-center text-base font-semibold">
-        <div key={banners[safeIndex].id} className="animate-marquee whitespace-nowrap">
-          {banners[safeIndex].message}
-        </div>
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={banners[safeIndex].id}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.4, ease: "easeInOut" }}
+            className="whitespace-nowrap"
+          >
+            {banners[safeIndex].message}
+          </motion.div>
+        </AnimatePresence>
       </div>
     </div>
   );
