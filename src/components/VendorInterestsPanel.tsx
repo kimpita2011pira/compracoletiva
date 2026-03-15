@@ -48,6 +48,7 @@ function InterestRow({ item }: { item: OfferInterestSummary }) {
     navigate("/vendor/create-offer", {
       state: {
         cloneFrom: {
+          sourceOfferId: item.offer_id,
           title: item.title,
           description: item.description,
           category: item.category,
