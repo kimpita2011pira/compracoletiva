@@ -170,173 +170,211 @@ export default function OffersMarketplace() {
           </TabsList>
         </Tabs>
 
-        {/* Search & Filters */}
-        <div className="mb-6 space-y-3">
-          <div className="flex gap-2">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-              <Input
-                placeholder="Buscar ofertas, produtos ou lojas..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="pl-9"
-              />
-              {search && (
-                <button
-                  onClick={() => setSearch("")}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+        {activeTab === "active" && (
+          <>
+            {/* Search & Filters */}
+            <div className="mb-6 space-y-3">
+              <div className="flex gap-2">
+                <div className="relative flex-1">
+                  <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                  <Input
+                    placeholder="Buscar ofertas, produtos ou lojas..."
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    className="pl-9"
+                  />
+                  {search && (
+                    <button
+                      onClick={() => setSearch("")}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  )}
+                </div>
+
+                {cities.length > 0 && (
+                  <Select value={cityFilter} onValueChange={setCityFilter}>
+                    <SelectTrigger className="w-[180px] shrink-0 text-xs gap-1">
+                      <MapPin className="h-3.5 w-3.5 text-muted-foreground" />
+                      <SelectValue placeholder="Cidade" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Todas as cidades</SelectItem>
+                      {cities.map((city) => (
+                        <SelectItem key={city} value={city}>{city}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+
+                <Button
+                  variant={showFilters ? "default" : "outline"}
+                  size="icon"
+                  onClick={() => setShowFilters(!showFilters)}
+                  className="shrink-0"
                 >
-                  <X className="h-4 w-4" />
-                </button>
-              )}
-            </div>
-
-            {cities.length > 0 && (
-              <Select value={cityFilter} onValueChange={setCityFilter}>
-                <SelectTrigger className="w-[180px] shrink-0 text-xs gap-1">
-                  <MapPin className="h-3.5 w-3.5 text-muted-foreground" />
-                  <SelectValue placeholder="Cidade" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Todas as cidades</SelectItem>
-                  {cities.map((city) => (
-                    <SelectItem key={city} value={city}>{city}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            )}
-
-            <Button
-              variant={showFilters ? "default" : "outline"}
-              size="icon"
-              onClick={() => setShowFilters(!showFilters)}
-              className="shrink-0"
-            >
-              <SlidersHorizontal className="h-4 w-4" />
-            </Button>
-          </div>
-
-          {/* Category chips */}
-          <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
-            <Button
-              variant={categoryFilter === "all" ? "default" : "outline"}
-              size="sm"
-              className="text-xs shrink-0 gap-1.5"
-              onClick={() => setCategoryFilter("all")}
-            >
-              Todas
-            </Button>
-            {Object.entries(CATEGORY_MAP).map(([key, { label, icon: Icon }]) => (
-              <Button
-                key={key}
-                variant={categoryFilter === key ? "default" : "outline"}
-                size="sm"
-                className="text-xs shrink-0 gap-1.5"
-                onClick={() => setCategoryFilter(key)}
-              >
-                <Icon className="h-3.5 w-3.5" />
-                {label}
-              </Button>
-            ))}
-          </div>
-
-          {showFilters && (
-            <div className="flex flex-wrap items-center gap-2 rounded-xl border bg-card p-3 animate-fade-in">
-              <Select value={sort} onValueChange={(v) => setSort(v as SortOption)}>
-                <SelectTrigger className="w-[170px] text-xs">
-                  <SelectValue placeholder="Ordenar por" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="ending_soon">Encerrando em breve</SelectItem>
-                  <SelectItem value="biggest_discount">Maior desconto</SelectItem>
-                  <SelectItem value="lowest_price">Menor preço</SelectItem>
-                  <SelectItem value="most_popular">Mais reservados</SelectItem>
-                </SelectContent>
-              </Select>
-
-              <Select value={deliveryFilter} onValueChange={(v) => setDeliveryFilter(v as DeliveryFilter)}>
-                <SelectTrigger className="w-[140px] text-xs">
-                  <SelectValue placeholder="Entrega" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Todos</SelectItem>
-                  <SelectItem value="delivery">Com entrega</SelectItem>
-                  <SelectItem value="pickup">Com retirada</SelectItem>
-                </SelectContent>
-              </Select>
-
-
-              <Button
-                variant={onlyGoalReached ? "default" : "outline"}
-                size="sm"
-                className="text-xs gap-1"
-                onClick={() => setOnlyGoalReached(!onlyGoalReached)}
-              >
-                ✅ Meta atingida
-              </Button>
-
-              {hasActiveFilters && (
-                <Button variant="ghost" size="sm" className="text-xs text-muted-foreground gap-1" onClick={clearFilters}>
-                  <X className="h-3 w-3" /> Limpar filtros
+                  <SlidersHorizontal className="h-4 w-4" />
                 </Button>
+              </div>
+
+              {/* Category chips */}
+              <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
+                <Button
+                  variant={categoryFilter === "all" ? "default" : "outline"}
+                  size="sm"
+                  className="text-xs shrink-0 gap-1.5"
+                  onClick={() => setCategoryFilter("all")}
+                >
+                  Todas
+                </Button>
+                {Object.entries(CATEGORY_MAP).map(([key, { label, icon: Icon }]) => (
+                  <Button
+                    key={key}
+                    variant={categoryFilter === key ? "default" : "outline"}
+                    size="sm"
+                    className="text-xs shrink-0 gap-1.5"
+                    onClick={() => setCategoryFilter(key)}
+                  >
+                    <Icon className="h-3.5 w-3.5" />
+                    {label}
+                  </Button>
+                ))}
+              </div>
+
+              {showFilters && (
+                <div className="flex flex-wrap items-center gap-2 rounded-xl border bg-card p-3 animate-fade-in">
+                  <Select value={sort} onValueChange={(v) => setSort(v as SortOption)}>
+                    <SelectTrigger className="w-[170px] text-xs">
+                      <SelectValue placeholder="Ordenar por" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="ending_soon">Encerrando em breve</SelectItem>
+                      <SelectItem value="biggest_discount">Maior desconto</SelectItem>
+                      <SelectItem value="lowest_price">Menor preço</SelectItem>
+                      <SelectItem value="most_popular">Mais reservados</SelectItem>
+                    </SelectContent>
+                  </Select>
+
+                  <Select value={deliveryFilter} onValueChange={(v) => setDeliveryFilter(v as DeliveryFilter)}>
+                    <SelectTrigger className="w-[140px] text-xs">
+                      <SelectValue placeholder="Entrega" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Todos</SelectItem>
+                      <SelectItem value="delivery">Com entrega</SelectItem>
+                      <SelectItem value="pickup">Com retirada</SelectItem>
+                    </SelectContent>
+                  </Select>
+
+                  <Button
+                    variant={onlyGoalReached ? "default" : "outline"}
+                    size="sm"
+                    className="text-xs gap-1"
+                    onClick={() => setOnlyGoalReached(!onlyGoalReached)}
+                  >
+                    ✅ Meta atingida
+                  </Button>
+
+                  {hasActiveFilters && (
+                    <Button variant="ghost" size="sm" className="text-xs text-muted-foreground gap-1" onClick={clearFilters}>
+                      <X className="h-3 w-3" /> Limpar filtros
+                    </Button>
+                  )}
+                </div>
+              )}
+
+              {/* Results count */}
+              {!isLoading && offers && (
+                <p className="text-xs text-muted-foreground">
+                  {filtered.length === offers.length
+                    ? `${offers.length} oferta${offers.length !== 1 ? "s" : ""} ativa${offers.length !== 1 ? "s" : ""}`
+                    : `${filtered.length} de ${offers.length} oferta${offers.length !== 1 ? "s" : ""}`}
+                </p>
               )}
             </div>
-          )}
 
-          {/* Results count */}
-          {!isLoading && offers && (
-            <p className="text-xs text-muted-foreground">
-              {filtered.length === offers.length
-                ? `${offers.length} oferta${offers.length !== 1 ? "s" : ""} ativa${offers.length !== 1 ? "s" : ""}`
-                : `${filtered.length} de ${offers.length} oferta${offers.length !== 1 ? "s" : ""}`}
-            </p>
-          )}
-        </div>
-
-        {/* Loading */}
-        {isLoading && (
-          <div className="flex justify-center py-20">
-            <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-          </div>
-        )}
-
-        {/* Empty state */}
-        {!isLoading && filtered.length === 0 && (
-          <div className="flex flex-col items-center justify-center rounded-xl border border-dashed bg-muted/30 py-20">
-            <ShoppingBag className="mb-4 h-12 w-12 text-muted-foreground/40" />
-            <p className="font-display text-lg font-bold text-muted-foreground">
-              {offers && offers.length > 0
-                ? "Nenhuma oferta encontrada com esses filtros"
-                : "Nenhuma oferta ativa no momento"}
-            </p>
-            <p className="mt-1 text-sm text-muted-foreground">
-              {offers && offers.length > 0
-                ? "Tente alterar os filtros ou a busca"
-                : "Volte em breve para novas ofertas incríveis!"}
-            </p>
-            {hasActiveFilters && (
-              <Button variant="outline" size="sm" className="mt-4" onClick={clearFilters}>
-                Limpar filtros
-              </Button>
+            {/* Loading */}
+            {isLoading && (
+              <div className="flex justify-center py-20">
+                <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+              </div>
             )}
-          </div>
+
+            {/* Empty state */}
+            {!isLoading && filtered.length === 0 && (
+              <div className="flex flex-col items-center justify-center rounded-xl border border-dashed bg-muted/30 py-20">
+                <ShoppingBag className="mb-4 h-12 w-12 text-muted-foreground/40" />
+                <p className="font-display text-lg font-bold text-muted-foreground">
+                  {offers && offers.length > 0
+                    ? "Nenhuma oferta encontrada com esses filtros"
+                    : "Nenhuma oferta ativa no momento"}
+                </p>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  {offers && offers.length > 0
+                    ? "Tente alterar os filtros ou a busca"
+                    : "Volte em breve para novas ofertas incríveis!"}
+                </p>
+                {hasActiveFilters && (
+                  <Button variant="outline" size="sm" className="mt-4" onClick={clearFilters}>
+                    Limpar filtros
+                  </Button>
+                )}
+              </div>
+            )}
+
+            {/* Offers Grid */}
+            {filtered.length > 0 && (
+              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                {filtered.map((offer) => (
+                  <OfferCard key={offer.id} offer={offer} onReserve={setSelectedOffer} />
+                ))}
+              </div>
+            )}
+
+            {selectedOffer && (
+              <ReserveOfferModal
+                offer={selectedOffer}
+                open={!!selectedOffer}
+                onOpenChange={(open) => !open && setSelectedOffer(null)}
+              />
+            )}
+          </>
         )}
 
-        {/* Offers Grid */}
-        {filtered.length > 0 && (
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {filtered.map((offer) => (
-              <OfferCard key={offer.id} offer={offer} onReserve={setSelectedOffer} />
-            ))}
-          </div>
-        )}
+        {activeTab === "closed" && (
+          <>
+            {isLoadingClosed && (
+              <div className="flex justify-center py-20">
+                <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+              </div>
+            )}
 
-        {selectedOffer && (
-          <ReserveOfferModal
-            offer={selectedOffer}
-            open={!!selectedOffer}
-            onOpenChange={(open) => !open && setSelectedOffer(null)}
-          />
+            {!isLoadingClosed && (!closedOffers || closedOffers.length === 0) && (
+              <div className="flex flex-col items-center justify-center rounded-xl border border-dashed bg-muted/30 py-20">
+                <Package className="mb-4 h-12 w-12 text-muted-foreground/40" />
+                <p className="font-display text-lg font-bold text-muted-foreground">
+                  Nenhuma oferta encerrada ainda
+                </p>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  As ofertas encerradas aparecerão aqui com o número de interessados
+                </p>
+              </div>
+            )}
+
+            {closedOffers && closedOffers.length > 0 && (
+              <>
+                <p className="mb-4 text-xs text-muted-foreground">
+                  {closedOffers.length} oferta{closedOffers.length !== 1 ? "s" : ""} encerrada{closedOffers.length !== 1 ? "s" : ""}
+                </p>
+                <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                  {closedOffers.map((offer) => (
+                    <ClosedOfferCard key={offer.id} offer={offer} />
+                  ))}
+                </div>
+              </>
+            )}
+          </>
         )}
       </main>
     </AppLayout>
