@@ -395,18 +395,23 @@ export default function VendorCreateOffer() {
     );
   }
 
+  const pageTitle = isEdit ? "Editar Oferta" : cloneData ? "Recriar Oferta" : "Nova Oferta";
+  const pageDesc = isEdit
+    ? "Atualize os dados da sua oferta"
+    : cloneData
+      ? "Dados pré-preenchidos da oferta anterior. Ajuste a data e publique!"
+      : "Preencha os dados da sua oferta coletiva";
+
   return (
-    <AppLayout title={isEdit ? "Editar Oferta" : "Nova Oferta"}>
+    <AppLayout title={pageTitle}>
       <main className="container max-w-2xl py-6 space-y-6">
         <Button variant="ghost" size="sm" className="gap-1" onClick={() => navigate("/vendor/my-offers")}>
           <ArrowLeft className="h-4 w-4" /> Voltar
         </Button>
 
         <div>
-          <h1 className="font-display text-2xl font-bold">{isEdit ? "Editar Oferta" : "Criar Oferta"}</h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            {isEdit ? "Atualize os dados da sua oferta" : "Preencha os dados da sua oferta coletiva"}
-          </p>
+          <h1 className="font-display text-2xl font-bold">{pageTitle}</h1>
+          <p className="text-sm text-muted-foreground mt-1">{pageDesc}</p>
         </div>
 
         <Form {...form}>
