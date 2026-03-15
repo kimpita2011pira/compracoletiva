@@ -9,6 +9,7 @@ import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import { Store, Clock, CheckCircle, XCircle, Package, Plus, TrendingUp, ShoppingCart, DollarSign, BarChart3, Pencil } from "lucide-react";
 import { VendorEditProfile } from "@/components/VendorEditProfile";
+import { VendorInterestsPanel } from "@/components/VendorInterestsPanel";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { useState } from "react";
 
