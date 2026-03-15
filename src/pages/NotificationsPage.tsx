@@ -123,7 +123,10 @@ export default function NotificationsPage() {
                 key={n.id}
                 notification={n}
                 isDeleting={deletingIds.has(n.id)}
-                onRead={() => !n.read && markAsRead.mutate(n.id)}
+                onRead={() => {
+                  if (!n.read) markAsRead.mutate(n.id);
+                  if (n.reference_id) navigate(`/offers/${n.reference_id}`);
+                }}
                 onDelete={() => handleDelete(n.id)}
               />
             ))}
