@@ -196,6 +196,8 @@ const VendorDashboard = () => {
           </Card>
         )}
 
+        {isApproved && <VendorInterestsPanel />}
+
         {isApproved && (
           <div className="grid gap-4 sm:grid-cols-2">
             <Card className="cursor-pointer border-2 border-transparent transition-all hover:border-primary/30 hover:shadow-md" onClick={() => navigate("/vendor/create-offer")}>
