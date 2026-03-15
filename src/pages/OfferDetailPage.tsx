@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useOfferDetail, useOfferReviews, useSubmitReview, type Review } from "@/hooks/useOfferDetail";
+import { useOfferInterest } from "@/hooks/useOfferInterest";
 import { useOfferImages } from "@/hooks/useOfferImages";
 import { useAuth } from "@/hooks/useAuth";
 import ReserveOfferModal from "@/components/ReserveOfferModal";
@@ -14,7 +15,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "@/hooks/use-toast";
 import {
-  ArrowLeft, Clock, Flame, Link2, MapPin, ShoppingBag, Star, Store, Tag, Truck,
+  ArrowLeft, Clock, Flame, Heart, Link2, MapPin, ShoppingBag, Star, Store, Tag, Truck,
 } from "lucide-react";
 import { CATEGORY_MAP } from "./OffersMarketplace";
 
@@ -26,6 +27,7 @@ export default function OfferDetailPage() {
   const { data: reviews } = useOfferReviews(id);
   const { data: galleryImages } = useOfferImages(id);
   const submitReview = useSubmitReview();
+  const { hasInterest, interestCount, toggle: toggleInterest } = useOfferInterest(id);
   const [showReserve, setShowReserve] = useState(false);
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("");
@@ -223,9 +225,27 @@ export default function OfferDetailPage() {
                 <ShoppingBag className="h-5 w-5" /> Reservar Agora
               </Button>
             ) : (
-              <Button className="flex-1 gap-2 font-bold" size="lg" disabled variant="secondary">
-                <ShoppingBag className="h-5 w-5" />
-                {offer.status === "CANCELADA" ? "Oferta Cancelada" : offer.status === "VALIDADA" ? "Oferta Validada" : "Oferta Encerrada"}
+              <Button
+                className="flex-1 gap-2 font-bold"
+                size="lg"
+                variant={hasInterest ? "secondary" : "default"}
+                onClick={() => {
+                  if (!user) {
+                    toast({ title: "Faça login para demonstrar interesse", variant: "destructive" });
+                    return;
+                  }
+                  toggleInterest.mutate(undefined, {
+                    onSuccess: () => toast({ title: hasInterest ? "Interesse removido" : "Interesse registrado! 💛" }),
+                    onError: () => toast({ title: "Erro ao registrar interesse", variant: "destructive" }),
+                  });
+                }}
+                disabled={toggleInterest.isPending}
+              >
+                <Heart className={`h-5 w-5 ${hasInterest ? "fill-current" : ""}`} />
+                {hasInterest ? "Tenho Interesse" : "Tenho Interesse"}
+                {interestCount > 0 && (
+                  <span className="ml-1 text-xs opacity-80">({interestCount})</span>
+                )}
               </Button>
             )}
             <FavoriteButton offerId={offer.id} size="md" />
