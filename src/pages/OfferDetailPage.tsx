@@ -61,6 +61,8 @@ export default function OfferDetailPage() {
   const hoursLeft = Math.max(Math.round((endDate.getTime() - Date.now()) / (1000 * 60 * 60)), 0);
   const isGoalReached = offer.sold_quantity >= offer.min_quantity;
   const isAlmostDone = hoursLeft <= 24;
+  const isExpired = endDate < new Date();
+  const canReserve = offer.status === "ATIVA" && !isExpired;
   const avgRating = reviews && reviews.length > 0
     ? reviews.reduce((s, r) => s + r.rating, 0) / reviews.length
     : 0;
