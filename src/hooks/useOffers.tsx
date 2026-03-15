@@ -15,6 +15,7 @@ export function useOffers() {
         .from("offers")
         .select("*, vendors(company_name)")
         .eq("status", "ATIVA")
+        .gte("end_date", new Date().toISOString())
         .order("end_date", { ascending: true });
       if (error) throw error;
       return (data ?? []) as OfferWithVendor[];
