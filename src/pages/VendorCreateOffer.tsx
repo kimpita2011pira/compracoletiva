@@ -142,12 +142,37 @@ export default function VendorCreateOffer() {
     }
   }, [existingOffer, form]);
 
+  // Pre-fill form when cloning from a closed offer
+  useEffect(() => {
+    if (cloneData && !isEdit) {
+      form.reset({
+        title: cloneData.title ?? "",
+        description: cloneData.description ?? "",
+        category: cloneData.category ?? "OUTROS",
+        original_price: Number(cloneData.original_price ?? 0),
+        offer_price: Number(cloneData.offer_price ?? 0),
+        min_quantity: cloneData.min_quantity ?? 1,
+        max_per_user: cloneData.max_per_user ?? 5,
+        end_date: "",
+        delivery_available: cloneData.delivery_available ?? false,
+        delivery_fee: Number(cloneData.delivery_fee ?? 0),
+        pickup_available: cloneData.pickup_available ?? true,
+        estimated_delivery_time: cloneData.estimated_delivery_time ?? "",
+        city: cloneData.city ?? "",
+      });
+      // Clone main image
+      if (cloneData.image_url) {
+        setImages([{ id: "cloned-main", preview: cloneData.image_url, existingUrl: cloneData.image_url }]);
+      }
+    }
+  }, [cloneData, isEdit, form]);
+
   // Auto-fill city from vendor when creating new offer
   useEffect(() => {
-    if (!isEdit && vendor && (vendor as any).city && !form.getValues("city")) {
+    if (!isEdit && !cloneData && vendor && (vendor as any).city && !form.getValues("city")) {
       form.setValue("city", (vendor as any).city);
     }
-  }, [vendor, isEdit, form]);
+  }, [vendor, isEdit, cloneData, form]);
 
   // Populate images from existing offer + gallery
   useEffect(() => {
