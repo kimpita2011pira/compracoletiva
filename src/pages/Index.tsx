@@ -50,7 +50,7 @@ const Index = () => {
       <section className="container grid gap-4 pb-12 md:grid-cols-3">
         <QuickCard
           icon={<ShoppingBag className="h-8 w-8" />}
-          title="Ofertas Ativas"
+          title="Ofertas"
           description="Veja as melhores ofertas disponíveis agora"
           color="primary"
           onClick={() => navigate("/offers")}
