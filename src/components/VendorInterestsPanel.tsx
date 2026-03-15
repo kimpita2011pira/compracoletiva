@@ -1,7 +1,9 @@
+import { useNavigate } from "react-router-dom";
 import { useVendorInterests, type OfferInterestSummary } from "@/hooks/useVendorInterests";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Heart } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Heart, RefreshCw } from "lucide-react";
 
 const statusLabels: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
   VALIDADA: { label: "Validada", variant: "default" },
@@ -39,7 +41,30 @@ export function VendorInterestsPanel() {
 }
 
 function InterestRow({ item }: { item: OfferInterestSummary }) {
+  const navigate = useNavigate();
   const cfg = statusLabels[item.status] ?? statusLabels.ENCERRADA;
+
+  const handleRecreate = () => {
+    navigate("/vendor/create-offer", {
+      state: {
+        cloneFrom: {
+          title: item.title,
+          description: item.description,
+          category: item.category,
+          original_price: item.original_price,
+          offer_price: item.offer_price,
+          min_quantity: item.min_quantity,
+          max_per_user: item.max_per_user,
+          delivery_available: item.delivery_available,
+          delivery_fee: item.delivery_fee,
+          pickup_available: item.pickup_available,
+          estimated_delivery_time: item.estimated_delivery_time,
+          city: item.city,
+          image_url: item.image_url,
+        },
+      },
+    });
+  };
 
   return (
     <div className="flex items-center justify-between gap-3 rounded-lg border p-3">
@@ -54,9 +79,15 @@ function InterestRow({ item }: { item: OfferInterestSummary }) {
           </span>
         </div>
       </div>
-      <div className="flex items-center gap-1.5 shrink-0">
-        <Heart className="h-4 w-4 fill-primary text-primary" />
-        <span className="text-lg font-bold text-primary">{item.interest_count}</span>
+      <div className="flex items-center gap-3 shrink-0">
+        <div className="flex items-center gap-1.5">
+          <Heart className="h-4 w-4 fill-primary text-primary" />
+          <span className="text-lg font-bold text-primary">{item.interest_count}</span>
+        </div>
+        <Button size="sm" variant="outline" className="gap-1 text-xs" onClick={handleRecreate}>
+          <RefreshCw className="h-3.5 w-3.5" />
+          Recriar
+        </Button>
       </div>
     </div>
   );
