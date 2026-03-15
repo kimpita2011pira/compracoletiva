@@ -60,6 +60,8 @@ export { CATEGORY_MAP };
 
 export default function OffersMarketplace() {
   const { data: offers, isLoading } = useOffers();
+  const { data: closedOffers, isLoading: isLoadingClosed } = useClosedOffers();
+  const [activeTab, setActiveTab] = useState<"active" | "closed">("active");
   const [selectedOffer, setSelectedOffer] = useState<OfferWithVendor | null>(null);
 
   const [search, setSearch] = useState("");
