@@ -289,6 +289,7 @@ export default function VendorCreateOffer() {
             .single();
           if (error) throw error;
           savedOfferId = data.id;
+          lastCreatedOfferId.current = data.id;
         }
 
         // Save gallery images (delete old, insert new)
