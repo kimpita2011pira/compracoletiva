@@ -144,7 +144,7 @@ export default function OffersMarketplace() {
   };
 
   return (
-    <AppLayout title="🔥 Ofertas Ativas">
+    <AppLayout title="🔥 Ofertas">
       <main className="container py-8">
         {/* Hero */}
         <div className="mb-8 text-center">
@@ -156,6 +156,19 @@ export default function OffersMarketplace() {
             Quanto mais gente compra, maior o desconto! Reserve agora e economize.
           </p>
         </div>
+
+        {/* Tabs */}
+        <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as "active" | "closed")} className="mb-6">
+          <TabsList className="w-full max-w-xs mx-auto grid grid-cols-2">
+            <TabsTrigger value="active">🔥 Ativas</TabsTrigger>
+            <TabsTrigger value="closed" className="gap-1">
+              📦 Encerradas
+              {closedOffers && closedOffers.length > 0 && (
+                <Badge variant="secondary" className="ml-1 text-[10px] px-1.5 py-0">{closedOffers.length}</Badge>
+              )}
+            </TabsTrigger>
+          </TabsList>
+        </Tabs>
 
         {/* Search & Filters */}
         <div className="mb-6 space-y-3">
