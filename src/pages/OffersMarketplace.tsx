@@ -160,7 +160,7 @@ export default function OffersMarketplace() {
         {/* Tabs */}
         <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as "active" | "closed")} className="mb-6">
           <TabsList className="w-full max-w-xs mx-auto grid grid-cols-2">
-            <TabsTrigger value="active">🔥 Ativas</TabsTrigger>
+            <TabsTrigger value="active">🔥 Ofertas</TabsTrigger>
             <TabsTrigger value="closed" className="gap-1">
               📦 Encerradas
               {closedOffers && closedOffers.length > 0 && (
