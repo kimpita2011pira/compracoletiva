@@ -1,7 +1,9 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useOffers } from "@/hooks/useOffers";
+import { useClosedOffers } from "@/hooks/useClosedOffers";
 import type { OfferWithVendor } from "@/hooks/useOffers";
+import type { ClosedOfferWithInterest } from "@/hooks/useClosedOffers";
 import ReserveOfferModal from "@/components/ReserveOfferModal";
 import { FavoriteButton } from "@/components/FavoriteButton";
 import { AppLayout } from "@/components/AppLayout";
@@ -9,6 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Clock,
   ShoppingBag,
