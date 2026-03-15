@@ -1,4 +1,5 @@
 import { useState, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import { useNotifications } from "@/hooks/useNotifications";
 import { AppLayout } from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";

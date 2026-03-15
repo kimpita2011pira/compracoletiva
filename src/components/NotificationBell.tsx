@@ -47,7 +47,10 @@ export function NotificationBell() {
             notifications.map((n) => (
               <button
                 key={n.id}
-                onClick={() => !n.read && markAsRead.mutate(n.id)}
+                onClick={() => {
+                  if (!n.read) markAsRead.mutate(n.id);
+                  if (n.reference_id) navigate(`/offers/${n.reference_id}`);
+                }}
                 className={`w-full text-left border-b last:border-0 px-4 py-3 transition-colors hover:bg-muted/50 ${
                   !n.read ? "bg-primary/5" : ""
                 }`}
