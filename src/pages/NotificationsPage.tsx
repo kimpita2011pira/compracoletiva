@@ -1,4 +1,5 @@
 import { useState, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import { useNotifications } from "@/hooks/useNotifications";
 import { AppLayout } from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
@@ -19,6 +20,7 @@ import type { Notification } from "@/hooks/useNotifications";
 type FilterType = "all" | "unread" | "read";
 
 export default function NotificationsPage() {
+  const navigate = useNavigate();
   const { data: notifications, unreadCount, markAsRead, markAllRead, deleteNotification, deleteAllRead, isLoading } = useNotifications();
   const [filter, setFilter] = useState<FilterType>("all");
   const [deletingIds, setDeletingIds] = useState<Set<string>>(new Set());
@@ -121,7 +123,10 @@ export default function NotificationsPage() {
                 key={n.id}
                 notification={n}
                 isDeleting={deletingIds.has(n.id)}
-                onRead={() => !n.read && markAsRead.mutate(n.id)}
+                onRead={() => {
+                  if (!n.read) markAsRead.mutate(n.id);
+                  if (n.reference_id) navigate(`/offers/${n.reference_id}`);
+                }}
                 onDelete={() => handleDelete(n.id)}
               />
             ))}
