@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -63,8 +63,10 @@ function toLocalDatetime(iso: string) {
 
 export default function VendorCreateOffer() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { id: offerId } = useParams<{ id: string }>();
   const isEdit = !!offerId;
+  const cloneData = (location.state as any)?.cloneFrom ?? null;
   const { vendor, isLoading: vendorLoading } = useVendor();
   const queryClient = useQueryClient();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -140,12 +142,37 @@ export default function VendorCreateOffer() {
     }
   }, [existingOffer, form]);
 
+  // Pre-fill form when cloning from a closed offer
+  useEffect(() => {
+    if (cloneData && !isEdit) {
+      form.reset({
+        title: cloneData.title ?? "",
+        description: cloneData.description ?? "",
+        category: cloneData.category ?? "OUTROS",
+        original_price: Number(cloneData.original_price ?? 0),
+        offer_price: Number(cloneData.offer_price ?? 0),
+        min_quantity: cloneData.min_quantity ?? 1,
+        max_per_user: cloneData.max_per_user ?? 5,
+        end_date: "",
+        delivery_available: cloneData.delivery_available ?? false,
+        delivery_fee: Number(cloneData.delivery_fee ?? 0),
+        pickup_available: cloneData.pickup_available ?? true,
+        estimated_delivery_time: cloneData.estimated_delivery_time ?? "",
+        city: cloneData.city ?? "",
+      });
+      // Clone main image
+      if (cloneData.image_url) {
+        setImages([{ id: "cloned-main", preview: cloneData.image_url, existingUrl: cloneData.image_url }]);
+      }
+    }
+  }, [cloneData, isEdit, form]);
+
   // Auto-fill city from vendor when creating new offer
   useEffect(() => {
-    if (!isEdit && vendor && (vendor as any).city && !form.getValues("city")) {
+    if (!isEdit && !cloneData && vendor && (vendor as any).city && !form.getValues("city")) {
       form.setValue("city", (vendor as any).city);
     }
-  }, [vendor, isEdit, form]);
+  }, [vendor, isEdit, cloneData, form]);
 
   // Populate images from existing offer + gallery
   useEffect(() => {
@@ -368,18 +395,23 @@ export default function VendorCreateOffer() {
     );
   }
 
+  const pageTitle = isEdit ? "Editar Oferta" : cloneData ? "Recriar Oferta" : "Nova Oferta";
+  const pageDesc = isEdit
+    ? "Atualize os dados da sua oferta"
+    : cloneData
+      ? "Dados pré-preenchidos da oferta anterior. Ajuste a data e publique!"
+      : "Preencha os dados da sua oferta coletiva";
+
   return (
-    <AppLayout title={isEdit ? "Editar Oferta" : "Nova Oferta"}>
+    <AppLayout title={pageTitle}>
       <main className="container max-w-2xl py-6 space-y-6">
         <Button variant="ghost" size="sm" className="gap-1" onClick={() => navigate("/vendor/my-offers")}>
           <ArrowLeft className="h-4 w-4" /> Voltar
         </Button>
 
         <div>
-          <h1 className="font-display text-2xl font-bold">{isEdit ? "Editar Oferta" : "Criar Oferta"}</h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            {isEdit ? "Atualize os dados da sua oferta" : "Preencha os dados da sua oferta coletiva"}
-          </p>
+          <h1 className="font-display text-2xl font-bold">{pageTitle}</h1>
+          <p className="text-sm text-muted-foreground mt-1">{pageDesc}</p>
         </div>
 
         <Form {...form}>
