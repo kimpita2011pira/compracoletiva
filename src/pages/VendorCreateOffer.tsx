@@ -72,6 +72,7 @@ export default function VendorCreateOffer() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [images, setImages] = useState<ImageItem[]>([]);
   const [uploading, setUploading] = useState(false);
+  const lastCreatedOfferId = useRef<string | null>(null);
 
   const { data: existingOffer, isLoading: loadingOffer } = useQuery({
     queryKey: ["offer-edit", offerId],
@@ -288,6 +289,7 @@ export default function VendorCreateOffer() {
             .single();
           if (error) throw error;
           savedOfferId = data.id;
+          lastCreatedOfferId.current = data.id;
         }
 
         // Save gallery images (delete old, insert new)
@@ -307,11 +309,24 @@ export default function VendorCreateOffer() {
         setUploading(false);
       }
     },
-    onSuccess: () => {
+    onSuccess: async (_data, _variables, _context) => {
       queryClient.invalidateQueries({ queryKey: ["offers-active"] });
       queryClient.invalidateQueries({ queryKey: ["vendor-offers"] });
       queryClient.invalidateQueries({ queryKey: ["offer-edit", offerId] });
       queryClient.invalidateQueries({ queryKey: ["offer-images"] });
+
+      // Notify interested users when recreating from a closed offer
+      if (!isEdit && cloneData?.sourceOfferId && lastCreatedOfferId.current) {
+        try {
+          await supabase.rpc("notify_interested_users", {
+            p_source_offer_id: cloneData.sourceOfferId,
+            p_new_offer_id: lastCreatedOfferId.current,
+          });
+        } catch (e) {
+          console.error("Failed to notify interested users:", e);
+        }
+      }
+
       toast({ title: isEdit ? "Oferta atualizada! ✅" : "Oferta criada com sucesso! 🎉" });
       navigate("/vendor/my-offers");
     },

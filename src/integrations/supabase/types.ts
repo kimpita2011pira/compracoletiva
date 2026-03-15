@@ -650,6 +650,10 @@ export type Database = {
         }
         Returns: boolean
       }
+      notify_interested_users: {
+        Args: { p_new_offer_id: string; p_source_offer_id: string }
+        Returns: undefined
+      }
       reserve_offer: {
         Args: {
           p_address_id?: string
