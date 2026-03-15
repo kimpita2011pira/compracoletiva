@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useOfferDetail, useOfferReviews, useSubmitReview, type Review } from "@/hooks/useOfferDetail";
+import { useOfferInterest } from "@/hooks/useOfferInterest";
 import { useOfferImages } from "@/hooks/useOfferImages";
 import { useAuth } from "@/hooks/useAuth";
 import ReserveOfferModal from "@/components/ReserveOfferModal";
