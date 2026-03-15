@@ -537,3 +537,84 @@ function OfferCard({ offer, onReserve }: { offer: OfferWithVendor; onReserve: (o
     </div>
   );
 }
+
+const closedStatusLabels: Record<string, { label: string; variant: "default" | "secondary" | "destructive" }> = {
+  VALIDADA: { label: "Validada", variant: "default" },
+  CANCELADA: { label: "Cancelada", variant: "destructive" },
+  ENCERRADA: { label: "Encerrada", variant: "secondary" },
+};
+
+function ClosedOfferCard({ offer }: { offer: ClosedOfferWithInterest }) {
+  const navigate = useNavigate();
+  const discount = Math.round(
+    ((offer.original_price - offer.offer_price) / offer.original_price) * 100
+  );
+  const cfg = closedStatusLabels[offer.status] ?? closedStatusLabels.ENCERRADA;
+
+  return (
+    <div
+      className="group relative overflow-hidden rounded-2xl border bg-card shadow-sm transition-all hover:shadow-lg hover:-translate-y-1 cursor-pointer opacity-90 hover:opacity-100"
+      onClick={() => navigate(`/offers/${offer.id}`)}
+    >
+      {/* Image */}
+      <div className="relative h-44 bg-gradient-to-br from-muted/30 to-muted/10">
+        {offer.image_url ? (
+          <img
+            src={offer.image_url}
+            alt={offer.title}
+            className="h-full w-full object-cover grayscale-[30%]"
+            loading="lazy"
+          />
+        ) : (
+          <div className="flex h-full items-center justify-center">
+            <ShoppingBag className="h-16 w-16 text-muted-foreground/20" />
+          </div>
+        )}
+
+        <Badge className="absolute left-3 top-3 gap-1 bg-accent text-accent-foreground shadow-md text-sm px-2.5 py-1">
+          <Tag className="h-3.5 w-3.5" />-{discount}%
+        </Badge>
+
+        <Badge variant={cfg.variant} className="absolute right-3 top-3 text-xs">
+          {cfg.label}
+        </Badge>
+      </div>
+
+      {/* Content */}
+      <div className="p-4 space-y-3">
+        <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+          {offer.vendors?.company_name && (
+            <>
+              <Store className="h-3 w-3" />
+              {offer.vendors.company_name}
+            </>
+          )}
+        </div>
+
+        <h3 className="font-display text-lg font-bold leading-tight line-clamp-2">
+          {offer.title}
+        </h3>
+
+        <div className="flex items-baseline gap-2">
+          <span className="font-display text-2xl font-bold text-primary">
+            R$ {offer.offer_price.toFixed(2).replace(".", ",")}
+          </span>
+          <span className="text-sm text-muted-foreground line-through">
+            R$ {offer.original_price.toFixed(2).replace(".", ",")}
+          </span>
+        </div>
+
+        <div className="flex items-center justify-between border-t pt-3">
+          <span className="text-xs text-muted-foreground">
+            Encerrada em {new Date(offer.end_date).toLocaleDateString("pt-BR")}
+          </span>
+          <div className="flex items-center gap-1.5">
+            <Heart className="h-4 w-4 fill-primary text-primary" />
+            <span className="text-sm font-bold text-primary">{offer.interest_count}</span>
+            <span className="text-xs text-muted-foreground">interessado{offer.interest_count !== 1 ? "s" : ""}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
