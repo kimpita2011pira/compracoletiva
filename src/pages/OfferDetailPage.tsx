@@ -27,6 +27,7 @@ export default function OfferDetailPage() {
   const { data: reviews } = useOfferReviews(id);
   const { data: galleryImages } = useOfferImages(id);
   const submitReview = useSubmitReview();
+  const { hasInterest, interestCount, toggle: toggleInterest } = useOfferInterest(id);
   const [showReserve, setShowReserve] = useState(false);
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("");
