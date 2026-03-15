@@ -72,6 +72,7 @@ export default function VendorCreateOffer() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [images, setImages] = useState<ImageItem[]>([]);
   const [uploading, setUploading] = useState(false);
+  const lastCreatedOfferId = useRef<string | null>(null);
 
   const { data: existingOffer, isLoading: loadingOffer } = useQuery({
     queryKey: ["offer-edit", offerId],
