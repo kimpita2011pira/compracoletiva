@@ -63,8 +63,10 @@ function toLocalDatetime(iso: string) {
 
 export default function VendorCreateOffer() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { id: offerId } = useParams<{ id: string }>();
   const isEdit = !!offerId;
+  const cloneData = (location.state as any)?.cloneFrom ?? null;
   const { vendor, isLoading: vendorLoading } = useVendor();
   const queryClient = useQueryClient();
   const fileInputRef = useRef<HTMLInputElement>(null);
