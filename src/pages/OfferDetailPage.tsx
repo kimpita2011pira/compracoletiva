@@ -225,9 +225,27 @@ export default function OfferDetailPage() {
                 <ShoppingBag className="h-5 w-5" /> Reservar Agora
               </Button>
             ) : (
-              <Button className="flex-1 gap-2 font-bold" size="lg" disabled variant="secondary">
-                <ShoppingBag className="h-5 w-5" />
-                {offer.status === "CANCELADA" ? "Oferta Cancelada" : offer.status === "VALIDADA" ? "Oferta Validada" : "Oferta Encerrada"}
+              <Button
+                className="flex-1 gap-2 font-bold"
+                size="lg"
+                variant={hasInterest ? "secondary" : "default"}
+                onClick={() => {
+                  if (!user) {
+                    toast({ title: "Faça login para demonstrar interesse", variant: "destructive" });
+                    return;
+                  }
+                  toggleInterest.mutate(undefined, {
+                    onSuccess: () => toast({ title: hasInterest ? "Interesse removido" : "Interesse registrado! 💛" }),
+                    onError: () => toast({ title: "Erro ao registrar interesse", variant: "destructive" }),
+                  });
+                }}
+                disabled={toggleInterest.isPending}
+              >
+                <Heart className={`h-5 w-5 ${hasInterest ? "fill-current" : ""}`} />
+                {hasInterest ? "Tenho Interesse" : "Tenho Interesse"}
+                {interestCount > 0 && (
+                  <span className="ml-1 text-xs opacity-80">({interestCount})</span>
+                )}
               </Button>
             )}
             <FavoriteButton offerId={offer.id} size="md" />
