@@ -218,9 +218,16 @@ export default function OfferDetailPage() {
           </div>
 
           <div className="flex gap-2">
-            <Button className="flex-1 gap-2 font-bold" size="lg" onClick={() => setShowReserve(true)}>
-              <ShoppingBag className="h-5 w-5" /> Reservar Agora
-            </Button>
+            {canReserve ? (
+              <Button className="flex-1 gap-2 font-bold" size="lg" onClick={() => setShowReserve(true)}>
+                <ShoppingBag className="h-5 w-5" /> Reservar Agora
+              </Button>
+            ) : (
+              <Button className="flex-1 gap-2 font-bold" size="lg" disabled variant="secondary">
+                <ShoppingBag className="h-5 w-5" />
+                {offer.status === "CANCELADA" ? "Oferta Cancelada" : offer.status === "VALIDADA" ? "Oferta Validada" : "Oferta Encerrada"}
+              </Button>
+            )}
             <FavoriteButton offerId={offer.id} size="md" />
             <Button
               variant="outline"
