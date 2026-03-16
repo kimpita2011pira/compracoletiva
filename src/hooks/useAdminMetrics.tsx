@@ -7,6 +7,7 @@ export interface AdminMetrics {
   totalVendors: number;
   totalOffers: number;
   activeOffers: number;
+  closedOffers: number;
   totalOrders: number;
   totalRevenue: number;
   platformBalance: number;
