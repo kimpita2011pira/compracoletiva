@@ -129,11 +129,23 @@ export default function OffersMarketplace() {
 
   const hasClosedFilters = closedSearch.trim() || closedCategoryFilter !== "all" || closedCityFilter !== "all" || closedStatusFilter !== "all";
 
+  // Reset page when filters change
+  const closedFilterKey = `${closedSearch}|${closedCategoryFilter}|${closedCityFilter}|${closedStatusFilter}`;
+  const [prevClosedFilterKey, setPrevClosedFilterKey] = useState(closedFilterKey);
+  if (closedFilterKey !== prevClosedFilterKey) {
+    setPrevClosedFilterKey(closedFilterKey);
+    setClosedPage(1);
+  }
+
+  const closedTotalPages = Math.max(1, Math.ceil(filteredClosed.length / CLOSED_PER_PAGE));
+  const paginatedClosed = filteredClosed.slice((closedPage - 1) * CLOSED_PER_PAGE, closedPage * CLOSED_PER_PAGE);
+
   const clearClosedFilters = () => {
     setClosedSearch("");
     setClosedCategoryFilter("all");
     setClosedCityFilter("all");
     setClosedStatusFilter("all");
+    setClosedPage(1);
   };
 
   const filtered = useMemo(() => {
