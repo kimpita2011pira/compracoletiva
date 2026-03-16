@@ -77,6 +77,8 @@ export default function OffersMarketplace() {
   const [closedCategoryFilter, setClosedCategoryFilter] = useState<string>("all");
   const [closedCityFilter, setClosedCityFilter] = useState<string>("all");
   const [closedStatusFilter, setClosedStatusFilter] = useState<string>("all");
+  const [closedPage, setClosedPage] = useState(1);
+  const CLOSED_PER_PAGE = 12;
 
   // Extract unique cities from offers
   const cities = useMemo(() => {
