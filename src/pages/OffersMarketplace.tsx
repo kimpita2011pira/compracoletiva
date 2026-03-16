@@ -528,11 +528,37 @@ export default function OffersMarketplace() {
             )}
 
             {filteredClosed.length > 0 && (
-              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                {filteredClosed.map((offer) => (
-                  <ClosedOfferCard key={offer.id} offer={offer} />
-                ))}
-              </div>
+              <>
+                <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                  {paginatedClosed.map((offer) => (
+                    <ClosedOfferCard key={offer.id} offer={offer} />
+                  ))}
+                </div>
+
+                {closedTotalPages > 1 && (
+                  <div className="mt-8 flex items-center justify-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      disabled={closedPage <= 1}
+                      onClick={() => { setClosedPage((p) => p - 1); window.scrollTo({ top: 0, behavior: "smooth" }); }}
+                    >
+                      Anterior
+                    </Button>
+                    <span className="text-sm text-muted-foreground">
+                      Página {closedPage} de {closedTotalPages}
+                    </span>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      disabled={closedPage >= closedTotalPages}
+                      onClick={() => { setClosedPage((p) => p + 1); window.scrollTo({ top: 0, behavior: "smooth" }); }}
+                    >
+                      Próxima
+                    </Button>
+                  </div>
+                )}
+              </>
             )}
           </>
         )}
