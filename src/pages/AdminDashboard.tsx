@@ -139,6 +139,7 @@ export default function AdminDashboard() {
                   <MetricCard icon={<Building2 className="h-5 w-5" />} label="Vendedores" value={metrics.totalVendors} color="primary" />
                   <MetricCard icon={<Package className="h-5 w-5" />} label="Ofertas Totais" value={metrics.totalOffers} color="secondary" />
                   <MetricCard icon={<TrendingUp className="h-5 w-5" />} label="Ofertas Ativas" value={metrics.activeOffers} color="success" />
+                  <MetricCard icon={<XCircle className="h-5 w-5" />} label="Ofertas Encerradas" value={metrics.closedOffers} color="destructive" />
                   <MetricCard icon={<Clock className="h-5 w-5" />} label="Vendedores Pendentes" value={pending.length} color="warning" />
                 </div>
 

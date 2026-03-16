@@ -133,6 +133,7 @@ export function useAdminMetrics(days: number = 14) {
         totalVendors: vendors.length,
         totalOffers: offers.length,
         activeOffers: offers.filter(o => o.status === "ATIVA").length,
+        closedOffers: offers.filter(o => ["VALIDADA", "CANCELADA", "ENCERRADA"].includes(o.status)).length,
         totalOrders: orders.length,
         totalRevenue,
         platformBalance: Number(platformWalletRes.data?.balance ?? 0),
