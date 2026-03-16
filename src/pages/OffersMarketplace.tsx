@@ -134,7 +134,7 @@ export default function OffersMarketplace() {
     setClosedStatusFilter("all");
   };
 
-
+  const filtered = useMemo(() => {
     if (!offers) return [];
     let result = [...offers];
 
