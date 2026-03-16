@@ -88,7 +88,53 @@ export default function OffersMarketplace() {
     return Array.from(set).sort();
   }, [offers]);
 
-  const filtered = useMemo(() => {
+  // Extract unique cities from closed offers
+  const closedCities = useMemo(() => {
+    if (!closedOffers) return [];
+    const set = new Set<string>();
+    for (const o of closedOffers) {
+      if ((o as any).city) set.add((o as any).city);
+    }
+    return Array.from(set).sort();
+  }, [closedOffers]);
+
+  const filteredClosed = useMemo(() => {
+    if (!closedOffers) return [];
+    let result = [...closedOffers];
+
+    if (closedSearch.trim()) {
+      const q = closedSearch.toLowerCase();
+      result = result.filter(
+        (o) =>
+          o.title.toLowerCase().includes(q) ||
+          o.description?.toLowerCase().includes(q) ||
+          o.vendors?.company_name?.toLowerCase().includes(q)
+      );
+    }
+
+    if (closedCategoryFilter !== "all") result = result.filter((o) => o.category === closedCategoryFilter);
+    if (closedCityFilter !== "all") result = result.filter((o) => (o as any).city === closedCityFilter);
+    if (closedStatusFilter !== "all") {
+      if (closedStatusFilter === "EXPIRED") {
+        result = result.filter((o) => o.status === "ATIVA");
+      } else {
+        result = result.filter((o) => o.status === closedStatusFilter);
+      }
+    }
+
+    return result;
+  }, [closedOffers, closedSearch, closedCategoryFilter, closedCityFilter, closedStatusFilter]);
+
+  const hasClosedFilters = closedSearch.trim() || closedCategoryFilter !== "all" || closedCityFilter !== "all" || closedStatusFilter !== "all";
+
+  const clearClosedFilters = () => {
+    setClosedSearch("");
+    setClosedCategoryFilter("all");
+    setClosedCityFilter("all");
+    setClosedStatusFilter("all");
+  };
+
+
     if (!offers) return [];
     let result = [...offers];
 
