@@ -72,6 +72,12 @@ export default function OffersMarketplace() {
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
   const [cityFilter, setCityFilter] = useState<string>("all");
 
+  // Closed tab filters
+  const [closedSearch, setClosedSearch] = useState("");
+  const [closedCategoryFilter, setClosedCategoryFilter] = useState<string>("all");
+  const [closedCityFilter, setClosedCityFilter] = useState<string>("all");
+  const [closedStatusFilter, setClosedStatusFilter] = useState<string>("all");
+
   // Extract unique cities from offers
   const cities = useMemo(() => {
     if (!offers) return [];
