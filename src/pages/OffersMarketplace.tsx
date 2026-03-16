@@ -396,35 +396,129 @@ export default function OffersMarketplace() {
 
         {activeTab === "closed" && (
           <>
+            {/* Search & Filters for closed */}
+            <div className="mb-6 space-y-3">
+              <div className="flex gap-2">
+                <div className="relative flex-1">
+                  <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                  <Input
+                    placeholder="Buscar ofertas encerradas..."
+                    value={closedSearch}
+                    onChange={(e) => setClosedSearch(e.target.value)}
+                    className="pl-9"
+                  />
+                  {closedSearch && (
+                    <button
+                      onClick={() => setClosedSearch("")}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  )}
+                </div>
+
+                {closedCities.length > 0 && (
+                  <Select value={closedCityFilter} onValueChange={setClosedCityFilter}>
+                    <SelectTrigger className="w-[180px] shrink-0 text-xs gap-1">
+                      <MapPin className="h-3.5 w-3.5 text-muted-foreground" />
+                      <SelectValue placeholder="Cidade" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Todas as cidades</SelectItem>
+                      {closedCities.map((city) => (
+                        <SelectItem key={city} value={city}>{city}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+
+                <Select value={closedStatusFilter} onValueChange={setClosedStatusFilter}>
+                  <SelectTrigger className="w-[150px] shrink-0 text-xs">
+                    <SelectValue placeholder="Status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Todos os status</SelectItem>
+                    <SelectItem value="VALIDADA">Validada</SelectItem>
+                    <SelectItem value="ENCERRADA">Encerrada</SelectItem>
+                    <SelectItem value="CANCELADA">Cancelada</SelectItem>
+                    <SelectItem value="EXPIRED">Expirada</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Category chips */}
+              <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
+                <Button
+                  variant={closedCategoryFilter === "all" ? "default" : "outline"}
+                  size="sm"
+                  className="text-xs shrink-0 gap-1.5"
+                  onClick={() => setClosedCategoryFilter("all")}
+                >
+                  Todas
+                </Button>
+                {Object.entries(CATEGORY_MAP).map(([key, { label, icon: Icon }]) => (
+                  <Button
+                    key={key}
+                    variant={closedCategoryFilter === key ? "default" : "outline"}
+                    size="sm"
+                    className="text-xs shrink-0 gap-1.5"
+                    onClick={() => setClosedCategoryFilter(key)}
+                  >
+                    <Icon className="h-3.5 w-3.5" />
+                    {label}
+                  </Button>
+                ))}
+              </div>
+
+              {hasClosedFilters && (
+                <Button variant="ghost" size="sm" className="text-xs text-muted-foreground gap-1" onClick={clearClosedFilters}>
+                  <X className="h-3 w-3" /> Limpar filtros
+                </Button>
+              )}
+
+              {/* Results count */}
+              {!isLoadingClosed && closedOffers && (
+                <p className="text-xs text-muted-foreground">
+                  {filteredClosed.length === closedOffers.length
+                    ? `${closedOffers.length} oferta${closedOffers.length !== 1 ? "s" : ""} encerrada${closedOffers.length !== 1 ? "s" : ""}`
+                    : `${filteredClosed.length} de ${closedOffers.length} oferta${closedOffers.length !== 1 ? "s" : ""}`}
+                </p>
+              )}
+            </div>
+
             {isLoadingClosed && (
               <div className="flex justify-center py-20">
                 <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
               </div>
             )}
 
-            {!isLoadingClosed && (!closedOffers || closedOffers.length === 0) && (
+            {!isLoadingClosed && filteredClosed.length === 0 && (
               <div className="flex flex-col items-center justify-center rounded-xl border border-dashed bg-muted/30 py-20">
                 <Package className="mb-4 h-12 w-12 text-muted-foreground/40" />
                 <p className="font-display text-lg font-bold text-muted-foreground">
-                  Nenhuma oferta encerrada ainda
+                  {closedOffers && closedOffers.length > 0
+                    ? "Nenhuma oferta encontrada com esses filtros"
+                    : "Nenhuma oferta encerrada ainda"}
                 </p>
                 <p className="mt-1 text-sm text-muted-foreground">
-                  As ofertas encerradas aparecerão aqui com o número de interessados
+                  {closedOffers && closedOffers.length > 0
+                    ? "Tente alterar os filtros ou a busca"
+                    : "As ofertas encerradas aparecerão aqui com o número de interessados"}
                 </p>
+                {hasClosedFilters && (
+                  <Button variant="outline" size="sm" className="mt-4" onClick={clearClosedFilters}>
+                    Limpar filtros
+                  </Button>
+                )}
               </div>
             )}
 
-            {closedOffers && closedOffers.length > 0 && (
-              <>
-                <p className="mb-4 text-xs text-muted-foreground">
-                  {closedOffers.length} oferta{closedOffers.length !== 1 ? "s" : ""} encerrada{closedOffers.length !== 1 ? "s" : ""}
-                </p>
-                <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                  {closedOffers.map((offer) => (
-                    <ClosedOfferCard key={offer.id} offer={offer} />
-                  ))}
-                </div>
-              </>
+            {filteredClosed.length > 0 && (
+              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                {filteredClosed.map((offer) => (
+                  <ClosedOfferCard key={offer.id} offer={offer} />
+                ))}
+              </div>
             )}
           </>
         )}
