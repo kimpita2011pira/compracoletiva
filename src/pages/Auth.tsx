@@ -196,14 +196,14 @@ const Auth = () => {
       <div className="sticky top-0 z-50">
         <PromoBanner />
       </div>
-      <div className="flex flex-1 items-center justify-center p-4">
+      <div className="flex flex-1 items-center justify-center p-3 sm:p-4">
       <Card className="w-full max-w-md border-0 shadow-xl">
-        <CardHeader className="text-center">
-          <h1 className="font-display text-3xl font-bold text-primary">🛒 Compra Coletiva</h1>
-          <CardTitle className="font-display text-xl">
+        <CardHeader className="text-center pb-2 sm:pb-4">
+          <h1 className="font-display text-2xl sm:text-3xl font-bold text-primary">🛒 Compra Coletiva</h1>
+          <CardTitle className="font-display text-lg sm:text-xl">
             {mode === "login" ? "Entrar na sua conta" : "Criar sua conta"}
           </CardTitle>
-          <CardDescription>
+          <CardDescription className="text-xs sm:text-sm">
             {mode === "login"
               ? "Acesse suas ofertas e carteira"
               : roleChoice === "CLIENTE"
