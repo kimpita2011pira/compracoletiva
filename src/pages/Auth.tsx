@@ -140,39 +140,39 @@ const Auth = () => {
           <PromoBanner />
         </div>
         <div className="flex flex-1 items-center justify-center p-4">
-        <div className="w-full max-w-md space-y-6">
+        <div className="w-full max-w-md space-y-4 sm:space-y-6">
           <div className="text-center">
-            <h1 className="font-display text-4xl font-bold text-primary">🛒 Compra Coletiva</h1>
-            <p className="mt-2 text-muted-foreground">Como você quer usar a plataforma?</p>
+            <h1 className="font-display text-3xl sm:text-4xl font-bold text-primary">🛒 Compra Coletiva</h1>
+            <p className="mt-1 sm:mt-2 text-sm sm:text-base text-muted-foreground">Como você quer usar a plataforma?</p>
           </div>
-          <div className="grid gap-4">
+          <div className="grid gap-3 sm:gap-4">
             <Card
-              className="cursor-pointer border-2 transition-all hover:border-primary hover:shadow-lg"
+              className="cursor-pointer border-2 transition-all hover:border-primary hover:shadow-lg active:scale-[0.98]"
               onClick={() => setRoleChoice("CLIENTE")}
             >
-              <CardContent className="flex items-center gap-4 p-6">
-                <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-primary/10">
-                  <ShoppingBag className="h-7 w-7 text-primary" />
+              <CardContent className="flex items-center gap-3 sm:gap-4 p-4 sm:p-6">
+                <div className="flex h-12 w-12 sm:h-14 sm:w-14 shrink-0 items-center justify-center rounded-xl bg-primary/10">
+                  <ShoppingBag className="h-6 w-6 sm:h-7 sm:w-7 text-primary" />
                 </div>
                 <div>
-                  <h3 className="font-display text-lg font-bold">Quero Comprar</h3>
-                  <p className="text-sm text-muted-foreground">
+                  <h3 className="font-display text-base sm:text-lg font-bold">Quero Comprar</h3>
+                  <p className="text-xs sm:text-sm text-muted-foreground">
                     Encontre ofertas incríveis com desconto em compra coletiva
                   </p>
                 </div>
               </CardContent>
             </Card>
             <Card
-              className="cursor-pointer border-2 transition-all hover:border-secondary hover:shadow-lg"
+              className="cursor-pointer border-2 transition-all hover:border-secondary hover:shadow-lg active:scale-[0.98]"
               onClick={() => setRoleChoice("VENDEDOR")}
             >
-              <CardContent className="flex items-center gap-4 p-6">
-                <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-secondary/10">
-                  <Store className="h-7 w-7 text-secondary" />
+              <CardContent className="flex items-center gap-3 sm:gap-4 p-4 sm:p-6">
+                <div className="flex h-12 w-12 sm:h-14 sm:w-14 shrink-0 items-center justify-center rounded-xl bg-secondary/10">
+                  <Store className="h-6 w-6 sm:h-7 sm:w-7 text-secondary" />
                 </div>
                 <div>
-                  <h3 className="font-display text-lg font-bold">Quero Vender</h3>
-                  <p className="text-sm text-muted-foreground">
+                  <h3 className="font-display text-base sm:text-lg font-bold">Quero Vender</h3>
+                  <p className="text-xs sm:text-sm text-muted-foreground">
                     Crie ofertas coletivas e aumente suas vendas
                   </p>
                 </div>
