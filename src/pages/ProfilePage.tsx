@@ -22,6 +22,84 @@ function formatPhone(value: string): string {
   return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
 }
 
+const ChangePasswordCard = () => {
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmNewPassword, setConfirmNewPassword] = useState("");
+  const [changingPassword, setChangingPassword] = useState(false);
+  const { toast } = useToast();
+
+  const handleChangePassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (newPassword !== confirmNewPassword) {
+      toast({ title: "Senhas não coincidem", description: "A confirmação deve ser igual à nova senha.", variant: "destructive" });
+      return;
+    }
+    if (newPassword.length < 6) {
+      toast({ title: "Senha muito curta", description: "A senha deve ter pelo menos 6 caracteres.", variant: "destructive" });
+      return;
+    }
+    setChangingPassword(true);
+    const { error } = await supabase.auth.updateUser({ password: newPassword });
+    setChangingPassword(false);
+    if (error) {
+      toast({ title: "Erro ao alterar senha", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: "Senha alterada com sucesso! 🔒" });
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmNewPassword("");
+    }
+  };
+
+  return (
+    <Card className="mt-6 border-0 shadow-xl">
+      <CardHeader className="text-center">
+        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
+          <Lock className="h-6 w-6 text-primary" />
+        </div>
+        <CardTitle className="font-display text-lg">Alterar Senha</CardTitle>
+        <CardDescription>Defina uma nova senha para sua conta</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <form onSubmit={handleChangePassword} className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="new-password">Nova senha</Label>
+            <Input
+              id="new-password"
+              type="password"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              required
+              minLength={6}
+              placeholder="Mínimo 6 caracteres"
+            />
+            <PasswordStrengthIndicator password={newPassword} />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="confirm-new-password">Confirmar nova senha</Label>
+            <Input
+              id="confirm-new-password"
+              type="password"
+              value={confirmNewPassword}
+              onChange={(e) => setConfirmNewPassword(e.target.value)}
+              required
+              minLength={6}
+            />
+            {confirmNewPassword && newPassword !== confirmNewPassword && (
+              <p className="text-sm text-destructive">As senhas não coincidem</p>
+            )}
+          </div>
+          <Button type="submit" className="w-full" size="lg" disabled={changingPassword}>
+            <Lock className="mr-2 h-4 w-4" />
+            {changingPassword ? "Alterando..." : "Alterar senha"}
+          </Button>
+        </form>
+      </CardContent>
+    </Card>
+  );
+};
+
 const ProfilePage = () => {
   const { user, roles } = useAuth();
   const isOnlyCliente = roles.length > 0 && roles.every((r) => r === "CLIENTE");
