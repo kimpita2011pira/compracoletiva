@@ -9,8 +9,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Save, User, Camera } from "lucide-react";
+import { Save, User, Camera, Lock } from "lucide-react";
 import { BecomeVendorCard } from "@/components/BecomeVendorCard";
+import { PasswordStrengthIndicator } from "@/components/PasswordStrengthIndicator";
 
 function formatPhone(value: string): string {
   const digits = value.replace(/\D/g, "").slice(0, 11);
