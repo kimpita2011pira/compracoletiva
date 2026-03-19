@@ -27,6 +27,7 @@ import type { Tables } from "@/integrations/supabase/types";
 import type { Database } from "@/integrations/supabase/types";
 import { AdminBannerManager } from "@/components/AdminBannerManager";
 import { AdminWithdrawals } from "@/components/AdminWithdrawals";
+import { AdminAuditLogs } from "@/components/AdminAuditLogs";
 import {
   BarChart,
   Bar,
