@@ -211,8 +211,8 @@ const Auth = () => {
                 : "Cadastro de Vendedor"}
           </CardDescription>
         </CardHeader>
-        <CardContent>
-          <form onSubmit={mode === "login" ? handleLogin : handleRegister} className="space-y-4">
+        <CardContent className="px-4 sm:px-6">
+          <form onSubmit={mode === "login" ? handleLogin : handleRegister} className="space-y-3 sm:space-y-4">
             {mode === "register" && (
               <>
                 <button
