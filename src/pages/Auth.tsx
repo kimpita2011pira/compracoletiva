@@ -299,6 +299,25 @@ const Auth = () => {
                 )}
               </div>
             )}
+            {mode === "register" && (
+              <div className="flex items-start space-x-2">
+                <Checkbox
+                  id="privacy"
+                  checked={acceptedPrivacy}
+                  onCheckedChange={(checked) => setAcceptedPrivacy(checked === true)}
+                />
+                <label htmlFor="privacy" className="text-sm text-muted-foreground leading-tight cursor-pointer">
+                  Li e aceito a{" "}
+                  <Link to="/privacy" target="_blank" className="font-semibold text-primary hover:underline">
+                    Política de Privacidade
+                  </Link>{" "}
+                  e os{" "}
+                  <Link to="/terms" target="_blank" className="font-semibold text-primary hover:underline">
+                    Termos de Uso
+                  </Link>
+                </label>
+              </div>
+            )}
             {mode === "login" && (
               <div className="text-right">
                 <button
