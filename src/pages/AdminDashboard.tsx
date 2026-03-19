@@ -20,6 +20,7 @@ import {
   Package,
   Wallet,
   Megaphone,
+  FileText,
 } from "lucide-react";
 import { toast } from "sonner";
 import type { Tables } from "@/integrations/supabase/types";
