@@ -20,12 +20,14 @@ import {
   Package,
   Wallet,
   Megaphone,
+  FileText,
 } from "lucide-react";
 import { toast } from "sonner";
 import type { Tables } from "@/integrations/supabase/types";
 import type { Database } from "@/integrations/supabase/types";
 import { AdminBannerManager } from "@/components/AdminBannerManager";
 import { AdminWithdrawals } from "@/components/AdminWithdrawals";
+import { AdminAuditLogs } from "@/components/AdminAuditLogs";
 import {
   BarChart,
   Bar,
@@ -88,7 +90,7 @@ export default function AdminDashboard() {
     <AppLayout title="🛡️ Painel Admin">
       <main className="container py-8">
         <Tabs defaultValue="metricas" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="metricas" className="gap-2">
               <BarChart3 className="h-4 w-4" /> Métricas
             </TabsTrigger>
@@ -100,6 +102,9 @@ export default function AdminDashboard() {
             </TabsTrigger>
             <TabsTrigger value="banners" className="gap-2">
               <Megaphone className="h-4 w-4" /> Banners
+            </TabsTrigger>
+            <TabsTrigger value="auditoria" className="gap-2">
+              <FileText className="h-4 w-4" /> Auditoria
             </TabsTrigger>
           </TabsList>
 
@@ -363,6 +368,11 @@ export default function AdminDashboard() {
               </p>
               <AdminBannerManager />
             </div>
+          </TabsContent>
+
+          {/* ===== AUDITORIA TAB ===== */}
+          <TabsContent value="auditoria" className="space-y-6">
+            <AdminAuditLogs />
           </TabsContent>
         </Tabs>
       </main>
