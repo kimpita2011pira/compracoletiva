@@ -65,6 +65,10 @@ const Auth = () => {
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!roleChoice) return;
+    if (!acceptedPrivacy) {
+      toast({ title: "Aceite obrigatório", description: "Você precisa aceitar a Política de Privacidade para criar sua conta.", variant: "destructive" });
+      return;
+    }
     if (password !== confirmPassword) {
       toast({ title: "Senhas não coincidem", description: "A confirmação de senha deve ser igual à senha.", variant: "destructive" });
       return;
