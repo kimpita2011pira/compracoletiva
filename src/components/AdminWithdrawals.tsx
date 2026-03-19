@@ -130,6 +130,24 @@ function WithdrawalCard({
 
       await onProcess.mutateAsync({ id: w.id, status, adminNote: note || undefined });
 
+      // Audit log
+      const { data: { user: adminUser } } = await supabase.auth.getUser();
+      if (adminUser) {
+        await supabase.from("audit_logs" as any).insert({
+          admin_id: adminUser.id,
+          action: status === "APROVADO" ? "WITHDRAWAL_APPROVED" : "WITHDRAWAL_REJECTED",
+          entity_type: "withdrawal_request",
+          entity_id: w.id,
+          details: {
+            vendor_id: w.vendor_id,
+            vendor_name: vendorName,
+            amount: w.amount,
+            pix_key: w.pix_key,
+            admin_note: note || null,
+          },
+        });
+      }
+
       await supabase.from("notifications").insert({
         user_id: w.user_id,
         title: status === "APROVADO" ? "Saque aprovado! ✅" : "Saque rejeitado ❌",
