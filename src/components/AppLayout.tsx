@@ -216,6 +216,11 @@ function Footer() {
                   Termos de Uso
                 </button>
               </li>
+              <li>
+                <button onClick={() => navigate("/privacy")} className="hover:text-primary transition-colors">
+                  Política de Privacidade
+                </button>
+              </li>
             </ul>
           </div>
           <div>
