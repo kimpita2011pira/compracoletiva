@@ -234,6 +234,7 @@ const ProfilePage = () => {
             </form>
           </CardContent>
         </Card>
+        <ChangePasswordCard />
 
         {isOnlyCliente && (
           <div className="mt-6">
