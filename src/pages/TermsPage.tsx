@@ -56,7 +56,11 @@ const TermsPage = () => {
             <h3 className="font-semibold text-foreground text-lg">6. Política de Privacidade</h3>
             <p className="mt-2">
               Seus dados pessoais são protegidos conforme a Lei Geral de Proteção de Dados (LGPD).
-              Utilizamos suas informações exclusivamente para a operação da plataforma.
+              Utilizamos suas informações exclusivamente para a operação da plataforma. Para mais
+              detalhes, consulte nossa{" "}
+              <a href="/privacy" className="font-semibold text-primary hover:underline">
+                Política de Privacidade
+              </a>.
             </p>
           </div>
 
