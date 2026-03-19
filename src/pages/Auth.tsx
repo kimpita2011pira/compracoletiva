@@ -1,4 +1,5 @@
 import { useState, useCallback } from "react";
+import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -6,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { ShoppingBag, Store, ArrowLeft } from "lucide-react";
 import { PasswordStrengthIndicator } from "@/components/PasswordStrengthIndicator";
@@ -27,6 +29,7 @@ const Auth = () => {
   const [selectedState, setSelectedState] = useState("");
   const [selectedCity, setSelectedCity] = useState("");
   const [loading, setLoading] = useState(false);
+  const [acceptedPrivacy, setAcceptedPrivacy] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
   const { states, cities, loadingStates, loadingCities } = useBrazilLocations(selectedState);
@@ -62,6 +65,10 @@ const Auth = () => {
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!roleChoice) return;
+    if (!acceptedPrivacy) {
+      toast({ title: "Aceite obrigatório", description: "Você precisa aceitar a Política de Privacidade para criar sua conta.", variant: "destructive" });
+      return;
+    }
     if (password !== confirmPassword) {
       toast({ title: "Senhas não coincidem", description: "A confirmação de senha deve ser igual à senha.", variant: "destructive" });
       return;
@@ -290,6 +297,25 @@ const Auth = () => {
                 {confirmPassword && password !== confirmPassword && (
                   <p className="text-sm text-destructive">As senhas não coincidem</p>
                 )}
+              </div>
+            )}
+            {mode === "register" && (
+              <div className="flex items-start space-x-2">
+                <Checkbox
+                  id="privacy"
+                  checked={acceptedPrivacy}
+                  onCheckedChange={(checked) => setAcceptedPrivacy(checked === true)}
+                />
+                <label htmlFor="privacy" className="text-sm text-muted-foreground leading-tight cursor-pointer">
+                  Li e aceito a{" "}
+                  <Link to="/privacy" target="_blank" className="font-semibold text-primary hover:underline">
+                    Política de Privacidade
+                  </Link>{" "}
+                  e os{" "}
+                  <Link to="/terms" target="_blank" className="font-semibold text-primary hover:underline">
+                    Termos de Uso
+                  </Link>
+                </label>
               </div>
             )}
             {mode === "login" && (
