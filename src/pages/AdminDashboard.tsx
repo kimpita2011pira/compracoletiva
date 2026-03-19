@@ -369,6 +369,11 @@ export default function AdminDashboard() {
               <AdminBannerManager />
             </div>
           </TabsContent>
+
+          {/* ===== AUDITORIA TAB ===== */}
+          <TabsContent value="auditoria" className="space-y-6">
+            <AdminAuditLogs />
+          </TabsContent>
         </Tabs>
       </main>
     </AppLayout>
