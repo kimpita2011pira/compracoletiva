@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { CheckCircle, XCircle, Clock, ArrowUpRight } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { AdminWithdrawalConfirmDialog } from "@/components/AdminWithdrawalConfirmDialog";
 
 const statusStyles: Record<string, { label: string; class: string }> = {
   PENDENTE: { label: "Pendente", class: "bg-warning/15 text-warning-foreground border-warning/30" },
@@ -72,8 +73,11 @@ function WithdrawalCard({
   const [note, setNote] = useState("");
   const [processing, setProcessing] = useState(false);
   const [vendorName, setVendorName] = useState<string | null>(null);
+  const [confirmDialog, setConfirmDialog] = useState<{ open: boolean; action: "APROVADO" | "REJEITADO" }>({
+    open: false,
+    action: "APROVADO",
+  });
 
-  // Fetch vendor name
   useEffect(() => {
     supabase
       .from("vendors")
@@ -87,13 +91,11 @@ function WithdrawalCard({
 
   const style = statusStyles[w.status] || statusStyles.PENDENTE;
 
-  const handleProcess = async (status: "APROVADO" | "REJEITADO") => {
+  const executeProcess = async (status: "APROVADO" | "REJEITADO") => {
     if (!onProcess) return;
     setProcessing(true);
     try {
-      // If approving, debit the vendor's wallet
       if (status === "APROVADO") {
-        // Get vendor's wallet
         const { data: wallet } = await supabase
           .from("wallets")
           .select("id, balance")
@@ -106,7 +108,6 @@ function WithdrawalCard({
           return;
         }
 
-        // Debit wallet
         const { error: walletErr } = await supabase
           .from("wallets")
           .update({ balance: Number(wallet.balance) - Number(w.amount), updated_at: new Date().toISOString() } as any)
@@ -114,7 +115,6 @@ function WithdrawalCard({
 
         if (walletErr) throw walletErr;
 
-        // Record transaction
         const { error: txErr } = await supabase
           .from("wallet_transactions" as any)
           .insert({
@@ -130,7 +130,6 @@ function WithdrawalCard({
 
       await onProcess.mutateAsync({ id: w.id, status, adminNote: note || undefined });
 
-      // Notify vendor
       await supabase.from("notifications").insert({
         user_id: w.user_id,
         title: status === "APROVADO" ? "Saque aprovado! ✅" : "Saque rejeitado ❌",
@@ -147,6 +146,10 @@ function WithdrawalCard({
     } finally {
       setProcessing(false);
     }
+  };
+
+  const openConfirm = (action: "APROVADO" | "REJEITADO") => {
+    setConfirmDialog({ open: true, action });
   };
 
   return (
@@ -190,7 +193,7 @@ function WithdrawalCard({
               size="sm"
               className="gap-1.5 flex-1"
               disabled={processing}
-              onClick={() => handleProcess("APROVADO")}
+              onClick={() => openConfirm("APROVADO")}
             >
               <CheckCircle className="h-3.5 w-3.5" /> Aprovar
             </Button>
@@ -199,13 +202,22 @@ function WithdrawalCard({
               variant="outline"
               className="gap-1.5 flex-1 text-destructive hover:text-destructive"
               disabled={processing}
-              onClick={() => handleProcess("REJEITADO")}
+              onClick={() => openConfirm("REJEITADO")}
             >
               <XCircle className="h-3.5 w-3.5" /> Rejeitar
             </Button>
           </div>
         </div>
       )}
+
+      <AdminWithdrawalConfirmDialog
+        open={confirmDialog.open}
+        onOpenChange={(open) => setConfirmDialog((prev) => ({ ...prev, open }))}
+        action={confirmDialog.action}
+        amount={w.amount}
+        vendorName={vendorName || "Vendedor"}
+        onConfirmed={() => executeProcess(confirmDialog.action)}
+      />
     </div>
   );
 }
