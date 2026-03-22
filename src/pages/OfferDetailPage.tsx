@@ -8,6 +8,7 @@ import ReserveOfferModal from "@/components/ReserveOfferModal";
 import { OfferImageGallery } from "@/components/OfferImageGallery";
 import { FavoriteButton } from "@/components/FavoriteButton";
 import { AppLayout } from "@/components/AppLayout";
+import { SEOHead } from "@/components/SEOHead";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
