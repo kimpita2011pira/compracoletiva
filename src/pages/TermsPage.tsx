@@ -8,6 +8,14 @@ const TermsPage = () => {
         title="Termos de Uso"
         description="Leia os Termos de Uso da plataforma Compra Coletiva. Saiba sobre cadastro, compras coletivas, carteira digital e responsabilidades."
         path="/terms"
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "WebPage",
+          name: "Termos de Uso – Compra Coletiva",
+          url: "https://compracoletiva.lovable.app/terms",
+          description: "Termos de Uso da plataforma Compra Coletiva.",
+          dateModified: "2026-02-01",
+        }}
       />
       <main className="container max-w-3xl py-10 space-y-8">
         <header>

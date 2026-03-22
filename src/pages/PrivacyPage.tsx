@@ -8,6 +8,14 @@ const PrivacyPage = () => {
         title="Política de Privacidade"
         description="Política de Privacidade do Compra Coletiva. Saiba como coletamos, usamos e protegemos seus dados pessoais em conformidade com a LGPD."
         path="/privacy"
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "WebPage",
+          name: "Política de Privacidade – Compra Coletiva",
+          url: "https://compracoletiva.lovable.app/privacy",
+          description: "Política de Privacidade da plataforma Compra Coletiva em conformidade com a LGPD.",
+          dateModified: "2026-03-01",
+        }}
       />
       <main className="container max-w-3xl py-10 space-y-8">
         <header>
