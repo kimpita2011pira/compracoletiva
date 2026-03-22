@@ -116,6 +116,7 @@ const ProfilePage = () => {
   const [whatsapp, setWhatsapp] = useState("");
   const [selectedState, setSelectedState] = useState("");
   const [selectedCity, setSelectedCity] = useState("");
+  const [cityOpen, setCityOpen] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const { states, cities, loadingStates, loadingCities } = useBrazilLocations(selectedState);
 
