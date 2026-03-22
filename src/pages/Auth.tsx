@@ -309,8 +309,8 @@ const Auth = () => {
                                       <CommandItem
                                         key={c.id}
                                         value={c.nome}
-                                        onSelect={(val) => {
-                                          setSelectedCity(val === selectedCity ? "" : val);
+                                        onSelect={() => {
+                                          setSelectedCity(prev => prev === c.nome ? "" : c.nome);
                                           setCityOpen(false);
                                         }}
                                       >
