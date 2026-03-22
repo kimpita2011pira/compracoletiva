@@ -9,7 +9,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Save, User, Camera, Lock } from "lucide-react";
+import { Save, User, Camera, Lock, ChevronsUpDown, Check } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Command, CommandInput, CommandList, CommandEmpty, CommandItem } from "@/components/ui/command";
+import { cn } from "@/lib/utils";
 import { BecomeVendorCard } from "@/components/BecomeVendorCard";
 import { PasswordStrengthIndicator } from "@/components/PasswordStrengthIndicator";
 
