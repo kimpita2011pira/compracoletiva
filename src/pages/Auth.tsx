@@ -287,16 +287,41 @@ const Auth = () => {
                           </div>
                           <div className="space-y-2">
                             <Label htmlFor="city">Cidade</Label>
-                            <Select value={selectedCity} onValueChange={setSelectedCity} disabled={!selectedState}>
-                              <SelectTrigger id="city">
-                                <SelectValue placeholder={loadingCities ? "Carregando..." : "Selecione"} />
-                              </SelectTrigger>
-                              <SelectContent>
-                                {cities.map((c) => (
-                                  <SelectItem key={c.id} value={c.nome}>{c.nome}</SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
+                            <Popover open={cityOpen} onOpenChange={setCityOpen}>
+                              <PopoverTrigger asChild>
+                                <Button
+                                  variant="outline"
+                                  role="combobox"
+                                  aria-expanded={cityOpen}
+                                  className="w-full justify-between font-normal"
+                                  disabled={!selectedState}
+                                >
+                                  {selectedCity || (loadingCities ? "Carregando..." : "Selecione a cidade")}
+                                  <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                                </Button>
+                              </PopoverTrigger>
+                              <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
+                                <Command>
+                                  <CommandInput placeholder="Buscar cidade..." />
+                                  <CommandList>
+                                    <CommandEmpty>Nenhuma cidade encontrada.</CommandEmpty>
+                                    {cities.map((c) => (
+                                      <CommandItem
+                                        key={c.id}
+                                        value={c.nome}
+                                        onSelect={(val) => {
+                                          setSelectedCity(val === selectedCity ? "" : val);
+                                          setCityOpen(false);
+                                        }}
+                                      >
+                                        <Check className={cn("mr-2 h-4 w-4", selectedCity === c.nome ? "opacity-100" : "opacity-0")} />
+                                        {c.nome}
+                                      </CommandItem>
+                                    ))}
+                                  </CommandList>
+                                </Command>
+                              </PopoverContent>
+                            </Popover>
                           </div>
                         </div>
                       </>
