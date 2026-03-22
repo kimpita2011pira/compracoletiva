@@ -8,6 +8,7 @@ import ReserveOfferModal from "@/components/ReserveOfferModal";
 import { OfferImageGallery } from "@/components/OfferImageGallery";
 import { FavoriteButton } from "@/components/FavoriteButton";
 import { AppLayout } from "@/components/AppLayout";
+import { SEOHead } from "@/components/SEOHead";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
@@ -99,6 +100,38 @@ export default function OfferDetailPage() {
 
   return (
     <AppLayout title={offer.title}>
+      <SEOHead
+        title={offer.title}
+        description={offer.description?.slice(0, 155) || `${offer.title} com ${discount}% de desconto no Compra Coletiva`}
+        path={`/offers/${offer.id}`}
+        type="product"
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "Product",
+          name: offer.title,
+          description: offer.description || offer.title,
+          image: offer.image_url || undefined,
+          url: `https://compracoletiva.lovable.app/offers/${offer.id}`,
+          offers: {
+            "@type": "Offer",
+            price: offer.offer_price.toFixed(2),
+            priceCurrency: "BRL",
+            availability: canReserve
+              ? "https://schema.org/InStock"
+              : "https://schema.org/SoldOut",
+            validThrough: offer.end_date,
+          },
+          ...(reviews && reviews.length > 0
+            ? {
+                aggregateRating: {
+                  "@type": "AggregateRating",
+                  ratingValue: avgRating.toFixed(1),
+                  reviewCount: reviews.length,
+                },
+              }
+            : {}),
+        }}
+      />
       <main className="container max-w-3xl py-6 space-y-6">
         {/* Back */}
         <Button variant="ghost" size="sm" className="gap-1" onClick={() => navigate("/offers")}>
