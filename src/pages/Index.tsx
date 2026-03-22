@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { AppLayout } from "@/components/AppLayout";
+import { SEOHead } from "@/components/SEOHead";
 import { ShoppingBag, Wallet, Package } from "lucide-react";
 
 const Index = () => {
