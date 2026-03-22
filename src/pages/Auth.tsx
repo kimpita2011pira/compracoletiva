@@ -33,6 +33,7 @@ const Auth = () => {
   const [whatsapp, setWhatsapp] = useState("");
   const [selectedState, setSelectedState] = useState("");
   const [selectedCity, setSelectedCity] = useState("");
+  const [cityOpen, setCityOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [acceptedPrivacy, setAcceptedPrivacy] = useState(false);
   const navigate = useNavigate();
