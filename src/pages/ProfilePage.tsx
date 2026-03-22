@@ -9,7 +9,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Save, User, Camera, Lock } from "lucide-react";
+import { Save, User, Camera, Lock, ChevronsUpDown, Check } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Command, CommandInput, CommandList, CommandEmpty, CommandItem } from "@/components/ui/command";
+import { cn } from "@/lib/utils";
 import { BecomeVendorCard } from "@/components/BecomeVendorCard";
 import { PasswordStrengthIndicator } from "@/components/PasswordStrengthIndicator";
 
@@ -113,6 +116,7 @@ const ProfilePage = () => {
   const [whatsapp, setWhatsapp] = useState("");
   const [selectedState, setSelectedState] = useState("");
   const [selectedCity, setSelectedCity] = useState("");
+  const [cityOpen, setCityOpen] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const { states, cities, loadingStates, loadingCities } = useBrazilLocations(selectedState);
 
@@ -293,16 +297,41 @@ const ProfilePage = () => {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="profile-city">Cidade</Label>
-                  <Select value={selectedCity} onValueChange={setSelectedCity} disabled={!selectedState}>
-                    <SelectTrigger id="profile-city">
-                      <SelectValue placeholder={loadingCities ? "Carregando..." : "Selecione"} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {cities.map((c) => (
-                        <SelectItem key={c.id} value={c.nome}>{c.nome}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <Popover open={cityOpen} onOpenChange={setCityOpen}>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        role="combobox"
+                        aria-expanded={cityOpen}
+                        className="w-full justify-between font-normal"
+                        disabled={!selectedState}
+                      >
+                        {selectedCity || (loadingCities ? "Carregando..." : "Selecione a cidade")}
+                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
+                      <Command>
+                        <CommandInput placeholder="Buscar cidade..." />
+                        <CommandList>
+                          <CommandEmpty>Nenhuma cidade encontrada.</CommandEmpty>
+                          {cities.map((c) => (
+                            <CommandItem
+                              key={c.id}
+                              value={c.nome}
+                              onSelect={() => {
+                                setSelectedCity(prev => prev === c.nome ? "" : c.nome);
+                                setCityOpen(false);
+                              }}
+                            >
+                              <Check className={cn("mr-2 h-4 w-4", selectedCity === c.nome ? "opacity-100" : "opacity-0")} />
+                              {c.nome}
+                            </CommandItem>
+                          ))}
+                        </CommandList>
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
                 </div>
               </div>
               <Button type="submit" className="w-full" size="lg" disabled={saving}>
