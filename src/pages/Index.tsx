@@ -33,6 +33,23 @@ const Index = () => {
 
   return (
     <AppLayout>
+      <SEOHead
+        title="Início"
+        description="Compra Coletiva: a plataforma que conecta consumidores e vendedores locais. Quanto mais participam, mais todos economizam!"
+        path="/"
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          name: "Compra Coletiva",
+          url: "https://compracoletiva.lovable.app",
+          description: "Plataforma de compra coletiva que conecta consumidores e vendedores locais.",
+          potentialAction: {
+            "@type": "SearchAction",
+            target: "https://compracoletiva.lovable.app/offers?q={search_term_string}",
+            "query-input": "required name=search_term_string",
+          },
+        }}
+      />
       {/* Hero */}
       <section className="container py-12 text-center">
         <p className="text-lg text-muted-foreground">
