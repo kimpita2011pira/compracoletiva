@@ -5,11 +5,12 @@ interface SEOHeadProps {
   description: string;
   path: string;
   type?: string;
+  jsonLd?: Record<string, unknown>;
 }
 
 const BASE_URL = "https://compracoletiva.lovable.app";
 
-export const SEOHead = ({ title, description, path, type = "website" }: SEOHeadProps) => {
+export const SEOHead = ({ title, description, path, type = "website", jsonLd }: SEOHeadProps) => {
   const fullTitle = `${title} | Compra Coletiva`;
   const url = `${BASE_URL}${path}`;
 
@@ -24,6 +25,9 @@ export const SEOHead = ({ title, description, path, type = "website" }: SEOHeadP
       <meta property="og:type" content={type} />
       <meta name="twitter:title" content={fullTitle} />
       <meta name="twitter:description" content={description} />
+      {jsonLd && (
+        <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>
+      )}
     </Helmet>
   );
 };

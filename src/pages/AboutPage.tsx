@@ -8,6 +8,19 @@ const AboutPage = () => {
         title="Sobre Nós"
         description="Conheça o Compra Coletiva: a plataforma de compra coletiva que conecta consumidores e vendedores locais. Quanto mais participam, mais todos economizam."
         path="/about"
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "Organization",
+          name: "Compra Coletiva",
+          url: "https://compracoletiva.lovable.app",
+          description: "Plataforma de compra coletiva que conecta consumidores e vendedores locais.",
+          contactPoint: {
+            "@type": "ContactPoint",
+            email: "kimpita2011@gmail.com",
+            telephone: "+5519991973737",
+            contactType: "customer service",
+          },
+        }}
       />
       <main className="container max-w-3xl py-10 space-y-8">
         <article>
