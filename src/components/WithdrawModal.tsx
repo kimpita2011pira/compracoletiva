@@ -113,12 +113,19 @@ export default function WithdrawModal({ open, onOpenChange }: WithdrawModalProps
             </Label>
             <Input
               type="text"
-              placeholder="CPF, e-mail, telefone ou chave aleatória"
+              placeholder="CPF, CNPJ, e-mail, telefone ou chave aleatória"
               value={pixKey}
               onChange={(e) => setPixKey(e.target.value)}
               maxLength={100}
               required
             />
+            {pixKey.trim() && (
+              detectPixKeyType(pixKey) ? (
+                <p className="text-[11px] text-success">✓ Tipo: {detectPixKeyType(pixKey)}</p>
+              ) : (
+                <p className="text-[11px] text-destructive">Formato inválido</p>
+              )
+            )}
           </div>
 
           <label className="flex items-center gap-2 text-sm cursor-pointer">
