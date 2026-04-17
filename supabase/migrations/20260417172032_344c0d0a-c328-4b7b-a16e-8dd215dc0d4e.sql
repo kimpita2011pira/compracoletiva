@@ -1,0 +1,1 @@
+ALTER TABLE public.franchises ADD COLUMN IF NOT EXISTS pix_key text;
