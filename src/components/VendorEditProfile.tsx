@@ -50,6 +50,7 @@ export function VendorEditProfile() {
   const [selectedState, setSelectedState] = useState("");
   const [selectedCity, setSelectedCity] = useState(vendor?.city || "");
   const [description, setDescription] = useState(vendor?.description || "");
+  const [pixKey, setPixKey] = useState(vendor?.pix_key || "");
   const [submitting, setSubmitting] = useState(false);
   const { states, cities, loadingStates, loadingCities } = useBrazilLocations(selectedState);
 
