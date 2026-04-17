@@ -12,6 +12,32 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Pencil, Save, X } from "lucide-react";
 
+const VALID_DDDS = new Set([
+  "11","12","13","14","15","16","17","18","19",
+  "21","22","24","27","28",
+  "31","32","33","34","35","37","38",
+  "41","42","43","44","45","46","47","48","49",
+  "51","53","54","55",
+  "61","62","63","64","65","66","67","68","69",
+  "71","73","74","75","77","79",
+  "81","82","83","84","85","86","87","88","89",
+  "91","92","93","94","95","96","97","98","99",
+]);
+
+function formatPhone(value: string): string {
+  const digits = value.replace(/\D/g, "").slice(0, 11);
+  if (digits.length <= 2) return digits.length ? `(${digits}` : "";
+  if (digits.length <= 6) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+  if (digits.length <= 10)
+    return `(${digits.slice(0, 2)}) ${digits.slice(2, 6)}-${digits.slice(6)}`;
+  return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
+}
+
+function isValidBrazilianMobile(value: string): boolean {
+  const digits = value.replace(/\D/g, "");
+  return digits.length === 11 && VALID_DDDS.has(digits.slice(0, 2)) && digits[2] === "9";
+}
+
 export function VendorEditProfile() {
   const { user } = useAuth();
   const { vendor, updateVendor } = useVendor();
@@ -20,6 +46,7 @@ export function VendorEditProfile() {
 
   const [companyName, setCompanyName] = useState(vendor?.company_name || "");
   const [cnpj, setCnpj] = useState(vendor?.cnpj || "");
+  const [whatsapp, setWhatsapp] = useState("");
   const [selectedState, setSelectedState] = useState("");
   const [selectedCity, setSelectedCity] = useState(vendor?.city || "");
   const [description, setDescription] = useState(vendor?.description || "");
@@ -28,17 +55,35 @@ export function VendorEditProfile() {
 
   if (!vendor) return null;
 
-  const handleStartEdit = () => {
+  const handleStartEdit = async () => {
     setCompanyName(vendor.company_name);
     setCnpj(vendor.cnpj || "");
     setSelectedCity(vendor.city || "");
     setDescription(vendor.description || "");
+    if (user) {
+      const { data } = await supabase
+        .from("profiles")
+        .select("whatsapp")
+        .eq("id", user.id)
+        .maybeSingle();
+      setWhatsapp(data?.whatsapp ? formatPhone(data.whatsapp) : "");
+    }
     setEditing(true);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user || !vendor) return;
+
+    if (!isValidBrazilianMobile(whatsapp)) {
+      toast({
+        title: "WhatsApp inválido",
+        description: "Use (DDD) 9XXXX-XXXX com DDD brasileiro válido.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setSubmitting(true);
 
     try {
@@ -57,8 +102,15 @@ export function VendorEditProfile() {
         changes.description = { de: vendor.description || "", para: description.trim() };
       }
 
+      // Always sync WhatsApp on profile (required for notifications)
+      const { error: profileErr } = await supabase
+        .from("profiles")
+        .update({ whatsapp })
+        .eq("id", user.id);
+      if (profileErr) throw profileErr;
+
       if (Object.keys(changes).length === 0) {
-        toast({ title: "Nenhuma alteração detectada" });
+        toast({ title: "WhatsApp atualizado", description: "Nenhuma alteração no cadastro detectada." });
         setEditing(false);
         setSubmitting(false);
         return;
@@ -128,7 +180,22 @@ export function VendorEditProfile() {
           </div>
 
           <div className="space-y-2">
+            <Label>WhatsApp *</Label>
+            <Input
+              value={whatsapp}
+              onChange={(e) => setWhatsapp(formatPhone(e.target.value))}
+              placeholder="(00) 00000-0000"
+              maxLength={15}
+              required
+            />
+            <p className="text-[11px] text-muted-foreground">
+              Obrigatório para receber notificações de pedidos, validação de ofertas e saques.
+            </p>
+          </div>
+
+          <div className="space-y-2">
             <Label>CPF ou CNPJ</Label>
+
             <Input
               value={cnpj}
               onChange={(e) => {
