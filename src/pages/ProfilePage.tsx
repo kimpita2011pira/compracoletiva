@@ -25,6 +25,28 @@ function formatPhone(value: string): string {
   return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
 }
 
+// Valid Brazilian DDDs
+const VALID_DDDS = new Set([
+  "11","12","13","14","15","16","17","18","19",
+  "21","22","24","27","28",
+  "31","32","33","34","35","37","38",
+  "41","42","43","44","45","46","47","48","49",
+  "51","53","54","55",
+  "61","62","63","64","65","66","67","68","69",
+  "71","73","74","75","77","79",
+  "81","82","83","84","85","86","87","88","89",
+  "91","92","93","94","95","96","97","98","99",
+]);
+
+function isValidBrazilianMobile(value: string): boolean {
+  const digits = value.replace(/\D/g, "");
+  // Mobile must be 11 digits: DDD (2) + 9 + 8 digits
+  if (digits.length !== 11) return false;
+  if (!VALID_DDDS.has(digits.slice(0, 2))) return false;
+  if (digits[2] !== "9") return false;
+  return true;
+}
+
 const ChangePasswordCard = () => {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -106,6 +128,7 @@ const ChangePasswordCard = () => {
 const ProfilePage = () => {
   const { user, roles } = useAuth();
   const isOnlyCliente = roles.length > 0 && roles.every((r) => r === "CLIENTE");
+  const isFranqueado = roles.includes("FRANQUEADO");
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [loading, setLoading] = useState(true);
@@ -180,6 +203,22 @@ const ProfilePage = () => {
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) return;
+
+    // Franqueado must have a valid Brazilian mobile WhatsApp
+    if (isFranqueado) {
+      if (!whatsapp.trim()) {
+        toast({ title: "WhatsApp obrigatório", description: "Franqueados devem cadastrar um número de WhatsApp válido.", variant: "destructive" });
+        return;
+      }
+      if (!isValidBrazilianMobile(whatsapp)) {
+        toast({ title: "WhatsApp inválido", description: "Use o formato (DDD) 9XXXX-XXXX com DDD brasileiro válido.", variant: "destructive" });
+        return;
+      }
+    } else if (whatsapp.trim() && !isValidBrazilianMobile(whatsapp)) {
+      toast({ title: "WhatsApp inválido", description: "Use o formato (DDD) 9XXXX-XXXX com DDD brasileiro válido.", variant: "destructive" });
+      return;
+    }
+
     setSaving(true);
     const { error } = await supabase
       .from("profiles")
@@ -271,14 +310,22 @@ const ProfilePage = () => {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="profile-whatsapp">WhatsApp</Label>
+                  <Label htmlFor="profile-whatsapp">
+                    WhatsApp{isFranqueado && <span className="text-destructive ml-0.5">*</span>}
+                  </Label>
                   <Input
                     id="profile-whatsapp"
                     value={whatsapp}
                     onChange={(e) => setWhatsapp(formatPhone(e.target.value))}
                     maxLength={15}
                     placeholder="(00) 00000-0000"
+                    required={isFranqueado}
                   />
+                  {isFranqueado && (
+                    <p className="text-[11px] text-muted-foreground">
+                      Obrigatório para receber notificações de saques e ações administrativas.
+                    </p>
+                  )}
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-3">
