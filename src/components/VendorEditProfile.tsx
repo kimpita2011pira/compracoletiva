@@ -300,7 +300,7 @@ export function VendorEditProfile() {
             <Label>Chave Pix padrão (saques)</Label>
             <Input
               value={pixKey}
-              onChange={(e) => setPixKey(e.target.value)}
+              onChange={(e) => setPixKey(formatPixKey(e.target.value))}
               placeholder="CPF, CNPJ, e-mail, telefone ou chave aleatória"
               maxLength={100}
             />
