@@ -132,12 +132,19 @@ export default function FranchiseeWithdrawModal({ open, onOpenChange }: Props) {
             </Label>
             <Input
               type="text"
-              placeholder="CPF, e-mail, telefone ou chave aleatória"
+              placeholder="CPF, CNPJ, e-mail, telefone ou chave aleatória"
               value={pixKey}
               onChange={(e) => setPixKey(e.target.value)}
               maxLength={100}
               required
             />
+            {pixKey.trim() && (
+              detectPixKeyType(pixKey) ? (
+                <p className="text-[11px] text-success">✓ Tipo: {detectPixKeyType(pixKey)}</p>
+              ) : (
+                <p className="text-[11px] text-destructive">Formato inválido</p>
+              )
+            )}
             {savedPixKey && pixKey === savedPixKey && (
               <p className="text-[11px] text-muted-foreground">Chave Pix padrão carregada do seu cadastro.</p>
             )}
