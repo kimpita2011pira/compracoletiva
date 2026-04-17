@@ -59,6 +59,11 @@ export default function FranchiseeWithdrawModal({ open, onOpenChange }: Props) {
       toast.error("Informe a chave Pix");
       return;
     }
+    const pixCheck = validatePixKey(pixKey);
+    if (!pixCheck.valid) {
+      toast.error(pixCheck.error || "Chave Pix inválida");
+      return;
+    }
 
     setSubmitting(true);
     try {
