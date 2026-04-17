@@ -5,10 +5,11 @@ import { useAuth } from "@/hooks/useAuth";
 interface ProtectedRouteProps {
   children: React.ReactNode;
   requiredRole?: string;
+  requiredAnyRole?: string[];
 }
 
 export const ProtectedRoute = forwardRef<HTMLDivElement, ProtectedRouteProps>(
-  ({ children, requiredRole }: ProtectedRouteProps, ref) => {
+  ({ children, requiredRole, requiredAnyRole }: ProtectedRouteProps, ref) => {
     const { user, loading, roles } = useAuth();
 
     if (loading) {
@@ -21,6 +22,7 @@ export const ProtectedRoute = forwardRef<HTMLDivElement, ProtectedRouteProps>(
 
     if (!user) return <Navigate to="/auth" replace />;
     if (requiredRole && !roles.includes(requiredRole)) return <Navigate to="/" replace />;
+    if (requiredAnyRole && !requiredAnyRole.some((r) => roles.includes(r))) return <Navigate to="/" replace />;
 
     return <div ref={ref}>{children}</div>;
   }
