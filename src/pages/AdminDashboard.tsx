@@ -28,6 +28,8 @@ import type { Database } from "@/integrations/supabase/types";
 import { AdminBannerManager } from "@/components/AdminBannerManager";
 import { AdminWithdrawals } from "@/components/AdminWithdrawals";
 import { AdminAuditLogs } from "@/components/AdminAuditLogs";
+import { AdminFranchiseManager } from "@/components/AdminFranchiseManager";
+import { Building } from "lucide-react";
 import {
   BarChart,
   Bar,
@@ -90,12 +92,15 @@ export default function AdminDashboard() {
     <AppLayout title="🛡️ Painel Admin">
       <main className="container py-8">
         <Tabs defaultValue="metricas" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-5">
+          <TabsList className="grid w-full grid-cols-6">
             <TabsTrigger value="metricas" className="gap-2">
               <BarChart3 className="h-4 w-4" /> Métricas
             </TabsTrigger>
             <TabsTrigger value="vendedores" className="gap-2">
               <Building2 className="h-4 w-4" /> Vendedores ({vendors.length})
+            </TabsTrigger>
+            <TabsTrigger value="franquias" className="gap-2">
+              <Building className="h-4 w-4" /> Franquias
             </TabsTrigger>
             <TabsTrigger value="saques" className="gap-2">
               <DollarSign className="h-4 w-4" /> Saques
