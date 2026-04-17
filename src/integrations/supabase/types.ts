@@ -677,7 +677,7 @@ export type Database = {
           processed_at: string | null
           status: string
           user_id: string
-          vendor_id: string
+          vendor_id: string | null
         }
         Insert: {
           admin_note?: string | null
@@ -688,7 +688,7 @@ export type Database = {
           processed_at?: string | null
           status?: string
           user_id: string
-          vendor_id: string
+          vendor_id?: string | null
         }
         Update: {
           admin_note?: string | null
@@ -699,7 +699,7 @@ export type Database = {
           processed_at?: string | null
           status?: string
           user_id?: string
-          vendor_id?: string
+          vendor_id?: string | null
         }
         Relationships: [
           {

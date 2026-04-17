@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 
 export type WithdrawalRequest = {
   id: string;
-  vendor_id: string;
+  vendor_id: string | null;
   user_id: string;
   amount: number;
   pix_key: string;
@@ -34,7 +34,7 @@ export function useVendorWithdrawals() {
 export function useCreateWithdrawal() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({ vendorId, amount, pixKey }: { vendorId: string; amount: number; pixKey: string }) => {
+    mutationFn: async ({ vendorId, amount, pixKey }: { vendorId: string | null; amount: number; pixKey: string }) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Não autenticado");
       const { data, error } = await supabase
@@ -47,6 +47,26 @@ export function useCreateWithdrawal() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["vendor-withdrawals"] });
+      queryClient.invalidateQueries({ queryKey: ["franchisee-withdrawals"] });
+    },
+  });
+}
+
+export function useFranchiseeWithdrawals() {
+  return useQuery({
+    queryKey: ["franchisee-withdrawals"],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return [];
+      const { data, error } = await supabase
+        .from("withdrawal_requests" as any)
+        .select("*")
+        .eq("user_id", user.id)
+        .is("vendor_id", null)
+        .order("created_at", { ascending: false })
+        .limit(50);
+      if (error) throw error;
+      return (data ?? []) as unknown as WithdrawalRequest[];
     },
   });
 }

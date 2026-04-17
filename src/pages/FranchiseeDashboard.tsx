@@ -1,7 +1,10 @@
 import { useState } from "react";
 import { useFranchiseeMetrics } from "@/hooks/useFranchiseeMetrics";
+import { useWallet } from "@/hooks/useWallet";
+import { useFranchiseeWithdrawals } from "@/hooks/useWithdrawals";
 import { AppLayout } from "@/components/AppLayout";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   BarChart3,
   Building2,
@@ -13,6 +16,8 @@ import {
   Wallet,
   Clock,
   CheckCircle,
+  XCircle,
+  ArrowUpRight,
 } from "lucide-react";
 import {
   Table,
@@ -32,6 +37,7 @@ import {
   YAxis,
 } from "recharts";
 import { AdminWithdrawals } from "@/components/AdminWithdrawals";
+import FranchiseeWithdrawModal from "@/components/FranchiseeWithdrawModal";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const fmtBRL = (v: number) =>
@@ -39,7 +45,10 @@ const fmtBRL = (v: number) =>
 
 export default function FranchiseeDashboard() {
   const [days, setDays] = useState(30);
+  const [withdrawOpen, setWithdrawOpen] = useState(false);
   const { data, isLoading } = useFranchiseeMetrics(days);
+  const { data: wallet } = useWallet();
+  const { data: myWithdrawals } = useFranchiseeWithdrawals();
 
   if (isLoading) {
     return (
@@ -241,13 +250,80 @@ export default function FranchiseeDashboard() {
             </div>
           </TabsContent>
 
-          <TabsContent value="withdrawals">
+          <TabsContent value="withdrawals" className="space-y-6">
+            {/* My commission balance + withdraw */}
+            <div className="rounded-xl border bg-gradient-to-br from-primary/5 via-card to-secondary/5 p-5 shadow-sm">
+              <div className="flex flex-wrap items-center justify-between gap-4">
+                <div>
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Wallet className="h-4 w-4" /> Minha comissão disponível
+                  </div>
+                  <p className="mt-1 font-display text-3xl font-bold text-primary">
+                    R$ {Number(wallet?.balance ?? 0).toFixed(2).replace(".", ",")}
+                  </p>
+                </div>
+                <Button
+                  size="lg"
+                  className="gap-2 font-bold"
+                  onClick={() => setWithdrawOpen(true)}
+                  disabled={Number(wallet?.balance ?? 0) < 1}
+                >
+                  <ArrowUpRight className="h-4 w-4" /> Sacar via Pix
+                </Button>
+              </div>
+            </div>
+
+            {/* My withdrawal history */}
+            {myWithdrawals && myWithdrawals.length > 0 && (
+              <div className="rounded-xl border bg-card p-5 shadow-sm">
+                <h3 className="mb-4 font-display text-lg font-bold">Meus saques</h3>
+                <div className="space-y-2">
+                  {myWithdrawals.map((w) => {
+                    const sm: Record<string, { label: string; icon: typeof Clock; color: string }> = {
+                      PENDENTE: { label: "Pendente", icon: Clock, color: "text-warning-foreground" },
+                      APROVADO: { label: "Aprovado", icon: CheckCircle, color: "text-success" },
+                      REJEITADO: { label: "Rejeitado", icon: XCircle, color: "text-destructive" },
+                    };
+                    const s = sm[w.status] || sm.PENDENTE;
+                    const SIcon = s.icon;
+                    return (
+                      <div key={w.id} className="flex items-center gap-3 rounded-xl border bg-card p-3">
+                        <div className="rounded-lg p-2 bg-primary/10">
+                          <ArrowUpRight className="h-4 w-4 text-primary" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <span className="text-sm font-semibold">
+                              R$ {Number(w.amount).toFixed(2).replace(".", ",")}
+                            </span>
+                            <Badge variant="outline" className={`text-[10px] gap-1 ${s.color}`}>
+                              <SIcon className="h-3 w-3" /> {s.label}
+                            </Badge>
+                          </div>
+                          <span className="text-xs text-muted-foreground">
+                            Pix: <span className="font-mono">{w.pix_key}</span> ·{" "}
+                            {new Date(w.created_at).toLocaleDateString("pt-BR")}
+                          </span>
+                          {w.admin_note && (
+                            <p className="text-xs text-muted-foreground mt-0.5">Nota: {w.admin_note}</p>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* Vendor withdrawals scoped to franchisee cities */}
             <div className="rounded-xl border bg-card p-5 shadow-sm">
               <h3 className="mb-4 font-display text-lg font-bold">Saques de vendedores das suas cidades</h3>
               <AdminWithdrawals />
             </div>
           </TabsContent>
         </Tabs>
+
+        <FranchiseeWithdrawModal open={withdrawOpen} onOpenChange={setWithdrawOpen} />
       </main>
     </AppLayout>
   );
