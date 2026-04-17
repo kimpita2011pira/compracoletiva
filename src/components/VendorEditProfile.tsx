@@ -87,6 +87,14 @@ export function VendorEditProfile() {
       return;
     }
 
+    if (pixKey.trim()) {
+      const pixCheck = validatePixKey(pixKey);
+      if (!pixCheck.valid) {
+        toast({ title: "Chave Pix inválida", description: pixCheck.error, variant: "destructive" });
+        return;
+      }
+    }
+
     setSubmitting(true);
 
     try {
