@@ -128,6 +128,7 @@ const ChangePasswordCard = () => {
 const ProfilePage = () => {
   const { user, roles } = useAuth();
   const isOnlyCliente = roles.length > 0 && roles.every((r) => r === "CLIENTE");
+  const isFranqueado = roles.includes("FRANQUEADO");
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [loading, setLoading] = useState(true);
