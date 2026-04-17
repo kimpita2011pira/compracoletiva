@@ -148,6 +148,68 @@ export type Database = {
           },
         ]
       }
+      franchise_cities: {
+        Row: {
+          city: string
+          created_at: string
+          franchise_id: string
+          id: string
+          state: string
+        }
+        Insert: {
+          city: string
+          created_at?: string
+          franchise_id: string
+          id?: string
+          state: string
+        }
+        Update: {
+          city?: string
+          created_at?: string
+          franchise_id?: string
+          id?: string
+          state?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "franchise_cities_franchise_id_fkey"
+            columns: ["franchise_id"]
+            isOneToOne: false
+            referencedRelation: "franchises"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      franchises: {
+        Row: {
+          active: boolean
+          commission_rate: number
+          created_at: string
+          id: string
+          notes: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          active?: boolean
+          commission_rate?: number
+          created_at?: string
+          id?: string
+          notes?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          active?: boolean
+          commission_rate?: number
+          created_at?: string
+          id?: string
+          notes?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       notifications: {
         Row: {
           created_at: string
@@ -673,11 +735,22 @@ export type Database = {
             }
             Returns: undefined
           }
+      get_franchisee_cities: {
+        Args: { _user_id: string }
+        Returns: {
+          city: string
+          state: string
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
         }
+        Returns: boolean
+      }
+      is_franchisee_for_city: {
+        Args: { _city: string; _state: string; _user_id: string }
         Returns: boolean
       }
       notify_interested_users: {
@@ -696,7 +769,7 @@ export type Database = {
       validate_expired_offers: { Args: never; Returns: Json }
     }
     Enums: {
-      app_role: "CLIENTE" | "VENDEDOR" | "ADMIN"
+      app_role: "CLIENTE" | "VENDEDOR" | "ADMIN" | "FRANQUEADO"
       delivery_type: "DELIVERY" | "RETIRADA"
       offer_category:
         | "ALIMENTACAO"
@@ -844,7 +917,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["CLIENTE", "VENDEDOR", "ADMIN"],
+      app_role: ["CLIENTE", "VENDEDOR", "ADMIN", "FRANQUEADO"],
       delivery_type: ["DELIVERY", "RETIRADA"],
       offer_category: [
         "ALIMENTACAO",
