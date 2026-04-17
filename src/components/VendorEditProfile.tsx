@@ -74,6 +74,16 @@ export function VendorEditProfile() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user || !vendor) return;
+
+    if (!isValidBrazilianMobile(whatsapp)) {
+      toast({
+        title: "WhatsApp inválido",
+        description: "Use (DDD) 9XXXX-XXXX com DDD brasileiro válido.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setSubmitting(true);
 
     try {
@@ -92,8 +102,15 @@ export function VendorEditProfile() {
         changes.description = { de: vendor.description || "", para: description.trim() };
       }
 
+      // Always sync WhatsApp on profile (required for notifications)
+      const { error: profileErr } = await supabase
+        .from("profiles")
+        .update({ whatsapp })
+        .eq("id", user.id);
+      if (profileErr) throw profileErr;
+
       if (Object.keys(changes).length === 0) {
-        toast({ title: "Nenhuma alteração detectada" });
+        toast({ title: "WhatsApp atualizado", description: "Nenhuma alteração no cadastro detectada." });
         setEditing(false);
         setSubmitting(false);
         return;
