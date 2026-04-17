@@ -111,6 +111,21 @@ export function VendorEditProfile() {
         .eq("id", user.id);
       if (profileErr) throw profileErr;
 
+      // Always sync pix_key (metadata, doesn't require re-approval)
+      const pixChanged = (pixKey.trim() || null) !== (vendor.pix_key || null);
+      if (pixChanged && Object.keys(changes).length === 0) {
+        const { error: pixErr } = await supabase
+          .from("vendors")
+          .update({ pix_key: pixKey.trim() || null })
+          .eq("id", vendor.id);
+        if (pixErr) throw pixErr;
+        updateVendor?.();
+        toast({ title: "Chave Pix atualizada ✅", description: "Sua chave Pix padrão foi salva." });
+        setEditing(false);
+        setSubmitting(false);
+        return;
+      }
+
       if (Object.keys(changes).length === 0) {
         toast({ title: "WhatsApp atualizado", description: "Nenhuma alteração no cadastro detectada." });
         setEditing(false);
@@ -125,6 +140,7 @@ export function VendorEditProfile() {
           cnpj: cnpj.trim() || null,
           city: selectedCity.trim() || null,
           description: description.trim() || null,
+          pix_key: pixKey.trim() || null,
           status: "PENDENTE" as any,
           previous_data: changes as any,
         })
