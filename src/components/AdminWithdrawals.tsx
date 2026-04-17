@@ -73,21 +73,34 @@ function WithdrawalCard({
   const [note, setNote] = useState("");
   const [processing, setProcessing] = useState(false);
   const [vendorName, setVendorName] = useState<string | null>(null);
+  const isFranchisee = !w.vendor_id;
   const [confirmDialog, setConfirmDialog] = useState<{ open: boolean; action: "APROVADO" | "REJEITADO" }>({
     open: false,
     action: "APROVADO",
   });
 
   useEffect(() => {
-    supabase
-      .from("vendors")
-      .select("company_name")
-      .eq("id", w.vendor_id)
-      .maybeSingle()
-      .then(({ data }) => {
-        if (data) setVendorName(data.company_name);
-      });
-  }, [w.vendor_id]);
+    if (w.vendor_id) {
+      supabase
+        .from("vendors")
+        .select("company_name")
+        .eq("id", w.vendor_id)
+        .maybeSingle()
+        .then(({ data }) => {
+          if (data) setVendorName(data.company_name);
+        });
+    } else {
+      // Franchisee withdrawal: fetch profile name
+      supabase
+        .from("profiles")
+        .select("name")
+        .eq("id", w.user_id)
+        .maybeSingle()
+        .then(({ data }) => {
+          if (data) setVendorName(`${data.name} (Franqueado)`);
+        });
+    }
+  }, [w.vendor_id, w.user_id]);
 
   const style = statusStyles[w.status] || statusStyles.PENDENTE;
 
