@@ -16,6 +16,8 @@ import {
 } from "@/components/ui/dialog";
 import { Plus, Trash2, MapPin, Building2, Search, X } from "lucide-react";
 import { toast } from "sonner";
+import { FranchisePerformanceReport } from "@/components/FranchisePerformanceReport";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export function AdminFranchiseManager() {
   const { list, create, update, remove, addCity, removeCity } = useFranchises();
