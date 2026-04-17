@@ -287,8 +287,21 @@ export function VendorEditProfile() {
             )}
           </div>
 
+          <div className="space-y-2">
+            <Label>Chave Pix padrão (saques)</Label>
+            <Input
+              value={pixKey}
+              onChange={(e) => setPixKey(e.target.value)}
+              placeholder="CPF, e-mail, telefone ou chave aleatória"
+              maxLength={100}
+            />
+            <p className="text-[11px] text-muted-foreground">
+              Será reutilizada automaticamente nas solicitações de saque. Alterar a chave Pix não exige nova aprovação.
+            </p>
+          </div>
+
           <div className="rounded-lg bg-warning/10 p-3 text-sm text-warning-foreground">
-            <p>⚠️ Ao salvar, seu status voltará para <strong>PENDENTE</strong> até o administrador aprovar novamente.</p>
+            <p>⚠️ Alterações em <strong>nome, CPF/CNPJ, cidade ou descrição</strong> retornam o status para <strong>PENDENTE</strong>.</p>
           </div>
 
           <div className="flex gap-3">
