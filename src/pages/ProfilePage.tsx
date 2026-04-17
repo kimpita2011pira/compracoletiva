@@ -203,6 +203,22 @@ const ProfilePage = () => {
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) return;
+
+    // Franqueado must have a valid Brazilian mobile WhatsApp
+    if (isFranqueado) {
+      if (!whatsapp.trim()) {
+        toast({ title: "WhatsApp obrigatório", description: "Franqueados devem cadastrar um número de WhatsApp válido.", variant: "destructive" });
+        return;
+      }
+      if (!isValidBrazilianMobile(whatsapp)) {
+        toast({ title: "WhatsApp inválido", description: "Use o formato (DDD) 9XXXX-XXXX com DDD brasileiro válido.", variant: "destructive" });
+        return;
+      }
+    } else if (whatsapp.trim() && !isValidBrazilianMobile(whatsapp)) {
+      toast({ title: "WhatsApp inválido", description: "Use o formato (DDD) 9XXXX-XXXX com DDD brasileiro válido.", variant: "destructive" });
+      return;
+    }
+
     setSaving(true);
     const { error } = await supabase
       .from("profiles")
