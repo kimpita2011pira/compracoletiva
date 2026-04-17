@@ -50,6 +50,7 @@ export function VendorEditProfile() {
   const [selectedState, setSelectedState] = useState("");
   const [selectedCity, setSelectedCity] = useState(vendor?.city || "");
   const [description, setDescription] = useState(vendor?.description || "");
+  const [pixKey, setPixKey] = useState(vendor?.pix_key || "");
   const [submitting, setSubmitting] = useState(false);
   const { states, cities, loadingStates, loadingCities } = useBrazilLocations(selectedState);
 
@@ -60,6 +61,7 @@ export function VendorEditProfile() {
     setCnpj(vendor.cnpj || "");
     setSelectedCity(vendor.city || "");
     setDescription(vendor.description || "");
+    setPixKey(vendor.pix_key || "");
     if (user) {
       const { data } = await supabase
         .from("profiles")
@@ -109,6 +111,21 @@ export function VendorEditProfile() {
         .eq("id", user.id);
       if (profileErr) throw profileErr;
 
+      // Always sync pix_key (metadata, doesn't require re-approval)
+      const pixChanged = (pixKey.trim() || null) !== (vendor.pix_key || null);
+      if (pixChanged && Object.keys(changes).length === 0) {
+        const { error: pixErr } = await supabase
+          .from("vendors")
+          .update({ pix_key: pixKey.trim() || null })
+          .eq("id", vendor.id);
+        if (pixErr) throw pixErr;
+        updateVendor?.();
+        toast({ title: "Chave Pix atualizada ✅", description: "Sua chave Pix padrão foi salva." });
+        setEditing(false);
+        setSubmitting(false);
+        return;
+      }
+
       if (Object.keys(changes).length === 0) {
         toast({ title: "WhatsApp atualizado", description: "Nenhuma alteração no cadastro detectada." });
         setEditing(false);
@@ -123,6 +140,7 @@ export function VendorEditProfile() {
           cnpj: cnpj.trim() || null,
           city: selectedCity.trim() || null,
           description: description.trim() || null,
+          pix_key: pixKey.trim() || null,
           status: "PENDENTE" as any,
           previous_data: changes as any,
         })
@@ -269,8 +287,21 @@ export function VendorEditProfile() {
             )}
           </div>
 
+          <div className="space-y-2">
+            <Label>Chave Pix padrão (saques)</Label>
+            <Input
+              value={pixKey}
+              onChange={(e) => setPixKey(e.target.value)}
+              placeholder="CPF, e-mail, telefone ou chave aleatória"
+              maxLength={100}
+            />
+            <p className="text-[11px] text-muted-foreground">
+              Será reutilizada automaticamente nas solicitações de saque. Alterar a chave Pix não exige nova aprovação.
+            </p>
+          </div>
+
           <div className="rounded-lg bg-warning/10 p-3 text-sm text-warning-foreground">
-            <p>⚠️ Ao salvar, seu status voltará para <strong>PENDENTE</strong> até o administrador aprovar novamente.</p>
+            <p>⚠️ Alterações em <strong>nome, CPF/CNPJ, cidade ou descrição</strong> retornam o status para <strong>PENDENTE</strong>.</p>
           </div>
 
           <div className="flex gap-3">
