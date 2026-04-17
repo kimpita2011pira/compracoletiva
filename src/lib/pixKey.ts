@@ -73,6 +73,65 @@ export function detectPixKeyType(value: string): PixKeyType {
   return null;
 }
 
+function maskCPF(d: string): string {
+  return d
+    .replace(/(\d{3})(\d)/, "$1.$2")
+    .replace(/(\d{3})(\d)/, "$1.$2")
+    .replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+}
+
+function maskCNPJ(d: string): string {
+  return d
+    .replace(/(\d{2})(\d)/, "$1.$2")
+    .replace(/(\d{3})(\d)/, "$1.$2")
+    .replace(/(\d{3})(\d)/, "$1/$2")
+    .replace(/(\d{4})(\d{1,2})$/, "$1-$2");
+}
+
+function maskPhone(d: string): string {
+  // d may include country code 55
+  let local = d;
+  let prefix = "";
+  if (d.length > 11 && d.startsWith("55")) {
+    local = d.slice(2, 13);
+    prefix = "+55 ";
+  } else {
+    local = d.slice(0, 11);
+  }
+  if (local.length <= 2) return prefix + (local.length ? `(${local}` : "");
+  if (local.length <= 7) return `${prefix}(${local.slice(0, 2)}) ${local.slice(2)}`;
+  return `${prefix}(${local.slice(0, 2)}) ${local.slice(2, 7)}-${local.slice(7)}`;
+}
+
+/**
+ * Apply a dynamic mask to a Pix key as the user types.
+ * - Pure digits: detect CPF/CNPJ/phone by length and shape
+ * - Contains @: treat as email (no mask, lowercase trim)
+ * - Contains "-" with hex: treat as UUID (no mask)
+ * - Starts with + or "55" + 11 digits: phone with country code
+ */
+export function formatPixKey(value: string): string {
+  const v = value.replace(/^\s+/, "");
+  if (!v) return "";
+  // Email
+  if (v.includes("@")) return v.trim().toLowerCase();
+  // UUID-like (contains hex + dash and no leading +)
+  if (/^[0-9a-fA-F-]+$/.test(v) && v.includes("-")) return v.trim().toLowerCase();
+  // Phone with explicit country code
+  if (v.startsWith("+")) {
+    const d = v.replace(/\D/g, "").slice(0, 13);
+    return maskPhone(d);
+  }
+  const digits = v.replace(/\D/g, "");
+  if (!digits) return v.trim();
+  // Phone heuristic: 11 digits starting with valid DDD and 9 in pos 2
+  if (digits.length === 11 && VALID_DDDS.has(digits.slice(0, 2)) && digits[2] === "9") {
+    return maskPhone(digits);
+  }
+  if (digits.length <= 11) return maskCPF(digits);
+  return maskCNPJ(digits.slice(0, 14));
+}
+
 export function validatePixKey(value: string): { valid: boolean; type: PixKeyType; error?: string } {
   const v = value.trim();
   if (!v) return { valid: false, type: null, error: "Informe a chave Pix" };
