@@ -357,6 +357,13 @@ export default function AdminDashboard() {
             </Tabs>
           </TabsContent>
 
+          {/* ===== FRANQUIAS TAB ===== */}
+          <TabsContent value="franquias" className="space-y-6">
+            <div className="rounded-xl border bg-card p-5 shadow-sm">
+              <AdminFranchiseManager />
+            </div>
+          </TabsContent>
+
           {/* ===== SAQUES TAB ===== */}
           <TabsContent value="saques" className="space-y-6">
             <div className="rounded-xl border bg-card p-5 shadow-sm">
