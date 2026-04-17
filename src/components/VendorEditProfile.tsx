@@ -61,6 +61,7 @@ export function VendorEditProfile() {
     setCnpj(vendor.cnpj || "");
     setSelectedCity(vendor.city || "");
     setDescription(vendor.description || "");
+    setPixKey(vendor.pix_key || "");
     if (user) {
       const { data } = await supabase
         .from("profiles")
