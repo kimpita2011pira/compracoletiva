@@ -301,9 +301,16 @@ export function VendorEditProfile() {
             <Input
               value={pixKey}
               onChange={(e) => setPixKey(e.target.value)}
-              placeholder="CPF, e-mail, telefone ou chave aleatória"
+              placeholder="CPF, CNPJ, e-mail, telefone ou chave aleatória"
               maxLength={100}
             />
+            {pixKey.trim() && (
+              detectPixKeyType(pixKey) ? (
+                <p className="text-[11px] text-success">✓ Tipo detectado: {detectPixKeyType(pixKey)}</p>
+              ) : (
+                <p className="text-[11px] text-destructive">Formato inválido (CPF, CNPJ, e-mail, telefone +55DDD9XXXXXXXX ou UUID)</p>
+              )
+            )}
             <p className="text-[11px] text-muted-foreground">
               Será reutilizada automaticamente nas solicitações de saque. Alterar a chave Pix não exige nova aprovação.
             </p>
