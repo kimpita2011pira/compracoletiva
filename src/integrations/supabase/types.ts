@@ -187,6 +187,7 @@ export type Database = {
           created_at: string
           id: string
           notes: string | null
+          pix_key: string | null
           updated_at: string
           user_id: string
         }
@@ -196,6 +197,7 @@ export type Database = {
           created_at?: string
           id?: string
           notes?: string | null
+          pix_key?: string | null
           updated_at?: string
           user_id: string
         }
@@ -205,6 +207,7 @@ export type Database = {
           created_at?: string
           id?: string
           notes?: string | null
+          pix_key?: string | null
           updated_at?: string
           user_id?: string
         }

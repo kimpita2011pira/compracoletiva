@@ -1,10 +1,12 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useWallet } from "@/hooks/useWallet";
 import { useCreateWithdrawal } from "@/hooks/useWithdrawals";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { ArrowUpRight, Key } from "lucide-react";
 
@@ -14,14 +16,36 @@ interface Props {
 }
 
 export default function FranchiseeWithdrawModal({ open, onOpenChange }: Props) {
+  const { user } = useAuth();
   const { data: wallet } = useWallet();
   const createWithdrawal = useCreateWithdrawal();
   const [amount, setAmount] = useState("");
   const [pixKey, setPixKey] = useState("");
+  const [savedPixKey, setSavedPixKey] = useState<string | null>(null);
+  const [franchiseId, setFranchiseId] = useState<string | null>(null);
+  const [saveKey, setSaveKey] = useState(true);
   const [submitting, setSubmitting] = useState(false);
 
   const balance = wallet?.balance ?? 0;
   const numAmount = Number(amount.replace(",", ".")) || 0;
+
+  // Load saved Pix key from franchise when modal opens
+  useEffect(() => {
+    if (!open || !user) return;
+    (supabase as any)
+      .from("franchises")
+      .select("id, pix_key")
+      .eq("user_id", user.id)
+      .eq("active", true)
+      .maybeSingle()
+      .then(({ data }: any) => {
+        if (data) {
+          setFranchiseId(data.id);
+          setSavedPixKey(data.pix_key || null);
+          if (data.pix_key) setPixKey(data.pix_key);
+        }
+      });
+  }, [open, user]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,6 +61,14 @@ export default function FranchiseeWithdrawModal({ open, onOpenChange }: Props) {
 
     setSubmitting(true);
     try {
+      // Save pix_key to franchise if requested and changed
+      if (saveKey && franchiseId && pixKey.trim() !== (savedPixKey || "")) {
+        await (supabase as any)
+          .from("franchises")
+          .update({ pix_key: pixKey.trim() })
+          .eq("id", franchiseId);
+      }
+
       await createWithdrawal.mutateAsync({
         vendorId: null,
         amount: numAmount,
@@ -44,7 +76,6 @@ export default function FranchiseeWithdrawModal({ open, onOpenChange }: Props) {
       });
       toast.success("Solicitação de saque enviada! Aguarde a aprovação do administrador.");
       setAmount("");
-      setPixKey("");
       onOpenChange(false);
     } catch (err: any) {
       toast.error(err.message || "Erro ao solicitar saque");
@@ -101,7 +132,20 @@ export default function FranchiseeWithdrawModal({ open, onOpenChange }: Props) {
               maxLength={100}
               required
             />
+            {savedPixKey && pixKey === savedPixKey && (
+              <p className="text-[11px] text-muted-foreground">Chave Pix padrão carregada do seu cadastro.</p>
+            )}
           </div>
+
+          <label className="flex items-center gap-2 text-sm cursor-pointer">
+            <input
+              type="checkbox"
+              checked={saveKey}
+              onChange={(e) => setSaveKey(e.target.checked)}
+              className="rounded border-input"
+            />
+            Salvar chave Pix como padrão para próximos saques
+          </label>
 
           <div className="flex gap-3">
             <Button type="button" variant="outline" className="flex-1" onClick={() => onOpenChange(false)}>
