@@ -194,7 +194,7 @@ export function VendorEditProfile() {
           </div>
 
           <div className="space-y-2">
-            <Label>CPF ou CNPJ</Label></alabel-placeholder>
+            <Label>CPF ou CNPJ</Label>
 
             <Input
               value={cnpj}
