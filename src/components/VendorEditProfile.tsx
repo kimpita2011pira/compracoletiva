@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Pencil, Save, X } from "lucide-react";
-import { validatePixKey, detectPixKeyType } from "@/lib/pixKey";
+import { validatePixKey, detectPixKeyType, formatPixKey } from "@/lib/pixKey";
 
 const VALID_DDDS = new Set([
   "11","12","13","14","15","16","17","18","19",
