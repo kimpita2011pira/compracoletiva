@@ -1,7 +1,10 @@
 import { useState } from "react";
 import { useFranchiseeMetrics } from "@/hooks/useFranchiseeMetrics";
+import { useWallet } from "@/hooks/useWallet";
+import { useFranchiseeWithdrawals } from "@/hooks/useWithdrawals";
 import { AppLayout } from "@/components/AppLayout";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   BarChart3,
   Building2,
@@ -13,6 +16,8 @@ import {
   Wallet,
   Clock,
   CheckCircle,
+  XCircle,
+  ArrowUpRight,
 } from "lucide-react";
 import {
   Table,
@@ -32,6 +37,7 @@ import {
   YAxis,
 } from "recharts";
 import { AdminWithdrawals } from "@/components/AdminWithdrawals";
+import FranchiseeWithdrawModal from "@/components/FranchiseeWithdrawModal";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const fmtBRL = (v: number) =>
@@ -39,7 +45,10 @@ const fmtBRL = (v: number) =>
 
 export default function FranchiseeDashboard() {
   const [days, setDays] = useState(30);
+  const [withdrawOpen, setWithdrawOpen] = useState(false);
   const { data, isLoading } = useFranchiseeMetrics(days);
+  const { data: wallet } = useWallet();
+  const { data: myWithdrawals } = useFranchiseeWithdrawals();
 
   if (isLoading) {
     return (
