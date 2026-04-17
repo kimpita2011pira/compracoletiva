@@ -180,7 +180,22 @@ export function VendorEditProfile() {
           </div>
 
           <div className="space-y-2">
-            <Label>CPF ou CNPJ</Label>
+            <Label>WhatsApp *</Label>
+            <Input
+              value={whatsapp}
+              onChange={(e) => setWhatsapp(formatPhone(e.target.value))}
+              placeholder="(00) 00000-0000"
+              maxLength={15}
+              required
+            />
+            <p className="text-[11px] text-muted-foreground">
+              Obrigatório para receber notificações de pedidos, validação de ofertas e saques.
+            </p>
+          </div>
+
+          <div className="space-y-2">
+            <Label>CPF ou CNPJ</Label></alabel-placeholder>
+
             <Input
               value={cnpj}
               onChange={(e) => {
