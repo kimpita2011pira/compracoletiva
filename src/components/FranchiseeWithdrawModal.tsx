@@ -9,7 +9,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { ArrowUpRight, Key } from "lucide-react";
-import { validatePixKey, detectPixKeyType } from "@/lib/pixKey";
+import { validatePixKey, detectPixKeyType, formatPixKey } from "@/lib/pixKey";
 
 interface Props {
   open: boolean;
@@ -134,7 +134,7 @@ export default function FranchiseeWithdrawModal({ open, onOpenChange }: Props) {
               type="text"
               placeholder="CPF, CNPJ, e-mail, telefone ou chave aleatória"
               value={pixKey}
-              onChange={(e) => setPixKey(e.target.value)}
+              onChange={(e) => setPixKey(formatPixKey(e.target.value))}
               maxLength={100}
               required
             />
