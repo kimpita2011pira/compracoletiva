@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Pencil, Save, X } from "lucide-react";
+import { validatePixKey, detectPixKeyType } from "@/lib/pixKey";
 
 const VALID_DDDS = new Set([
   "11","12","13","14","15","16","17","18","19",
@@ -84,6 +85,14 @@ export function VendorEditProfile() {
         variant: "destructive",
       });
       return;
+    }
+
+    if (pixKey.trim()) {
+      const pixCheck = validatePixKey(pixKey);
+      if (!pixCheck.valid) {
+        toast({ title: "Chave Pix inválida", description: pixCheck.error, variant: "destructive" });
+        return;
+      }
     }
 
     setSubmitting(true);
@@ -292,9 +301,16 @@ export function VendorEditProfile() {
             <Input
               value={pixKey}
               onChange={(e) => setPixKey(e.target.value)}
-              placeholder="CPF, e-mail, telefone ou chave aleatória"
+              placeholder="CPF, CNPJ, e-mail, telefone ou chave aleatória"
               maxLength={100}
             />
+            {pixKey.trim() && (
+              detectPixKeyType(pixKey) ? (
+                <p className="text-[11px] text-success">✓ Tipo detectado: {detectPixKeyType(pixKey)}</p>
+              ) : (
+                <p className="text-[11px] text-destructive">Formato inválido (CPF, CNPJ, e-mail, telefone +55DDD9XXXXXXXX ou UUID)</p>
+              )
+            )}
             <p className="text-[11px] text-muted-foreground">
               Será reutilizada automaticamente nas solicitações de saque. Alterar a chave Pix não exige nova aprovação.
             </p>
