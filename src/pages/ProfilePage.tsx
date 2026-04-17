@@ -310,14 +310,22 @@ const ProfilePage = () => {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="profile-whatsapp">WhatsApp</Label>
+                  <Label htmlFor="profile-whatsapp">
+                    WhatsApp{isFranqueado && <span className="text-destructive ml-0.5">*</span>}
+                  </Label>
                   <Input
                     id="profile-whatsapp"
                     value={whatsapp}
                     onChange={(e) => setWhatsapp(formatPhone(e.target.value))}
                     maxLength={15}
                     placeholder="(00) 00000-0000"
+                    required={isFranqueado}
                   />
+                  {isFranqueado && (
+                    <p className="text-[11px] text-muted-foreground">
+                      Obrigatório para receber notificações de saques e ações administrativas.
+                    </p>
+                  )}
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-3">
