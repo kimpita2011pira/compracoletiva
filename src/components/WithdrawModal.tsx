@@ -9,7 +9,7 @@ import { useCreateWithdrawal } from "@/hooks/useWithdrawals";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { ArrowUpRight, Key } from "lucide-react";
-import { validatePixKey, detectPixKeyType } from "@/lib/pixKey";
+import { validatePixKey, detectPixKeyType, formatPixKey } from "@/lib/pixKey";
 
 interface WithdrawModalProps {
   open: boolean;
