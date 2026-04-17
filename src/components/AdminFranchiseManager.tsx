@@ -16,6 +16,8 @@ import {
 } from "@/components/ui/dialog";
 import { Plus, Trash2, MapPin, Building2, Search, X } from "lucide-react";
 import { toast } from "sonner";
+import { FranchisePerformanceReport } from "@/components/FranchisePerformanceReport";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export function AdminFranchiseManager() {
   const { list, create, update, remove, addCity, removeCity } = useFranchises();
@@ -85,7 +87,13 @@ export function AdminFranchiseManager() {
   }
 
   return (
-    <div className="space-y-6">
+    <Tabs defaultValue="manage" className="space-y-4">
+      <TabsList>
+        <TabsTrigger value="manage">Gerenciar</TabsTrigger>
+        <TabsTrigger value="report">Relatório</TabsTrigger>
+      </TabsList>
+
+      <TabsContent value="manage" className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <h2 className="font-display text-2xl font-bold">Franquias</h2>
@@ -248,6 +256,11 @@ export function AdminFranchiseManager() {
           ))}
         </div>
       )}
-    </div>
+      </TabsContent>
+
+      <TabsContent value="report">
+        <FranchisePerformanceReport />
+      </TabsContent>
+    </Tabs>
   );
 }
