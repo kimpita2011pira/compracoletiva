@@ -104,7 +104,6 @@ export default function VendorCreateOffer() {
   });
 
   const form = useForm<FormValues>({
-
     resolver: zodResolver(formSchema),
     defaultValues: {
       title: "",
@@ -122,6 +121,31 @@ export default function VendorCreateOffer() {
       city: "",
     },
   });
+
+  // Watch the city field to compute the real commission for that city
+  const watchedCity = form.watch("city") ?? "";
+  const effectiveCity = (watchedCity || vendor?.city || "").trim();
+
+  const { data: cityFranchise } = useQuery({
+    queryKey: ["franchise-by-city", effectiveCity],
+    queryFn: async () => {
+      if (!effectiveCity) return null;
+      const { data } = await supabase
+        .from("franchise_cities")
+        .select("franchise_id, franchises!inner(id, active, commission_rate)")
+        .eq("city", effectiveCity)
+        .eq("franchises.active", true)
+        .maybeSingle();
+      return (data as any)?.franchises ?? null;
+    },
+    enabled: !!effectiveCity,
+  });
+
+  const totalCommission = cityFranchise ? Number(cityFranchise.commission_rate) : 10;
+  const platformCut = cityFranchise ? 1 : 10;
+  const franchiseeCut = cityFranchise ? Math.max(0, totalCommission - 1) : 0;
+  const vendorCut = Math.max(0, 100 - totalCommission);
+
 
   // Populate form when editing
   useEffect(() => {
