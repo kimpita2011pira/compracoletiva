@@ -104,6 +104,10 @@ export default function VendorCreateOffer() {
   });
 
   const form = useForm<FormValues>({
+    // placeholder line replaced below
+  } as any);
+  // (real form definition below)
+
     resolver: zodResolver(formSchema),
     defaultValues: {
       title: "",
