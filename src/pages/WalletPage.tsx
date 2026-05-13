@@ -43,6 +43,11 @@ export default function WalletPage() {
 
   return (
     <AppLayout title="💰 Minha Carteira">
+      <SEOHead
+        title="Minha carteira"
+        description="Gerencie seu saldo, depósitos e saques na carteira digital do Compra Coletiva e use seu crédito para reservar ofertas."
+        path="/wallet"
+      />
       <main className="container max-w-2xl py-8 space-y-6">
         {/* Balance card */}
         <div className="rounded-2xl border bg-gradient-to-br from-primary/5 via-card to-secondary/5 p-6 shadow-sm">
