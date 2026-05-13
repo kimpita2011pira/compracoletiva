@@ -7,6 +7,7 @@ import type { ClosedOfferWithInterest } from "@/hooks/useClosedOffers";
 import ReserveOfferModal from "@/components/ReserveOfferModal";
 import { FavoriteButton } from "@/components/FavoriteButton";
 import { AppLayout } from "@/components/AppLayout";
+import { SEOHead } from "@/components/SEOHead";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -211,6 +212,18 @@ export default function OffersMarketplace() {
 
   return (
     <AppLayout title="🔥 Ofertas">
+      <SEOHead
+        title="Ofertas Ativas — Marketplace de compras coletivas"
+        description="Explore ofertas em grupo na sua cidade. Filtre por categoria, entrega e desconto, e reserve agora para garantir o menor preço da rodada."
+        path="/offers"
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "CollectionPage",
+          name: "Ofertas Ativas — Compra Coletiva",
+          description: "Galeria de ofertas em compra coletiva disponíveis no marketplace.",
+          url: "https://compracoletiva.lovable.app/offers",
+        }}
+      />
       <main className="container py-8">
         {/* Hero */}
         <div className="mb-8 text-center">
