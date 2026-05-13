@@ -34,8 +34,8 @@ const Index = () => {
   return (
     <AppLayout>
       <SEOHead
-        title="Início"
-        description="Compra Coletiva: a plataforma que conecta consumidores e vendedores locais. Quanto mais participam, mais todos economizam!"
+        title="Economize em grupo com ofertas locais"
+        description="Compra Coletiva conecta você a vendedores da sua cidade. Reserve ofertas em grupo e desbloqueie descontos exclusivos quando mais pessoas participam."
         path="/"
         jsonLd={{
           "@context": "https://schema.org",
@@ -50,6 +50,7 @@ const Index = () => {
           },
         }}
       />
+      <main>
       {/* Hero */}
       <section className="container py-12 text-center">
         <p className="text-lg text-muted-foreground">
@@ -88,6 +89,7 @@ const Index = () => {
           onClick={() => navigate("/orders")}
         />
       </section>
+      </main>
     </AppLayout>
   );
 };

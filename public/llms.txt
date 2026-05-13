@@ -1,0 +1,17 @@
+# Compra Coletiva
+
+> Plataforma brasileira de compra coletiva que conecta consumidores e vendedores locais. Quanto mais pessoas reservam uma oferta, maior o desconto desbloqueado para todo o grupo.
+
+Compra Coletiva permite que vendedores publiquem ofertas com quantidade mínima. Consumidores reservam usando saldo da carteira digital (com depósito via Pix). Ao atingir a meta, a oferta é validada e todos economizam; caso contrário, os valores são estornados automaticamente.
+
+## Pages
+
+- [Home](/): Visão geral da plataforma e atalhos para ofertas, carteira e pedidos.
+- [Ofertas](/offers): Marketplace com todas as ofertas ativas e encerradas, com filtros por categoria, cidade e tipo de entrega.
+- [Sobre](/about): O que é o Compra Coletiva, como funciona e contato.
+- [Termos de Uso](/terms): Termos e condições de uso da plataforma.
+- [Política de Privacidade](/privacy): Como tratamos dados pessoais (LGPD).
+
+## Optional
+
+- [Entrar](/auth): Login e cadastro de consumidores e vendedores.
