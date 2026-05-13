@@ -18,6 +18,7 @@ import { cn } from "@/lib/utils";
 import { PasswordStrengthIndicator } from "@/components/PasswordStrengthIndicator";
 import { useBrazilLocations } from "@/hooks/useBrazilLocations";
 import { PromoBanner } from "@/components/PromoBanner";
+import { SEOHead } from "@/components/SEOHead";
 
 type AuthMode = "login" | "register";
 type RoleChoice = "CLIENTE" | "VENDEDOR" | null;
