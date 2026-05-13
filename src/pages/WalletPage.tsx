@@ -6,6 +6,7 @@ import { useVendorWithdrawals } from "@/hooks/useWithdrawals";
 import DepositModal from "@/components/DepositModal";
 import WithdrawModal from "@/components/WithdrawModal";
 import { AppLayout } from "@/components/AppLayout";
+import { SEOHead } from "@/components/SEOHead";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -42,6 +43,11 @@ export default function WalletPage() {
 
   return (
     <AppLayout title="💰 Minha Carteira">
+      <SEOHead
+        title="Minha carteira"
+        description="Gerencie seu saldo, depósitos e saques na carteira digital do Compra Coletiva e use seu crédito para reservar ofertas."
+        path="/wallet"
+      />
       <main className="container max-w-2xl py-8 space-y-6">
         {/* Balance card */}
         <div className="rounded-2xl border bg-gradient-to-br from-primary/5 via-card to-secondary/5 p-6 shadow-sm">

@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { SEOHead } from "@/components/SEOHead";
 import { useOrders } from "@/hooks/useOrders";
 import { AppLayout } from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
@@ -22,6 +23,11 @@ const MyOrders = () => {
 
   return (
     <AppLayout title="📦 Meus Pedidos">
+      <SEOHead
+        title="Meus pedidos"
+        description="Acompanhe suas reservas e pedidos no Compra Coletiva: status, entrega e detalhes de cada compra coletiva."
+        path="/orders"
+      />
       <main className="container max-w-2xl py-6 space-y-4">
         {isLoading && (
           <div className="space-y-4">

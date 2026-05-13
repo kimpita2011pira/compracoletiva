@@ -213,7 +213,7 @@ export default function OffersMarketplace() {
   return (
     <AppLayout title="🔥 Ofertas">
       <SEOHead
-        title="Ofertas Ativas — Marketplace de compras coletivas"
+        title="Ofertas ativas"
         description="Explore ofertas em grupo na sua cidade. Filtre por categoria, entrega e desconto, e reserve agora para garantir o menor preço da rodada."
         path="/offers"
         jsonLd={{
