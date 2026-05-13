@@ -157,6 +157,11 @@ const Auth = () => {
 
   return (
     <div className="flex min-h-screen flex-col bg-gradient-to-br from-primary/10 via-background to-secondary/10">
+      <SEOHead
+        title="Entrar ou criar conta"
+        description="Acesse sua conta no Compra Coletiva ou cadastre-se gratuitamente para reservar ofertas em grupo na sua cidade."
+        path="/auth"
+      />
       <div className="sticky top-0 z-50">
         <PromoBanner />
       </div>
