@@ -6,6 +6,7 @@ import { useVendorWithdrawals } from "@/hooks/useWithdrawals";
 import DepositModal from "@/components/DepositModal";
 import WithdrawModal from "@/components/WithdrawModal";
 import { AppLayout } from "@/components/AppLayout";
+import { SEOHead } from "@/components/SEOHead";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
