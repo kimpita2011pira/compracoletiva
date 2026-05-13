@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { SEOHead } from "@/components/SEOHead";
 import { useOrders } from "@/hooks/useOrders";
 import { AppLayout } from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
