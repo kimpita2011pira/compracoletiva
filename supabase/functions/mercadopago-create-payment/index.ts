@@ -41,9 +41,23 @@ Deno.serve(async (req) => {
     }
     const userId = claimsData.claims.sub as string;
 
-    // Get user email for MP
+    // Get user email/profile for MP
     const { data: userData } = await supabase.auth.getUser();
     const email = userData?.user?.email ?? "cliente@email.com";
+
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("name")
+      .eq("id", userId)
+      .maybeSingle();
+
+    const fullName = String(profile?.name ?? "").trim();
+    const [firstName, ...lastNameParts] = fullName.split(/\s+/).filter(Boolean);
+    const payer = {
+      email,
+      ...(firstName ? { first_name: firstName } : {}),
+      ...(lastNameParts.length > 0 ? { last_name: lastNameParts.join(" ") } : {}),
+    };
 
     const { amount, method } = await req.json();
     if (!amount || amount < 1) {
@@ -82,7 +96,7 @@ Deno.serve(async (req) => {
           transaction_amount: Number(amount),
           payment_method_id: "pix",
           description: `Depósito na carteira - R$ ${Number(amount).toFixed(2)}`,
-          payer: { email },
+          payer,
           notification_url: webhookUrl,
           metadata: {
             user_id: userId,
@@ -131,7 +145,7 @@ Deno.serve(async (req) => {
               currency_id: "BRL",
             },
           ],
-          payer: { email },
+          payer,
           payment_methods: {
             excluded_payment_types: [{ id: "ticket" }, { id: "atm" }],
             installments: 12,
@@ -142,7 +156,7 @@ Deno.serve(async (req) => {
             failure: `${req.headers.get("origin") || "https://compracoletiva.lovable.app"}/wallet?status=failure`,
             pending: `${req.headers.get("origin") || "https://compracoletiva.lovable.app"}/wallet?status=pending`,
           },
-          statement_descriptor: "COMPRACOLETIVA",
+          statement_descriptor: "COLETIVA",
           binary_mode: false,
           notification_url: webhookUrl,
           external_reference: `deposit-${userId}-${Date.now()}`,
