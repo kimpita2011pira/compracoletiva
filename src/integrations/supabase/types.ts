@@ -719,6 +719,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      credit_deposit_once: {
+        Args: { p_amount: number; p_description: string; p_wallet_id: string }
+        Returns: boolean
+      }
       credit_wallet: {
         Args: {
           p_amount: number

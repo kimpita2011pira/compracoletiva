@@ -145,6 +145,11 @@ export default function DepositModal({ open, onOpenChange, onPollingChange }: Pr
           description: `R$ ${numAmount.toFixed(2).replace(".", ",")} creditado na sua carteira.`,
         });
         handleClose(false);
+      } else if (data?.status === "not_found" || data?.retryable) {
+        toast({
+          title: "Pagamento em processamento",
+          description: "A confirmação do provedor ainda não chegou. Aguarde alguns segundos e toque em “Já paguei” novamente.",
+        });
       } else {
         toast({
           title: "Pagamento ainda não confirmado",
