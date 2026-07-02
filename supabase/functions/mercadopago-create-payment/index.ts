@@ -148,9 +148,13 @@ Deno.serve(async (req) => {
               currency_id: "BRL",
             },
           ],
-          payer,
+          payer: { email },
           payment_methods: {
-            excluded_payment_types: [{ id: "ticket" }, { id: "atm" }],
+            excluded_payment_types: [
+              { id: "ticket" },
+              { id: "atm" },
+              { id: "bank_transfer" },
+            ],
             installments: 12,
             default_installments: 1,
           },
@@ -159,8 +163,6 @@ Deno.serve(async (req) => {
             failure: `${req.headers.get("origin") || "https://compracoletiva.lovable.app"}/wallet?status=failure`,
             pending: `${req.headers.get("origin") || "https://compracoletiva.lovable.app"}/wallet?status=pending`,
           },
-          statement_descriptor: "COLETIVA",
-          binary_mode: false,
           notification_url: webhookUrl,
           external_reference: `deposit-${userId}-${Date.now()}`,
           metadata: {
@@ -169,6 +171,7 @@ Deno.serve(async (req) => {
             type: "deposit",
           },
         }),
+
       });
 
       const mpData = await mpRes.json();
