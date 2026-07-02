@@ -129,7 +129,15 @@ Deno.serve(async (req) => {
         { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     } else if (method === "card") {
-      // Create Checkout Pro preference for card payments
+      // Create Checkout Pro preference for card payments.
+      // Do not pre-fill payer.email here: Mercado Pago disables the final
+      // "Pagar" button when the buyer is detected as the same account that
+      // owns the seller credential. Leaving the payer open lets checkout use
+      // a separate buyer session/email, especially in sandbox tests.
+      const fallbackOrigin = "https://compracoletiva.lovable.app";
+      const requestOrigin = req.headers.get("origin") || fallbackOrigin;
+      const safeOrigin = requestOrigin.startsWith("https://") ? requestOrigin : fallbackOrigin;
+
       const mpRes = await fetch("https://api.mercadopago.com/checkout/preferences", {
         method: "POST",
         headers: {
@@ -148,7 +156,6 @@ Deno.serve(async (req) => {
               currency_id: "BRL",
             },
           ],
-          payer: { email },
           payment_methods: {
             excluded_payment_types: [
               { id: "ticket" },
@@ -156,12 +163,11 @@ Deno.serve(async (req) => {
               { id: "bank_transfer" },
             ],
             installments: 12,
-            default_installments: 1,
           },
           back_urls: {
-            success: `${req.headers.get("origin") || "https://compracoletiva.lovable.app"}/wallet?status=success`,
-            failure: `${req.headers.get("origin") || "https://compracoletiva.lovable.app"}/wallet?status=failure`,
-            pending: `${req.headers.get("origin") || "https://compracoletiva.lovable.app"}/wallet?status=pending`,
+            success: `${safeOrigin}/wallet?status=success`,
+            failure: `${safeOrigin}/wallet?status=failure`,
+            pending: `${safeOrigin}/wallet?status=pending`,
           },
           notification_url: webhookUrl,
           external_reference: `deposit-${userId}-${Date.now()}`,
