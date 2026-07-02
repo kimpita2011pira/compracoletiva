@@ -163,10 +163,15 @@ Deno.serve(async (req) => {
         );
       }
 
+      const isSandboxToken = MP_TOKEN.startsWith("TEST-");
+      const checkoutUrl = isSandboxToken
+        ? mpData.sandbox_init_point ?? mpData.init_point
+        : mpData.init_point ?? mpData.sandbox_init_point;
+
       return new Response(
         JSON.stringify({
           preference_id: mpData.id,
-          init_point: mpData.init_point,
+          init_point: checkoutUrl,
           sandbox_init_point: mpData.sandbox_init_point,
         }),
         { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }

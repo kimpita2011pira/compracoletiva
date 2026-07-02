@@ -3,7 +3,21 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
+    "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
+};
+
+const jsonResponse = (body: Record<string, unknown>, status = 200) =>
+  new Response(JSON.stringify(body), {
+    status,
+    headers: { ...corsHeaders, "Content-Type": "application/json" },
+  });
+
+const normalizePaymentId = (value: unknown): string | null => {
+  if (typeof value === "number" && Number.isFinite(value)) return String(Math.trunc(value));
+  if (typeof value !== "string") return null;
+  const trimmed = value.trim();
+  if (!/^\d+$/.test(trimmed)) return null;
+  return trimmed;
 };
 
 Deno.serve(async (req) => {
@@ -19,10 +33,7 @@ Deno.serve(async (req) => {
 
     const authHeader = req.headers.get("Authorization");
     if (!authHeader?.startsWith("Bearer ")) {
-      return new Response(JSON.stringify({ error: "Unauthorized" }), {
-        status: 401,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      return jsonResponse({ error: "Unauthorized" }, 401);
     }
 
     const userClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
@@ -31,47 +42,33 @@ Deno.serve(async (req) => {
     const token = authHeader.replace("Bearer ", "");
     const { data: claimsData, error: claimsError } = await userClient.auth.getClaims(token);
     if (claimsError || !claimsData?.claims) {
-      return new Response(JSON.stringify({ error: "Unauthorized" }), {
-        status: 401,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      return jsonResponse({ error: "Unauthorized" }, 401);
     }
     const userId = claimsData.claims.sub as string;
 
     const { payment_id } = await req.json();
-    if (!payment_id) {
-      return new Response(JSON.stringify({ error: "payment_id required" }), {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+    const paymentId = normalizePaymentId(payment_id);
+    if (!paymentId) {
+      return jsonResponse({ error: "payment_id required" }, 400);
     }
 
-    const mpRes = await fetch(`https://api.mercadopago.com/v1/payments/${payment_id}`, {
+    const mpRes = await fetch(`https://api.mercadopago.com/v1/payments/${paymentId}`, {
       headers: { Authorization: `Bearer ${MP_TOKEN}` },
     });
     if (!mpRes.ok) {
       const errText = await mpRes.text();
-      console.error("MP fetch error:", errText);
-      return new Response(JSON.stringify({ error: "Failed to fetch payment" }), {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      console.error(`MP fetch error [${mpRes.status}] for payment ${paymentId}:`, errText);
+      return jsonResponse({ status: "not_found", credited: false, retryable: true }, 200);
     }
     const payment = await mpRes.json();
 
     // Ownership check via metadata
     if (payment.metadata?.user_id !== userId) {
-      return new Response(JSON.stringify({ error: "Forbidden" }), {
-        status: 403,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      return jsonResponse({ error: "Forbidden" }, 403);
     }
 
     if (payment.status !== "approved") {
-      return new Response(
-        JSON.stringify({ status: payment.status, credited: false }),
-        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      return jsonResponse({ status: payment.status, credited: false });
     }
 
     const admin = createClient(SUPABASE_URL, SERVICE_ROLE_KEY);
@@ -79,10 +76,7 @@ Deno.serve(async (req) => {
     const amount = Number(payment.transaction_amount);
 
     if (!walletId || !Number.isFinite(amount) || amount <= 0) {
-      return new Response(JSON.stringify({ error: "Invalid payment metadata" }), {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      return jsonResponse({ error: "Invalid payment metadata" }, 400);
     }
 
     const { data: wallet, error: walletError } = await admin
@@ -93,13 +87,10 @@ Deno.serve(async (req) => {
       .single();
 
     if (walletError || !wallet) {
-      return new Response(JSON.stringify({ error: "Wallet not found" }), {
-        status: 403,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      return jsonResponse({ error: "Wallet not found" }, 403);
     }
 
-    const description = `Depósito via ${payment.payment_method_id === "pix" ? "Pix" : "Cartão"} - MP #${payment_id}`;
+    const description = `Depósito via ${payment.payment_method_id === "pix" ? "Pix" : "Cartão"} - MP #${paymentId}`;
 
     // Idempotency check
     const { data: existing } = await admin
@@ -107,17 +98,14 @@ Deno.serve(async (req) => {
       .select("id")
       .eq("wallet_id", walletId)
       .eq("type", "DEPOSITO")
-      .like("description", `%MP #${payment_id}%`)
+      .eq("description", description)
       .maybeSingle();
 
     if (existing) {
-      return new Response(
-        JSON.stringify({ status: "approved", credited: true, already_processed: true }),
-        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      return jsonResponse({ status: "approved", credited: true, already_processed: true });
     }
 
-    const { error: creditError } = await admin.rpc("credit_wallet", {
+    const { data: credited, error: creditError } = await admin.rpc("credit_deposit_once", {
       p_wallet_id: walletId,
       p_amount: amount,
       p_description: description,
@@ -130,15 +118,9 @@ Deno.serve(async (req) => {
       );
     }
 
-    return new Response(
-      JSON.stringify({ status: "approved", credited: true, amount }),
-      { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-    );
+    return jsonResponse({ status: "approved", credited: true, already_processed: credited === false, amount });
   } catch (err) {
     console.error("check-payment error:", err);
-    return new Response(
-      JSON.stringify({ error: "service_unavailable", retryable: true }),
-      { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-    );
+    return jsonResponse({ error: "service_unavailable", retryable: true });
   }
 });

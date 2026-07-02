@@ -3,7 +3,22 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
+    "authorization, x-client-info, apikey, content-type, x-signature, x-request-id",
+};
+
+const jsonResponse = (body: Record<string, unknown>, status = 200) =>
+  new Response(JSON.stringify(body), {
+    status,
+    headers: { ...corsHeaders, "Content-Type": "application/json" },
+  });
+
+const timingSafeEqualHex = (a: string, b: string): boolean => {
+  if (a.length !== b.length) return false;
+  let diff = 0;
+  for (let i = 0; i < a.length; i += 1) {
+    diff |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  }
+  return diff === 0;
 };
 
 Deno.serve(async (req) => {
@@ -21,16 +36,30 @@ Deno.serve(async (req) => {
 
     const supabase = createClient(SUPABASE_URL, SERVICE_ROLE_KEY);
 
-    // Read raw body so we can both verify signature and parse JSON
+    const url = new URL(req.url);
     const rawBody = await req.text();
+    const body = rawBody ? JSON.parse(rawBody) : {};
+
+    let paymentId: string | null = null;
+
+    if (body.topic === "payment" && body.id) {
+      paymentId = String(body.id);
+    } else if (body.data?.id && body.action?.includes("payment")) {
+      paymentId = String(body.data.id);
+    } else if (body.type === "payment" && body.data?.id) {
+      paymentId = String(body.data.id);
+    } else if (url.searchParams.get("data.id")) {
+      paymentId = url.searchParams.get("data.id");
+    } else if (url.searchParams.get("id")) {
+      paymentId = url.searchParams.get("id");
+    }
 
     // ---- Verify x-signature per Mercado Pago spec ----
     // https://www.mercadopago.com.br/developers/en/docs/your-integrations/notifications/webhooks
     if (MP_WEBHOOK_SECRET) {
       const sigHeader = req.headers.get("x-signature") || "";
       const requestId = req.headers.get("x-request-id") || "";
-      const url = new URL(req.url);
-      const dataId = url.searchParams.get("data.id") || url.searchParams.get("id") || "";
+      const dataId = (url.searchParams.get("data.id") || url.searchParams.get("id") || paymentId || "").toLowerCase();
 
       const parts = Object.fromEntries(
         sigHeader.split(",").map((p) => {
@@ -64,37 +93,19 @@ Deno.serve(async (req) => {
         .map((b) => b.toString(16).padStart(2, "0"))
         .join("");
 
-      if (expected !== v1) {
+      if (!timingSafeEqualHex(expected, v1)) {
         console.warn("Invalid x-signature");
-        return new Response(JSON.stringify({ error: "invalid signature" }), {
-          status: 401,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
+        return jsonResponse({ error: "invalid signature" }, 401);
       }
     } else {
       console.warn("MERCADO_PAGO_WEBHOOK_SECRET not set — skipping signature verification");
     }
 
-    const body = JSON.parse(rawBody);
-
     console.log("Webhook received:", JSON.stringify(body));
-
-    let paymentId: string | null = null;
-
-    if (body.topic === "payment" && body.id) {
-      paymentId = String(body.id);
-    } else if (body.data?.id && body.action?.includes("payment")) {
-      paymentId = String(body.data.id);
-    } else if (body.type === "payment" && body.data?.id) {
-      paymentId = String(body.data.id);
-    }
 
     if (!paymentId) {
       console.log("Not a payment notification, ignoring");
-      return new Response(JSON.stringify({ ok: true }), {
-        status: 200,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      return jsonResponse({ ok: true });
     }
 
     // Fetch payment details from MP API
@@ -105,10 +116,7 @@ Deno.serve(async (req) => {
     if (!mpRes.ok) {
       const errText = await mpRes.text();
       console.error(`MP API error [${mpRes.status}]: ${errText}`);
-      return new Response(JSON.stringify({ error: "Failed to fetch payment" }), {
-        status: 200,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      return jsonResponse({ error: "Failed to fetch payment" });
     }
 
     const payment = await mpRes.json();
@@ -116,10 +124,7 @@ Deno.serve(async (req) => {
 
     if (payment.status !== "approved") {
       console.log(`Payment ${paymentId} status is ${payment.status}, not crediting`);
-      return new Response(JSON.stringify({ ok: true, status: payment.status }), {
-        status: 200,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      return jsonResponse({ ok: true, status: payment.status });
     }
 
     const walletId = payment.metadata?.wallet_id;
@@ -127,10 +132,7 @@ Deno.serve(async (req) => {
 
     if (!walletId || !userId) {
       console.error("Missing metadata in payment:", payment.metadata);
-      return new Response(JSON.stringify({ error: "Missing metadata" }), {
-        status: 200,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      return jsonResponse({ error: "Missing metadata" });
     }
 
     const amount = Number(payment.transaction_amount);
@@ -142,19 +144,15 @@ Deno.serve(async (req) => {
       .select("id")
       .eq("wallet_id", walletId)
       .eq("type", "DEPOSITO")
-      .like("description", `%MP #${paymentId}%`)
+      .eq("description", mpDescription)
       .maybeSingle();
 
     if (existingTx) {
       console.log(`Payment ${paymentId} already processed, skipping`);
-      return new Response(JSON.stringify({ ok: true, already_processed: true }), {
-        status: 200,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      return jsonResponse({ ok: true, already_processed: true });
     }
 
-    // Credit wallet atomically
-    const { error: creditError } = await supabase.rpc("credit_wallet", {
+    const { data: credited, error: creditError } = await supabase.rpc("credit_deposit_once", {
       p_wallet_id: walletId,
       p_amount: amount,
       p_description: mpDescription,
@@ -162,39 +160,14 @@ Deno.serve(async (req) => {
 
     if (creditError) {
       console.error("Error crediting wallet via RPC:", creditError);
-      // Fallback: manual credit
-      const { data: currentWallet } = await supabase
-        .from("wallets")
-        .select("balance")
-        .eq("id", walletId)
-        .single();
-
-      if (currentWallet) {
-        await supabase
-          .from("wallets")
-          .update({ balance: Number(currentWallet.balance) + amount, updated_at: new Date().toISOString() })
-          .eq("id", walletId);
-
-        await supabase.from("wallet_transactions").insert({
-          wallet_id: walletId,
-          type: "DEPOSITO",
-          amount,
-          description: mpDescription,
-        });
-      }
+      return jsonResponse({ error: "credit_failed" });
     }
 
     console.log(`Successfully credited R$ ${amount} to wallet ${walletId}`);
 
-    return new Response(JSON.stringify({ ok: true, credited: amount }), {
-      status: 200,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return jsonResponse({ ok: true, credited: credited ? amount : 0, already_processed: credited === false });
   } catch (err) {
     console.error("Webhook error:", err);
-    return new Response(
-      JSON.stringify({ error: err instanceof Error ? err.message : "Internal error" }),
-      { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-    );
+    return jsonResponse({ error: err instanceof Error ? err.message : "Internal error" });
   }
 });
