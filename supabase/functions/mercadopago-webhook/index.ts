@@ -158,7 +158,6 @@ Deno.serve(async (req) => {
       p_wallet_id: walletId,
       p_amount: amount,
       p_description: mpDescription,
-      p_reference_id: null,
     });
 
     if (creditError) {
