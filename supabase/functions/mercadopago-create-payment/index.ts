@@ -122,20 +122,30 @@ Deno.serve(async (req) => {
         body: JSON.stringify({
           items: [
             {
+              id: "wallet-deposit",
               title: "Depósito na Carteira",
+              description: "Crédito de saldo na carteira Compra Coletiva",
+              category_id: "services",
               quantity: 1,
               unit_price: Number(amount),
               currency_id: "BRL",
             },
           ],
           payer: { email },
+          payment_methods: {
+            excluded_payment_types: [{ id: "ticket" }, { id: "atm" }],
+            installments: 12,
+            default_installments: 1,
+          },
           back_urls: {
             success: `${req.headers.get("origin") || "https://compracoletiva.lovable.app"}/wallet?status=success`,
             failure: `${req.headers.get("origin") || "https://compracoletiva.lovable.app"}/wallet?status=failure`,
             pending: `${req.headers.get("origin") || "https://compracoletiva.lovable.app"}/wallet?status=pending`,
           },
-          auto_return: "approved",
+          statement_descriptor: "COMPRACOLETIVA",
+          binary_mode: false,
           notification_url: webhookUrl,
+          external_reference: `deposit-${userId}-${Date.now()}`,
           metadata: {
             user_id: userId,
             wallet_id: wallet.id,
