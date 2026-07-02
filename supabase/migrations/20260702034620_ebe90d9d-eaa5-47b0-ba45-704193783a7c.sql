@@ -1,0 +1,1 @@
+DROP FUNCTION IF EXISTS public.credit_wallet(uuid, numeric, text, text);
