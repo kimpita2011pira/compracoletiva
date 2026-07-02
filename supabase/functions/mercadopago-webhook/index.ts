@@ -21,6 +21,15 @@ const timingSafeEqualHex = (a: string, b: string): boolean => {
   return diff === 0;
 };
 
+const getString = (value: unknown): string | null =>
+  typeof value === "string" && value.trim() ? value.trim() : null;
+
+const userIdFromExternalReference = (value: unknown): string | null => {
+  const reference = getString(value);
+  if (!reference) return null;
+  return reference.match(/^deposit-([0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12})-/i)?.[1] ?? null;
+};
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -127,12 +136,39 @@ Deno.serve(async (req) => {
       return jsonResponse({ ok: true, status: payment.status });
     }
 
-    const walletId = payment.metadata?.wallet_id;
-    const userId = payment.metadata?.user_id;
+    const metadata = payment.metadata ?? {};
+    let walletId = getString(metadata.wallet_id);
+    const userId = getString(metadata.user_id) ?? userIdFromExternalReference(payment.external_reference);
 
-    if (!walletId || !userId) {
-      console.error("Missing metadata in payment:", payment.metadata);
-      return jsonResponse({ error: "Missing metadata" });
+    if (!userId) {
+      console.error("Missing user reference in payment:", payment.metadata, payment.external_reference);
+      return jsonResponse({ error: "Missing user reference" });
+    }
+
+    if (walletId) {
+      const { data: wallet } = await supabase
+        .from("wallets")
+        .select("id,user_id")
+        .eq("id", walletId)
+        .maybeSingle();
+
+      if (!wallet || wallet.user_id !== userId) {
+        console.error("Wallet metadata does not match payment user", { walletId, userId });
+        return jsonResponse({ error: "Invalid wallet reference" });
+      }
+    } else {
+      const { data: wallet } = await supabase
+        .from("wallets")
+        .select("id")
+        .eq("user_id", userId)
+        .maybeSingle();
+
+      walletId = wallet?.id ?? null;
+    }
+
+    if (!walletId) {
+      console.error("Wallet not found for payment user", { userId, metadata: payment.metadata });
+      return jsonResponse({ error: "Wallet not found" });
     }
 
     const amount = Number(payment.transaction_amount);

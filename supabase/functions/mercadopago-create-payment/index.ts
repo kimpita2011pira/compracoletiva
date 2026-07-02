@@ -84,6 +84,8 @@ Deno.serve(async (req) => {
     const webhookUrl = `${SUPABASE_URL}/functions/v1/mercadopago-webhook`;
 
     if (method === "pix") {
+      const externalReference = `deposit-${userId}-${Date.now()}`;
+
       // Create Pix payment
       const mpRes = await fetch("https://api.mercadopago.com/v1/payments", {
         method: "POST",
@@ -98,6 +100,7 @@ Deno.serve(async (req) => {
           description: `Depósito na carteira - R$ ${Number(amount).toFixed(2)}`,
           payer,
           notification_url: webhookUrl,
+          external_reference: externalReference,
           metadata: {
             user_id: userId,
             wallet_id: wallet.id,

@@ -20,6 +20,15 @@ const normalizePaymentId = (value: unknown): string | null => {
   return trimmed;
 };
 
+const getString = (value: unknown): string | null =>
+  typeof value === "string" && value.trim() ? value.trim() : null;
+
+const userIdFromExternalReference = (value: unknown): string | null => {
+  const reference = getString(value);
+  if (!reference) return null;
+  return reference.match(/^deposit-([0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12})-/i)?.[1] ?? null;
+};
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
@@ -62,8 +71,11 @@ Deno.serve(async (req) => {
     }
     const payment = await mpRes.json();
 
-    // Ownership check via metadata
-    if (payment.metadata?.user_id !== userId) {
+    const metadata = payment.metadata ?? {};
+    const paymentUserId = getString(metadata.user_id) ?? userIdFromExternalReference(payment.external_reference);
+
+    // Ownership check via metadata/external_reference
+    if (paymentUserId !== userId) {
       return jsonResponse({ error: "Forbidden" }, 403);
     }
 
@@ -72,23 +84,29 @@ Deno.serve(async (req) => {
     }
 
     const admin = createClient(SUPABASE_URL, SERVICE_ROLE_KEY);
-    const walletId = payment.metadata?.wallet_id;
+    const metadataWalletId = getString(metadata.wallet_id);
     const amount = Number(payment.transaction_amount);
 
-    if (!walletId || !Number.isFinite(amount) || amount <= 0) {
-      return jsonResponse({ error: "Invalid payment metadata" }, 400);
+    if (!Number.isFinite(amount) || amount <= 0) {
+      return jsonResponse({ error: "Invalid payment amount" }, 400);
     }
 
-    const { data: wallet, error: walletError } = await admin
+    let walletQuery = admin
       .from("wallets")
       .select("id,user_id,balance")
-      .eq("id", walletId)
-      .eq("user_id", userId)
-      .single();
+      .eq("user_id", userId);
+
+    if (metadataWalletId) {
+      walletQuery = walletQuery.eq("id", metadataWalletId);
+    }
+
+    const { data: wallet, error: walletError } = await walletQuery.maybeSingle();
 
     if (walletError || !wallet) {
       return jsonResponse({ error: "Wallet not found" }, 403);
     }
+
+    const walletId = wallet.id;
 
     const description = `Depósito via ${payment.payment_method_id === "pix" ? "Pix" : "Cartão"} - MP #${paymentId}`;
 
@@ -111,11 +129,8 @@ Deno.serve(async (req) => {
       p_description: description,
     });
     if (creditError) {
-      console.error("credit_wallet error:", creditError);
-      return new Response(
-        JSON.stringify({ status: "approved", credited: false, retryable: true, error: "credit_failed" }),
-        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      console.error("credit_deposit_once error:", creditError);
+      return jsonResponse({ status: "approved", credited: false, retryable: true, error: "credit_failed" });
     }
 
     return jsonResponse({ status: "approved", credited: true, already_processed: credited === false, amount });
