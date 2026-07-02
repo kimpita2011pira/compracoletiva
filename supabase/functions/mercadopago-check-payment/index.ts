@@ -77,6 +77,28 @@ Deno.serve(async (req) => {
     const admin = createClient(SUPABASE_URL, SERVICE_ROLE_KEY);
     const walletId = payment.metadata?.wallet_id;
     const amount = Number(payment.transaction_amount);
+
+    if (!walletId || !Number.isFinite(amount) || amount <= 0) {
+      return new Response(JSON.stringify({ error: "Invalid payment metadata" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    const { data: wallet, error: walletError } = await admin
+      .from("wallets")
+      .select("id,user_id,balance")
+      .eq("id", walletId)
+      .eq("user_id", userId)
+      .single();
+
+    if (walletError || !wallet) {
+      return new Response(JSON.stringify({ error: "Wallet not found" }), {
+        status: 403,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     const description = `Depósito via ${payment.payment_method_id === "pix" ? "Pix" : "Cartão"} - MP #${payment_id}`;
 
     // Idempotency check
@@ -99,11 +121,13 @@ Deno.serve(async (req) => {
       p_wallet_id: walletId,
       p_amount: amount,
       p_description: description,
-      p_reference_id: null,
     });
     if (creditError) {
       console.error("credit_wallet error:", creditError);
-      throw creditError;
+      return new Response(
+        JSON.stringify({ status: "approved", credited: false, retryable: true, error: "credit_failed" }),
+        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
     }
 
     return new Response(
@@ -113,8 +137,8 @@ Deno.serve(async (req) => {
   } catch (err) {
     console.error("check-payment error:", err);
     return new Response(
-      JSON.stringify({ error: err instanceof Error ? err.message : "Internal error" }),
-      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      JSON.stringify({ error: "service_unavailable", retryable: true }),
+      { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
 });
