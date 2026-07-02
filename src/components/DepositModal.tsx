@@ -123,14 +123,45 @@ export default function DepositModal({ open, onOpenChange, onPollingChange }: Pr
     }
   };
 
-  const handlePixDone = () => {
-    queryClient.invalidateQueries({ queryKey: ["wallet"] });
-    queryClient.invalidateQueries({ queryKey: ["wallet-transactions"] });
-    handleClose(false);
-    toast({
-      title: "Aguardando confirmação",
-      description: "Seu saldo será atualizado assim que o pagamento for confirmado.",
-    });
+  const handlePixDone = async () => {
+    if (!pixData?.payment_id) {
+      handleClose(false);
+      return;
+    }
+    setLoading(true);
+    try {
+      const res = await supabase.functions.invoke("mercadopago-check-payment", {
+        body: { payment_id: pixData.payment_id },
+      });
+      if (res.error) throw new Error(res.error.message);
+      const data = res.data;
+      queryClient.invalidateQueries({ queryKey: ["wallet"] });
+      queryClient.invalidateQueries({ queryKey: ["wallet-transactions"] });
+      queryClient.invalidateQueries({ queryKey: ["wallet-balance"] });
+
+      if (data?.credited) {
+        toast({
+          title: "Pagamento confirmado! ✅",
+          description: `R$ ${numAmount.toFixed(2).replace(".", ",")} creditado na sua carteira.`,
+        });
+        handleClose(false);
+      } else {
+        toast({
+          title: "Pagamento ainda não confirmado",
+          description: "Aguarde alguns segundos e tente novamente. O Pix pode levar alguns instantes.",
+          variant: "destructive",
+        });
+      }
+    } catch (err) {
+      console.error("Check payment error:", err);
+      toast({
+        title: "Erro ao verificar pagamento",
+        description: err instanceof Error ? err.message : "Tente novamente",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   // PIX step
