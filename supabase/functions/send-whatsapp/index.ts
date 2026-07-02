@@ -24,6 +24,25 @@ serve(async (req) => {
     const SUPABASE_URL = Deno.env.get('SUPABASE_URL');
     const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
 
+    // Verify caller is our internal DB trigger via shared secret from vaulted DB row
+    const providedSecret = req.headers.get('x-internal-secret') || '';
+    const secretRes = await fetch(`${SUPABASE_URL}/rest/v1/rpc/get_internal_webhook_secret`, {
+      method: 'POST',
+      headers: {
+        'apikey': SUPABASE_SERVICE_ROLE_KEY!,
+        'Authorization': `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: '{}',
+    });
+    const expectedSecret = (await secretRes.json())?.toString?.() || '';
+    if (!providedSecret || providedSecret !== expectedSecret) {
+      return new Response(JSON.stringify({ error: 'unauthorized' }), {
+        status: 401,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
     const payload = await req.json();
     const { record } = payload;
 
