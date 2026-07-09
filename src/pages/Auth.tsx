@@ -178,9 +178,7 @@ const Auth = () => {
             >
               <motion.div variants={staggerChildren} initial="initial" animate="animate" className="space-y-4 sm:space-y-6">
                 <motion.div variants={childVariants} className="text-center">
-                  <img src="/logo-icon.png" alt="Compra Coletiva" className="mx-auto h-24 sm:h-32 w-auto object-contain" />
-                  <h1 className="font-display text-2xl sm:text-3xl font-bold tracking-tight text-foreground mt-2">Compra Coletiva</h1>
-                  <p className="mt-1 text-lg sm:text-xl font-semibold text-primary tracking-wide">JUNTOS, PAGAMOS MENOS!</p>
+                  <img src="/logo.png" alt="Compra Coletiva" className="mx-auto h-24 sm:h-32 w-auto object-contain" />
                   <p className="mt-3 sm:mt-4 text-sm sm:text-base text-muted-foreground">Como você quer usar a plataforma?</p>
                 </motion.div>
                 <div className="grid gap-3 sm:gap-4">
