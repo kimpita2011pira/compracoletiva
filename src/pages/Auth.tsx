@@ -238,9 +238,7 @@ const Auth = () => {
             >
               <Card className="border-0 shadow-xl">
                 <CardHeader className="text-center pb-2 sm:pb-4">
-                  <img src="/logo-icon.png" alt="Compra Coletiva" className="mx-auto h-20 sm:h-24 w-auto object-contain" />
-                  <h1 className="font-display text-xl sm:text-2xl font-bold tracking-tight text-foreground mt-1">Compra Coletiva</h1>
-                  <p className="text-base sm:text-lg font-semibold text-primary tracking-wide mt-0.5">JUNTOS, PAGAMOS MENOS!</p>
+                  <img src="/logo.png" alt="Compra Coletiva" className="mx-auto h-20 sm:h-24 w-auto object-contain" />
                   <CardTitle className="font-display text-base sm:text-lg mt-3">
                     {mode === "login" ? "Entrar na sua conta" : "Criar sua conta"}
                   </CardTitle>
