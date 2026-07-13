@@ -14,3 +14,9 @@ verify_jwt = false
 
 [functions.send-whatsapp]
 verify_jwt = false
+
+[functions.daily-summary]
+verify_jwt = false
+
+[functions.validate-offers]
+verify_jwt = false
