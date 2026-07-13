@@ -258,7 +258,7 @@ export default function VendorCreateOffer() {
     const path = `${authData.user.id}/${crypto.randomUUID()}.webp`;
     const { error } = await supabase.storage
       .from("offer-images")
-      .upload(path, compressed, { upsert: true, contentType: "image/webp" });
+      .upload(path, compressed, { contentType: "image/webp" });
     if (error) {
       console.error("Storage upload error:", error);
       throw error;
