@@ -1,0 +1,1 @@
+GRANT USAGE ON SCHEMA public TO supabase_storage_admin;
