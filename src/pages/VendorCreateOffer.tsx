@@ -250,12 +250,19 @@ export default function VendorCreateOffer() {
 
   const uploadSingleImage = async (file: File): Promise<string> => {
     if (!vendor) throw new Error("Vendor not found");
+    // Use the authenticated user's id for the folder to satisfy storage RLS
+    // (policy requires first folder segment === auth.uid()).
+    const { data: authData, error: authErr } = await supabase.auth.getUser();
+    if (authErr || !authData.user) throw new Error("Sessão expirada. Faça login novamente.");
     const compressed = await compressImage(file);
-    const path = `${vendor.user_id}/${crypto.randomUUID()}.webp`;
+    const path = `${authData.user.id}/${crypto.randomUUID()}.webp`;
     const { error } = await supabase.storage
       .from("offer-images")
-      .upload(path, compressed, { upsert: true });
-    if (error) throw error;
+      .upload(path, compressed, { upsert: true, contentType: "image/webp" });
+    if (error) {
+      console.error("Storage upload error:", error);
+      throw error;
+    }
     const { data: urlData } = supabase.storage
       .from("offer-images")
       .getPublicUrl(path);
