@@ -719,6 +719,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      can_upload_offer_image: { Args: { _user_id: string }; Returns: boolean }
       credit_deposit_once: {
         Args: { p_amount: number; p_description: string; p_wallet_id: string }
         Returns: boolean

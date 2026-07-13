@@ -1,0 +1,1 @@
+GRANT EXECUTE ON FUNCTION public.can_upload_offer_image(uuid) TO supabase_storage_admin;
