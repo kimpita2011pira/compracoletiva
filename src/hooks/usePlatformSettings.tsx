@@ -20,9 +20,9 @@ export function useUpdateMonthlyAdminFee() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (fee: number) => {
-      const { error } = await supabase
-        .from("platform_settings" as any)
-        .update({ monthly_admin_fee: fee, updated_at: new Date().toISOString() } as any)
+      const { error } = await (supabase as any)
+        .from("platform_settings")
+        .update({ monthly_admin_fee: fee, updated_at: new Date().toISOString() })
         .eq("id", true);
       if (error) throw error;
     },
