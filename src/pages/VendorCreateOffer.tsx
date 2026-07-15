@@ -67,6 +67,7 @@ export default function VendorCreateOffer() {
   const { id: offerId } = useParams<{ id: string }>();
   const isEdit = !!offerId;
   const cloneData = (location.state as any)?.cloneFrom ?? null;
+  const sourceSuggestionId = (location.state as any)?.sourceSuggestionId ?? null;
   const { vendor, isLoading: vendorLoading } = useVendor();
   const queryClient = useQueryClient();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -316,7 +317,7 @@ export default function VendorCreateOffer() {
         } else {
           const { data, error } = await supabase
             .from("offers")
-            .insert({ ...payload, vendor_id: vendor.id })
+            .insert({ ...payload, vendor_id: vendor.id, source_suggestion_id: sourceSuggestionId })
             .select("id")
             .single();
           if (error) throw error;
