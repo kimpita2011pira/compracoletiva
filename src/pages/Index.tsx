@@ -4,6 +4,8 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { AppLayout } from "@/components/AppLayout";
 import { SEOHead } from "@/components/SEOHead";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { OfferSuggestions } from "@/components/OfferSuggestions";
 import { ShoppingBag, Wallet, Package } from "lucide-react";
 
 const Index = () => {
