@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -18,7 +19,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { toast } from "@/hooks/use-toast";
-import { ThumbsUp, Loader2, Plus, Lightbulb, Pencil, Trash2, X, Check } from "lucide-react";
+import { ThumbsUp, Loader2, Plus, Lightbulb, Pencil, Trash2, X, Check, Sparkles } from "lucide-react";
 
 interface Suggestion {
   id: string;
