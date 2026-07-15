@@ -95,7 +95,7 @@ const TermsPage = () => {
           </section>
 
           <section>
-            <h2 className="font-semibold text-foreground text-lg">6. Política de Privacidade</h2>
+            <h2 className="font-semibold text-foreground text-lg">8. Política de Privacidade</h2>
             <p className="mt-2">
               Seus dados pessoais são protegidos conforme a Lei Geral de Proteção de Dados (LGPD).
               Utilizamos suas informações exclusivamente para a operação da plataforma. Para mais
@@ -107,7 +107,7 @@ const TermsPage = () => {
           </section>
 
           <section>
-            <h2 className="font-semibold text-foreground text-lg">7. Contato</h2>
+            <h2 className="font-semibold text-foreground text-lg">9. Contato</h2>
             <p className="mt-2">
               Para dúvidas sobre estes termos, entre em contato pelo e-mail kimpita2011@gmail.com.
             </p>
