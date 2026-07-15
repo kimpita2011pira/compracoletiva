@@ -551,6 +551,7 @@ export type Database = {
       }
       profiles: {
         Row: {
+          admin_fee_exempt: boolean
           avatar_url: string | null
           city: string | null
           created_at: string
@@ -562,6 +563,7 @@ export type Database = {
           whatsapp: string | null
         }
         Insert: {
+          admin_fee_exempt?: boolean
           avatar_url?: string | null
           city?: string | null
           created_at?: string
@@ -573,6 +575,7 @@ export type Database = {
           whatsapp?: string | null
         }
         Update: {
+          admin_fee_exempt?: boolean
           avatar_url?: string | null
           city?: string | null
           created_at?: string
