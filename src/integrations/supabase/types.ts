@@ -513,6 +513,24 @@ export type Database = {
           },
         ]
       }
+      platform_settings: {
+        Row: {
+          id: boolean
+          monthly_admin_fee: number
+          updated_at: string
+        }
+        Insert: {
+          id?: boolean
+          monthly_admin_fee?: number
+          updated_at?: string
+        }
+        Update: {
+          id?: boolean
+          monthly_admin_fee?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       platform_wallet: {
         Row: {
           balance: number
@@ -625,6 +643,30 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      user_admin_fee_charges: {
+        Row: {
+          amount: number
+          charged_at: string
+          id: string
+          month: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          charged_at?: string
+          id?: string
+          month: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          charged_at?: string
+          id?: string
+          month?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       user_roles: {
         Row: {
@@ -795,6 +837,10 @@ export type Database = {
     }
     Functions: {
       can_upload_offer_image: { Args: { _user_id: string }; Returns: boolean }
+      charge_admin_fee_current_month: {
+        Args: { _user_id: string }
+        Returns: boolean
+      }
       credit_deposit_once: {
         Args: { p_amount: number; p_description: string; p_wallet_id: string }
         Returns: boolean
@@ -840,6 +886,7 @@ export type Database = {
         }
         Returns: string
       }
+      run_monthly_admin_fee: { Args: never; Returns: Json }
       validate_expired_offers: { Args: never; Returns: Json }
     }
     Enums: {
@@ -863,6 +910,7 @@ export type Database = {
         | "ESTORNO"
         | "CREDITO"
         | "COMISSAO"
+        | "TAXA_ADMIN"
       vendor_status: "PENDENTE" | "APROVADO" | "REJEITADO"
     }
     CompositeTypes: {
@@ -1012,6 +1060,7 @@ export const Constants = {
         "ESTORNO",
         "CREDITO",
         "COMISSAO",
+        "TAXA_ADMIN",
       ],
       vendor_status: ["PENDENTE", "APROVADO", "REJEITADO"],
     },
