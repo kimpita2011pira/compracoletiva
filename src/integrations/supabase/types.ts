@@ -387,6 +387,7 @@ export type Database = {
           original_price: number
           pickup_available: boolean | null
           sold_quantity: number
+          source_suggestion_id: string | null
           start_date: string
           status: Database["public"]["Enums"]["offer_status"]
           title: string
@@ -409,6 +410,7 @@ export type Database = {
           original_price: number
           pickup_available?: boolean | null
           sold_quantity?: number
+          source_suggestion_id?: string | null
           start_date?: string
           status?: Database["public"]["Enums"]["offer_status"]
           title: string
@@ -431,12 +433,20 @@ export type Database = {
           original_price?: number
           pickup_available?: boolean | null
           sold_quantity?: number
+          source_suggestion_id?: string | null
           start_date?: string
           status?: Database["public"]["Enums"]["offer_status"]
           title?: string
           vendor_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "offers_source_suggestion_id_fkey"
+            columns: ["source_suggestion_id"]
+            isOneToOne: false
+            referencedRelation: "offer_suggestions"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "offers_vendor_id_fkey"
             columns: ["vendor_id"]
