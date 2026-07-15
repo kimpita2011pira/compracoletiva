@@ -85,6 +85,9 @@ export default function WalletPage() {
           </div>
         </div>
 
+        {/* Admin fee status (buyers only) */}
+        <AdminFeeStatusCard />
+
         {/* Withdrawal requests (vendor only) */}
         {isVendor && withdrawals && withdrawals.length > 0 && (
           <div>
