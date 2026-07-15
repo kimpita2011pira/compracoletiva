@@ -21,7 +21,6 @@ import {
   Wallet,
   Megaphone,
   FileText,
-  FileText,
   Settings2,
 } from "lucide-react";
 import { toast } from "sonner";
