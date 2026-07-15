@@ -304,6 +304,71 @@ export type Database = {
           },
         ]
       }
+      offer_suggestion_votes: {
+        Row: {
+          created_at: string
+          id: string
+          suggestion_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          suggestion_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          suggestion_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "offer_suggestion_votes_suggestion_id_fkey"
+            columns: ["suggestion_id"]
+            isOneToOne: false
+            referencedRelation: "offer_suggestions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      offer_suggestions: {
+        Row: {
+          category: string | null
+          city: string | null
+          created_at: string
+          description: string | null
+          id: string
+          title: string
+          updated_at: string
+          user_id: string
+          votes_count: number
+        }
+        Insert: {
+          category?: string | null
+          city?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          title: string
+          updated_at?: string
+          user_id: string
+          votes_count?: number
+        }
+        Update: {
+          category?: string | null
+          city?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+          votes_count?: number
+        }
+        Relationships: []
+      }
       offers: {
         Row: {
           category: Database["public"]["Enums"]["offer_category"] | null

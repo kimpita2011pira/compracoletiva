@@ -4,6 +4,8 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { AppLayout } from "@/components/AppLayout";
 import { SEOHead } from "@/components/SEOHead";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { OfferSuggestions } from "@/components/OfferSuggestions";
 import { ShoppingBag, Wallet, Package } from "lucide-react";
 
 const Index = () => {
@@ -65,29 +67,44 @@ const Index = () => {
         </p>
       </section>
 
-      {/* Quick actions */}
-      <section className="container grid gap-4 pb-12 md:grid-cols-3">
-        <QuickCard
-          icon={<ShoppingBag className="h-8 w-8" />}
-          title="Ofertas"
-          description="Veja as melhores ofertas disponíveis agora"
-          color="primary"
-          onClick={() => navigate("/offers")}
-        />
-        <QuickCard
-          icon={<Wallet className="h-8 w-8" />}
-          title="Minha Carteira"
-          description="Gerencie seu saldo e extrato"
-          color="secondary"
-          onClick={() => navigate("/wallet")}
-        />
-        <QuickCard
-          icon={<Package className="h-8 w-8" />}
-          title="Meus Pedidos"
-          description="Acompanhe suas reservas e compras"
-          color="accent"
-          onClick={() => navigate("/orders")}
-        />
+      {/* Tabs: Início / Sugestões */}
+      <section className="container pb-12">
+        <Tabs defaultValue="home" className="w-full">
+          <TabsList className="grid w-full grid-cols-2 md:w-auto md:inline-grid">
+            <TabsTrigger value="home">Início</TabsTrigger>
+            <TabsTrigger value="suggestions">💡 Sugestões</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="home" className="mt-6">
+            <div className="grid gap-4 md:grid-cols-3">
+              <QuickCard
+                icon={<ShoppingBag className="h-8 w-8" />}
+                title="Ofertas"
+                description="Veja as melhores ofertas disponíveis agora"
+                color="primary"
+                onClick={() => navigate("/offers")}
+              />
+              <QuickCard
+                icon={<Wallet className="h-8 w-8" />}
+                title="Minha Carteira"
+                description="Gerencie seu saldo e extrato"
+                color="secondary"
+                onClick={() => navigate("/wallet")}
+              />
+              <QuickCard
+                icon={<Package className="h-8 w-8" />}
+                title="Meus Pedidos"
+                description="Acompanhe suas reservas e compras"
+                color="accent"
+                onClick={() => navigate("/orders")}
+              />
+            </div>
+          </TabsContent>
+
+          <TabsContent value="suggestions" className="mt-6">
+            <OfferSuggestions />
+          </TabsContent>
+        </Tabs>
       </section>
       </main>
     </AppLayout>
