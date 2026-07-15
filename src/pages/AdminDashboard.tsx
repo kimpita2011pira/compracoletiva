@@ -391,6 +391,10 @@ export default function AdminDashboard() {
           <TabsContent value="auditoria" className="space-y-6">
             <AdminAuditLogs />
           </TabsContent>
+
+          <TabsContent value="config" className="space-y-6">
+            <AdminPlatformSettings />
+          </TabsContent>
         </Tabs>
       </main>
     </AppLayout>
