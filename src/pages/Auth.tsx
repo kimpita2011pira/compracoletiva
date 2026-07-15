@@ -19,6 +19,7 @@ import { PasswordStrengthIndicator } from "@/components/PasswordStrengthIndicato
 import { useBrazilLocations } from "@/hooks/useBrazilLocations";
 import { PromoBanner } from "@/components/PromoBanner";
 import { SEOHead } from "@/components/SEOHead";
+import { usePlatformSettings } from "@/hooks/usePlatformSettings";
 
 type AuthMode = "login" | "register";
 type RoleChoice = "CLIENTE" | "VENDEDOR" | null;
@@ -40,6 +41,8 @@ const Auth = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { states, cities, loadingStates, loadingCities } = useBrazilLocations(selectedState);
+  const { data: platformSettings } = usePlatformSettings();
+  const monthlyFee = Number(platformSettings?.monthly_admin_fee ?? 0);
 
   const formatPhone = useCallback((value: string) => {
     const digits = value.replace(/\D/g, "").slice(0, 11);
