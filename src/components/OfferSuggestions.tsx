@@ -33,7 +33,9 @@ interface Suggestion {
 }
 
 export function OfferSuggestions() {
-  const { user } = useAuth();
+  const { user, roles } = useAuth();
+  const navigate = useNavigate();
+  const isVendor = roles.includes("VENDEDOR");
   const qc = useQueryClient();
   const [showForm, setShowForm] = useState(false);
   const [title, setTitle] = useState("");
