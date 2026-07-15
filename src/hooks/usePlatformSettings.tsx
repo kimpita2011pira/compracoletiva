@@ -5,8 +5,8 @@ export function usePlatformSettings() {
   return useQuery({
     queryKey: ["platform-settings"],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("platform_settings" as any)
+      const { data, error } = await (supabase as any)
+        .from("platform_settings")
         .select("monthly_admin_fee")
         .eq("id", true)
         .maybeSingle();
