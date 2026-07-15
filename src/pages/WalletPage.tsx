@@ -27,6 +27,7 @@ const TX_CONFIG: Record<string, { label: string; icon: typeof ArrowDownLeft; col
   RESERVA: { label: "Reserva", icon: ArrowUpRight, colorClass: "text-destructive" },
   DEBITO: { label: "Débito", icon: ArrowUpRight, colorClass: "text-destructive" },
   COMISSAO: { label: "Comissão", icon: ArrowUpRight, colorClass: "text-destructive" },
+  TAXA_ADMIN: { label: "Taxa administrativa", icon: ArrowUpRight, colorClass: "text-destructive" },
 };
 
 export default function WalletPage() {

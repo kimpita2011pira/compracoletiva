@@ -69,7 +69,33 @@ const TermsPage = () => {
           </section>
 
           <section>
-            <h2 className="font-semibold text-foreground text-lg">6. Política de Privacidade</h2>
+            <h2 className="font-semibold text-foreground text-lg">6. Taxa administrativa (compradores)</h2>
+            <p className="mt-2">
+              A plataforma pode cobrar uma <strong>taxa administrativa mensal</strong> dos usuários
+              compradores, debitada automaticamente do saldo da carteira digital. O valor vigente é
+              exibido no momento do cadastro e pode ser consultado a qualquer momento no seu extrato.
+              Regras:
+            </p>
+            <ul className="mt-2 list-disc list-inside space-y-1">
+              <li>Cobrança única por mês corrente; meses sem uso <strong>não acumulam</strong>.</li>
+              <li>Se não houver saldo no momento da cobrança, a taxa é debitada automaticamente após a próxima recarga do mesmo mês.</li>
+              <li>Vendedores, administradores e franqueados <strong>não pagam</strong> esta taxa.</li>
+            </ul>
+          </section>
+
+          <section>
+            <h2 className="font-semibold text-foreground text-lg">7. Comissão do vendedor</h2>
+            <p className="mt-2">
+              Sobre cada oferta validada, a plataforma retém uma <strong>comissão padrão de 10%</strong>{" "}
+              sobre o valor bruto das vendas. Em cidades com franquia ativa, a distribuição segue a
+              taxa configurada para a franquia (a plataforma retém 1% fixo e a franquia recebe o
+              restante da comissão). O vendedor recebe o valor líquido diretamente em sua carteira
+              ao final do ciclo da oferta.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="font-semibold text-foreground text-lg">8. Política de Privacidade</h2>
             <p className="mt-2">
               Seus dados pessoais são protegidos conforme a Lei Geral de Proteção de Dados (LGPD).
               Utilizamos suas informações exclusivamente para a operação da plataforma. Para mais
@@ -81,7 +107,7 @@ const TermsPage = () => {
           </section>
 
           <section>
-            <h2 className="font-semibold text-foreground text-lg">7. Contato</h2>
+            <h2 className="font-semibold text-foreground text-lg">9. Contato</h2>
             <p className="mt-2">
               Para dúvidas sobre estes termos, entre em contato pelo e-mail kimpita2011@gmail.com.
             </p>
