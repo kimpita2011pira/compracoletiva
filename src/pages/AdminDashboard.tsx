@@ -394,6 +394,7 @@ export default function AdminDashboard() {
 
           <TabsContent value="config" className="space-y-6">
             <AdminPlatformSettings />
+            <AdminFeeHistory />
           </TabsContent>
         </Tabs>
       </main>
