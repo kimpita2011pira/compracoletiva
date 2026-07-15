@@ -292,6 +292,23 @@ export function OfferSuggestions() {
             </Button>
           </div>
         )}
+        {isVendor && !isMine && (
+          <Button
+            size="sm"
+            variant="outline"
+            className="gap-1"
+            onClick={() =>
+              navigate("/vendor/create-offer", {
+                state: {
+                  sourceSuggestionId: s.id,
+                  cloneFrom: { title: s.title, description: s.description, city: s.city },
+                },
+              })
+            }
+          >
+            <Sparkles className="h-4 w-4" /> Criar oferta
+          </Button>
+        )}
       </Card>
     );
   };
