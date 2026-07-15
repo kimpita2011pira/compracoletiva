@@ -27,14 +27,31 @@ export function OfferSuggestions() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("");
-  const [city, setCity] = useState("");
+
+  const profileQuery = useQuery({
+    queryKey: ["profile-city", user?.id],
+    enabled: !!user,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("city, state")
+        .eq("id", user!.id)
+        .single();
+      if (error) throw error;
+      return data as { city: string | null; state: string | null };
+    },
+  });
+
+  const userCity = profileQuery.data?.city ?? null;
 
   const suggestionsQuery = useQuery({
-    queryKey: ["offer-suggestions"],
+    queryKey: ["offer-suggestions", userCity],
+    enabled: !!userCity,
     queryFn: async () => {
       const { data, error } = await supabase
         .from("offer_suggestions")
         .select("*")
+        .eq("city", userCity!)
         .order("votes_count", { ascending: false })
         .order("created_at", { ascending: false })
         .limit(100);
@@ -59,18 +76,19 @@ export function OfferSuggestions() {
   const createMutation = useMutation({
     mutationFn: async () => {
       if (!user) throw new Error("Faça login");
+      if (!userCity) throw new Error("Defina sua cidade no perfil para sugerir ofertas.");
       const { error } = await supabase.from("offer_suggestions").insert({
         user_id: user.id,
         title: title.trim(),
         description: description.trim() || null,
         category: category.trim() || null,
-        city: city.trim() || null,
+        city: userCity,
       });
       if (error) throw error;
     },
     onSuccess: () => {
       toast({ title: "Sugestão enviada!", description: "Obrigado pela contribuição." });
-      setTitle(""); setDescription(""); setCategory(""); setCity("");
+      setTitle(""); setDescription(""); setCategory("");
       setShowForm(false);
       qc.invalidateQueries({ queryKey: ["offer-suggestions"] });
     },
@@ -104,11 +122,30 @@ export function OfferSuggestions() {
 
   const suggestions = suggestionsQuery.data ?? [];
 
+  if (profileQuery.isLoading) {
+    return (
+      <div className="flex justify-center py-8">
+        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+
+  if (!userCity) {
+    return (
+      <Card className="flex flex-col items-center gap-2 p-8 text-center">
+        <Lightbulb className="h-10 w-10 text-muted-foreground" />
+        <p className="text-sm text-muted-foreground">
+          Defina sua cidade no seu perfil para ver e enviar sugestões da sua região.
+        </p>
+      </Card>
+    );
+  }
+
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-2">
         <p className="text-sm text-muted-foreground">
-          Sugira ofertas que você gostaria de ver e vote nas ideias da comunidade.
+          Sugestões em <span className="font-semibold text-foreground">📍 {userCity}</span>. Vote nas ideias da comunidade.
         </p>
         <Button size="sm" onClick={() => setShowForm((v) => !v)}>
           <Plus className="mr-1 h-4 w-4" /> Nova
@@ -130,20 +167,15 @@ export function OfferSuggestions() {
             maxLength={500}
             rows={3}
           />
-          <div className="grid grid-cols-2 gap-2">
-            <Input
-              placeholder="Categoria (opcional)"
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
-              maxLength={40}
-            />
-            <Input
-              placeholder="Cidade (opcional)"
-              value={city}
-              onChange={(e) => setCity(e.target.value)}
-              maxLength={60}
-            />
-          </div>
+          <Input
+            placeholder="Categoria (opcional)"
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            maxLength={40}
+          />
+          <p className="text-xs text-muted-foreground">
+            Cidade: <span className="font-semibold">{userCity}</span>
+          </p>
           <Button
             onClick={() => createMutation.mutate()}
             disabled={!title.trim() || createMutation.isPending}
@@ -163,7 +195,7 @@ export function OfferSuggestions() {
         <Card className="flex flex-col items-center gap-2 p-8 text-center">
           <Lightbulb className="h-10 w-10 text-muted-foreground" />
           <p className="text-sm text-muted-foreground">
-            Ainda não há sugestões. Seja o primeiro!
+            Ainda não há sugestões em {userCity}. Seja o primeiro!
           </p>
         </Card>
       ) : (
