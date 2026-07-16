@@ -32,6 +32,7 @@ import { AdminAuditLogs } from "@/components/AdminAuditLogs";
 import { AdminFranchiseManager } from "@/components/AdminFranchiseManager";
 import { AdminPlatformSettings } from "@/components/AdminPlatformSettings";
 import { AdminFeeHistory } from "@/components/AdminFeeHistory";
+import { PlatformWalletLedger } from "@/components/PlatformWalletLedger";
 import { Building } from "lucide-react";
 import {
   BarChart,
@@ -395,6 +396,7 @@ export default function AdminDashboard() {
 
           <TabsContent value="config" className="space-y-6">
             <AdminPlatformSettings />
+            <PlatformWalletLedger />
             <AdminFeeHistory />
           </TabsContent>
         </Tabs>

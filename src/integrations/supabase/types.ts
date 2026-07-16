@@ -549,6 +549,48 @@ export type Database = {
         }
         Relationships: []
       }
+      platform_wallet_transactions: {
+        Row: {
+          amount: number
+          city: string | null
+          created_at: string
+          description: string | null
+          franchise_id: string | null
+          id: string
+          offer_id: string | null
+          source_label: string
+          state: string | null
+          type: string
+          user_id: string | null
+        }
+        Insert: {
+          amount: number
+          city?: string | null
+          created_at?: string
+          description?: string | null
+          franchise_id?: string | null
+          id?: string
+          offer_id?: string | null
+          source_label: string
+          state?: string | null
+          type: string
+          user_id?: string | null
+        }
+        Update: {
+          amount?: number
+          city?: string | null
+          created_at?: string
+          description?: string | null
+          franchise_id?: string | null
+          id?: string
+          offer_id?: string | null
+          source_label?: string
+          state?: string | null
+          type?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           admin_fee_exempt: boolean
