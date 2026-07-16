@@ -881,6 +881,28 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_list_vendors: {
+        Args: never
+        Returns: {
+          city: string | null
+          cnpj: string | null
+          company_name: string
+          created_at: string
+          description: string | null
+          id: string
+          pix_key: string | null
+          previous_data: Json | null
+          status: Database["public"]["Enums"]["vendor_status"]
+          updated_at: string
+          user_id: string
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "vendors"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
       can_upload_offer_image: { Args: { _user_id: string }; Returns: boolean }
       charge_admin_fee_current_month: {
         Args: { _user_id: string }
@@ -907,6 +929,35 @@ export type Database = {
         }[]
       }
       get_internal_webhook_secret: { Args: never; Returns: string }
+      get_my_vendor: {
+        Args: never
+        Returns: {
+          city: string | null
+          cnpj: string | null
+          company_name: string
+          created_at: string
+          description: string | null
+          id: string
+          pix_key: string | null
+          previous_data: Json | null
+          status: Database["public"]["Enums"]["vendor_status"]
+          updated_at: string
+          user_id: string
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "vendors"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
+      get_vendor_secrets: {
+        Args: { _vendor_id: string }
+        Returns: {
+          cnpj: string
+          pix_key: string
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
