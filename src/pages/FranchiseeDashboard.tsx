@@ -119,6 +119,7 @@ export default function FranchiseeDashboard() {
           </TabsList>
 
           <TabsContent value="overview" className="space-y-6">
+            <FranchiseModeInfo commissionRate={myFranchise?.commission_rate} />
             {/* KPIs */}
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               <Kpi icon={<Wallet className="h-5 w-5" />} label="Comissão acumulada" value={fmtBRL(totals.franchiseeCommissionEarned)} accent="primary" />
