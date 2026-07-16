@@ -51,6 +51,7 @@ export default function FranchiseeDashboard() {
   const { data, isLoading } = useFranchiseeMetrics(days);
   const { data: wallet } = useWallet();
   const { data: myWithdrawals } = useFranchiseeWithdrawals();
+  const { data: myFranchise } = useMyFranchise();
 
   if (isLoading) {
     return (
