@@ -39,6 +39,8 @@ import {
 import { AdminWithdrawals } from "@/components/AdminWithdrawals";
 import FranchiseeWithdrawModal from "@/components/FranchiseeWithdrawModal";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { FranchiseModeInfo } from "@/components/FranchiseModeInfo";
+import { useMyFranchise } from "@/hooks/useFranchises";
 
 const fmtBRL = (v: number) =>
   v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -49,6 +51,7 @@ export default function FranchiseeDashboard() {
   const { data, isLoading } = useFranchiseeMetrics(days);
   const { data: wallet } = useWallet();
   const { data: myWithdrawals } = useFranchiseeWithdrawals();
+  const { data: myFranchise } = useMyFranchise();
 
   if (isLoading) {
     return (
@@ -116,6 +119,7 @@ export default function FranchiseeDashboard() {
           </TabsList>
 
           <TabsContent value="overview" className="space-y-6">
+            <FranchiseModeInfo commissionRate={myFranchise?.commission_rate} />
             {/* KPIs */}
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               <Kpi icon={<Wallet className="h-5 w-5" />} label="Comissão acumulada" value={fmtBRL(totals.franchiseeCommissionEarned)} accent="primary" />

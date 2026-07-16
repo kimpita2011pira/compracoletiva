@@ -17,6 +17,7 @@ import {
 import { Plus, Trash2, MapPin, Building2, Search, X } from "lucide-react";
 import { toast } from "sonner";
 import { FranchisePerformanceReport } from "@/components/FranchisePerformanceReport";
+import { FranchiseModeInfo } from "@/components/FranchiseModeInfo";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export function AdminFranchiseManager() {
@@ -94,6 +95,7 @@ export function AdminFranchiseManager() {
       </TabsList>
 
       <TabsContent value="manage" className="space-y-6">
+      <FranchiseModeInfo />
       <div className="flex items-center justify-between">
         <div>
           <h2 className="font-display text-2xl font-bold">Franquias</h2>
