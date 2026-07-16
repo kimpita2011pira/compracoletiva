@@ -11,13 +11,14 @@ export function useAdminVendors() {
   const vendorsQuery = useQuery({
     queryKey: ["admin-vendors"],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("vendors")
-        .select("*")
-        .order("created_at", { ascending: false });
+      const { data, error } = await supabase.rpc("admin_list_vendors");
       if (error) throw error;
-      return data as Tables<"vendors">[];
+      const rows = (data ?? []) as Tables<"vendors">[];
+      return [...rows].sort((a, b) =>
+        (b.created_at ?? "").localeCompare(a.created_at ?? "")
+      );
     },
+
   });
 
   const updateStatus = useMutation({

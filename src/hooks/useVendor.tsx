@@ -13,21 +13,19 @@ export function useVendor() {
       if (!user) return null;
       try {
         console.log("Fetching vendor for user:", user.id);
-        const { data, error } = await supabase
-          .from("vendors")
-          .select("*")
-          .eq("user_id", user.id)
-          .maybeSingle();
+        const { data, error } = await supabase.rpc("get_my_vendor");
         if (error) {
           console.error("Vendor fetch error:", error);
           throw error;
         }
-        console.log("Vendor data received:", data);
-        return data as Tables<"vendors"> | null;
+        const row = Array.isArray(data) && data.length ? data[0] : null;
+        console.log("Vendor data received:", row);
+        return (row as Tables<"vendors"> | null) ?? null;
       } catch (err) {
         console.error("Vendor query failed:", err);
         throw err;
       }
+
     },
     enabled: !!user,
     retry: 1,
