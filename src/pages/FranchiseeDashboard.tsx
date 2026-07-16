@@ -39,6 +39,8 @@ import {
 import { AdminWithdrawals } from "@/components/AdminWithdrawals";
 import FranchiseeWithdrawModal from "@/components/FranchiseeWithdrawModal";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { FranchiseModeInfo } from "@/components/FranchiseModeInfo";
+import { useMyFranchise } from "@/hooks/useFranchises";
 
 const fmtBRL = (v: number) =>
   v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
