@@ -17,6 +17,7 @@ import {
 import { Plus, Trash2, MapPin, Building2, Search, X } from "lucide-react";
 import { toast } from "sonner";
 import { FranchisePerformanceReport } from "@/components/FranchisePerformanceReport";
+import { FranchiseModeInfo } from "@/components/FranchiseModeInfo";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export function AdminFranchiseManager() {
