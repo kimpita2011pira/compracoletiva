@@ -104,7 +104,7 @@ const Auth = () => {
     });
     setLoading(false);
     if (error) {
-      toast({ title: "Erro no cadastro", description: error.message, variant: "destructive" });
+      toast({ title: "erro ao cadastrar novo usuario", description: error.message, variant: "destructive" });
     } else {
       toast({
         title: "Cadastro realizado!",
