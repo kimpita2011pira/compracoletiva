@@ -350,6 +350,17 @@ export default function DepositModal({ open, onOpenChange, onPollingChange, auto
             <Button variant="outline" onClick={() => setStep("form")}>
               Voltar
             </Button>
+            {autoCheckPaymentId && (
+              <Button 
+                variant="outline" 
+                onClick={() => handleCheckPayment(autoCheckPaymentId)}
+                className="gap-2 border-primary text-primary hover:bg-primary/5"
+                disabled={loading}
+              >
+                {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
+                Voltar do Mercado Pago
+              </Button>
+            )}
             <Button
               onClick={() => {
                 queryClient.invalidateQueries({ queryKey: ["wallet"] });
