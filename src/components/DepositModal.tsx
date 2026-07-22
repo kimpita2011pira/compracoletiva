@@ -133,18 +133,13 @@ export default function DepositModal({ open, onOpenChange, onPollingChange, auto
           description: "Aguarde enquanto abrimos a página de checkout.",
         });
 
+        // Use location.replace for a cleaner history and avoid popup issues
+        // We add a small delay to ensure the UI updates first
         setTimeout(() => {
-          try {
-            window.location.href = data.init_point;
-          } catch (e) {
-            console.error("Redirect error:", e);
-            toast({
-              title: "Falha no redirecionamento",
-              description: "Use o botão na tela para abrir manualmente.",
-              variant: "destructive",
-            });
+          if (data.init_point) {
+            window.location.replace(data.init_point);
           }
-        }, 100);
+        }, 800);
       } else {
         throw new Error("Não foi possível gerar os dados de pagamento. Tente novamente.");
       }
