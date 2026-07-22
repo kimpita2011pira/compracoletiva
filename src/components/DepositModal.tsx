@@ -146,9 +146,10 @@ export default function DepositModal({ open, onOpenChange, onPollingChange, auto
         // We add a small delay to ensure the UI updates first
         setTimeout(() => {
           if (initPoint) {
-            window.location.replace(initPoint);
+            console.log("Redirecting to:", initPoint);
+            window.location.href = initPoint;
           }
-        }, 1000);
+        }, 500);
       } else {
         throw new Error("Não foi possível gerar os dados de pagamento. Tente novamente.");
       }
