@@ -11,12 +11,24 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Save, User, Camera, Lock, ChevronsUpDown, Check } from "lucide-react";
+import { Save, User, Camera, Lock, ChevronsUpDown, Check, Trash2, AlertTriangle } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Command, CommandInput, CommandList, CommandEmpty, CommandItem } from "@/components/ui/command";
 import { cn } from "@/lib/utils";
 import { BecomeVendorCard } from "@/components/BecomeVendorCard";
 import { PasswordStrengthIndicator } from "@/components/PasswordStrengthIndicator";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+
 
 function formatPhone(value: string): string {
   const digits = value.replace(/\D/g, "").slice(0, 11);
@@ -126,6 +138,134 @@ const ChangePasswordCard = () => {
     </Card>
   );
 };
+
+const DeleteAccountSection = () => {
+  const [isFirstConfirmOpen, setIsFirstConfirmOpen] = useState(false);
+  const [isSecondConfirmOpen, setIsSecondConfirmOpen] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const { toast } = useToast();
+  const navigate = useNavigate();
+
+  const handleDeleteAccount = async () => {
+    setDeleting(true);
+    try {
+      // In a real application with Supabase, deleting an auth user usually requires 
+      // an edge function or a service role key. 
+      // Here we will call a database function that handles account deletion/anonymization
+      // and then sign out.
+      
+      // @ts-ignore - delete_user_account is dynamically generated in types
+      const { error } = await supabase.rpc('delete_user_account');
+
+      
+      if (error) {
+        // If RPC doesn't exist yet, we'll implement it. 
+        // For now, let's at least try to sign out and show an error if it fails.
+        console.error("Error calling delete_user_account:", error);
+        toast({ 
+          title: "Erro ao excluir conta", 
+          description: "Não foi possível processar sua solicitação no momento. Entre em contato com o suporte.", 
+          variant: "destructive" 
+        });
+        setDeleting(false);
+        return;
+      }
+
+      await supabase.auth.signOut();
+      toast({ title: "Conta excluída", description: "Sua conta e dados foram removidos com sucesso." });
+      navigate("/auth");
+    } catch (error) {
+      console.error("Delete account error:", error);
+      toast({ title: "Erro técnico", description: "Ocorreu um erro ao tentar excluir sua conta.", variant: "destructive" });
+      setDeleting(false);
+    }
+  };
+
+  return (
+    <div className="mt-8 pt-6 border-t border-destructive/20">
+      <Card className="border-destructive/20 bg-destructive/5 shadow-none">
+        <CardHeader>
+          <CardTitle className="text-destructive flex items-center gap-2 text-lg">
+            <Trash2 className="h-5 w-5" />
+            Zona de Perigo
+          </CardTitle>
+          <CardDescription>
+            Ações irreversíveis relacionadas à sua conta
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h4 className="font-medium text-sm">Excluir minha conta</h4>
+              <p className="text-xs text-muted-foreground mt-1">
+                Isso removerá permanentemente todos os seus dados e pedidos.
+              </p>
+            </div>
+            
+            <AlertDialog open={isFirstConfirmOpen} onOpenChange={setIsFirstConfirmOpen}>
+              <AlertDialogTrigger asChild>
+                <Button variant="destructive" size="sm" className="shrink-0">
+                  <Trash2 className="mr-2 h-4 w-4" />
+                  Excluir Conta
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle className="flex items-center gap-2">
+                    <AlertTriangle className="h-5 w-5 text-destructive" />
+                    Você tem certeza absoluta?
+                  </AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Esta ação não pode ser desfeita. Isso excluirá permanentemente seu perfil, 
+                    histórico de pedidos e removerá seu acesso ao Compra Coletiva.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                  <AlertDialogAction 
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setIsFirstConfirmOpen(false);
+                      setIsSecondConfirmOpen(true);
+                    }}
+                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                  >
+                    Eu entendo, prosseguir
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+
+            <AlertDialog open={isSecondConfirmOpen} onOpenChange={setIsSecondConfirmOpen}>
+              <AlertDialogContent className="border-2 border-destructive">
+                <AlertDialogHeader>
+                  <AlertDialogTitle className="text-destructive uppercase tracking-widest font-black text-center">
+                    CONFIRMAÇÃO FINAL
+                  </AlertDialogTitle>
+                  <AlertDialogDescription className="text-center font-bold text-foreground">
+                    PARA EXCLUIR SUA CONTA DEFINITIVAMENTE, CLIQUE NO BOTÃO ABAIXO.
+                    ESTA É SUA ÚLTIMA CHANCE DE DESISTIR.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter className="flex-col sm:flex-row gap-2">
+                  <AlertDialogCancel className="w-full sm:w-auto">Desistir e manter minha conta</AlertDialogCancel>
+                  <AlertDialogAction 
+                    onClick={handleDeleteAccount}
+                    disabled={deleting}
+                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90 w-full sm:w-auto font-bold"
+                  >
+                    {deleting ? "Excluindo..." : "SIM, EXCLUIR MINHA CONTA AGORA"}
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+};
+
 
 const ProfilePage = () => {
   const { user, roles } = useAuth();
@@ -396,6 +536,8 @@ const ProfilePage = () => {
           </CardContent>
         </Card>
         <ChangePasswordCard />
+        <DeleteAccountSection />
+
 
         {isOnlyCliente && (
           <div className="mt-6">
