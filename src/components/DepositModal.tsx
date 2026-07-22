@@ -384,9 +384,9 @@ export default function DepositModal({ open, onOpenChange, onPollingChange, auto
                 inputMode="decimal"
                 placeholder="0,00"
                 value={amount}
+                onFocus={(e) => e.target.select()}
                 onChange={(e) => {
                   const val = e.target.value.replace(/[^0-9,\.]/g, "").replace(".", ",");
-                  // Prevent multiple commas
                   if ((val.match(/,/g) || []).length > 1) return;
                   setAmount(val);
                 }}
