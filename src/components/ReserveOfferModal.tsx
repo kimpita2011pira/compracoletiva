@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import type { OfferWithVendor } from "@/hooks/useOffers";
 import { useReserveOffer, useWalletBalance, useUserAddresses } from "@/hooks/useReserveOffer";
 import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
 import {
   Dialog,
   DialogContent,
@@ -18,6 +19,9 @@ import {
   Select,
   SelectContent,
   SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";

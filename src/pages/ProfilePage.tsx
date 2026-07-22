@@ -391,6 +391,7 @@ const ProfilePage = () => {
                       </Command>
                     </PopoverContent>
                   </Popover>
+                </div>
               </div>
 
               <div className="space-y-2">
