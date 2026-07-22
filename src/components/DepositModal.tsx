@@ -109,13 +109,14 @@ export default function DepositModal({ open, onOpenChange, onPollingChange, auto
       }
 
       const data = res.data;
+      console.log("Mercado Pago response data:", data);
 
       if (method === "pix" && data.pix_qr_code) {
         setPixData({
           pix_qr_code: data.pix_qr_code,
           pix_qr_code_base64: data.pix_qr_code_base64,
-          pix_copy_paste: data.pix_copy_paste,
-          payment_id: data.payment_id,
+          pix_copy_paste: data.pix_copy_paste || data.pix_qr_code,
+          payment_id: String(data.payment_id),
         });
         setStep("pix");
         onPollingChange?.(true);
@@ -137,17 +138,18 @@ export default function DepositModal({ open, onOpenChange, onPollingChange, auto
         setStep("redirect");
         
         toast({
-          title: "Redirecionando para pagamento",
-          description: "Aguarde enquanto abrimos a página de checkout.",
+          title: "Redirecionando...",
+          description: "Abriremos o Mercado Pago em instantes. Caso não abra, use o botão abaixo.",
         });
 
         // Use location.replace for a cleaner history and avoid popup issues
         // We add a small delay to ensure the UI updates first
         setTimeout(() => {
           if (initPoint) {
-            window.location.replace(initPoint);
+            console.log("Redirecting to:", initPoint);
+            window.location.assign(initPoint);
           }
-        }, 1000);
+        }, 100);
       } else {
         throw new Error("Não foi possível gerar os dados de pagamento. Tente novamente.");
       }
@@ -180,6 +182,7 @@ export default function DepositModal({ open, onOpenChange, onPollingChange, auto
       });
       if (res.error) throw new Error(res.error.message);
       const data = res.data;
+      console.log("Check payment status response:", data);
       
       queryClient.invalidateQueries({ queryKey: ["wallet"] });
       queryClient.invalidateQueries({ queryKey: ["wallet-transactions"] });
@@ -194,16 +197,16 @@ export default function DepositModal({ open, onOpenChange, onPollingChange, auto
       } else if (data?.status === "not_found" || data?.retryable) {
         if (!autoCheckPaymentId) {
           toast({
-            title: "Pagamento em processamento",
-            description: "A confirmação do provedor ainda não chegou. Aguarde alguns segundos e tente novamente.",
+            title: "Aguardando aprovação",
+            description: "O Mercado Pago ainda está processando. Verifique seu app de banco ou tente novamente em instantes.",
           });
         }
         setStep("form");
       } else {
         if (!autoCheckPaymentId) {
           toast({
-            title: "Pagamento ainda não confirmado",
-            description: "O pagamento pode levar alguns instantes para ser processado.",
+            title: "Pagamento não identificado",
+            description: "Não conseguimos confirmar este pagamento ainda. Se você já pagou, aguarde 1 minuto e atualize a página.",
             variant: "destructive",
           });
         }
