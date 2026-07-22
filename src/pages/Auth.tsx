@@ -168,7 +168,14 @@ const Auth = () => {
       <div className="sticky top-0 z-50">
         <PromoBanner />
       </div>
-      <div className="flex flex-1 items-center justify-center p-3 sm:p-4">
+      <div className="flex flex-1 flex-col items-center justify-center p-3 sm:p-4">
+        <motion.div 
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-6 w-full max-w-md rounded-xl border border-primary/20 bg-white/50 backdrop-blur-sm p-3 text-center text-xs sm:text-sm text-muted-foreground shadow-sm"
+        >
+          💡 <span className="font-semibold text-primary">Dica:</span> Instale este app no seu navegador para acesso rápido. Mantenha seu navegador atualizado e limpe o cache para melhor navegação.
+        </motion.div>
         <AnimatePresence mode="wait">
           {mode === "register" && !roleChoice ? (
             <motion.div
