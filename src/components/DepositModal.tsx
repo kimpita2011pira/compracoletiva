@@ -317,17 +317,17 @@ export default function DepositModal({ open, onOpenChange, onPollingChange, auto
           <div className="flex flex-col items-center gap-4 py-6">
             <ExternalLink className="h-12 w-12 text-primary animate-pulse" />
             <p className="text-center text-sm text-muted-foreground px-4">
-              Você está sendo redirecionado para o Mercado Pago. Se a página não abrir, use o botão abaixo:
+              Você está sendo redirecionado para o Mercado Pago. Se a página não abrir em alguns segundos, clique no botão abaixo:
             </p>
             {pixData?.init_point && (
               <Button 
                 variant="default" 
-                className="gap-2 font-bold w-full max-w-xs" 
+                className="gap-2 font-bold w-full max-w-xs shadow-lg animate-bounce" 
                 onClick={() => {
-                  window.location.href = pixData.init_point!;
+                  window.location.replace(pixData.init_point!);
                 }}
               >
-                <ExternalLink className="h-4 w-4" /> Ir para pagamento
+                <ExternalLink className="h-4 w-4" /> IR PARA PAGAMENTO
               </Button>
             )}
             {/* Fallback link if data.init_point was used (card) */}
