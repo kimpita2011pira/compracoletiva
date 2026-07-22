@@ -391,8 +391,28 @@ const ProfilePage = () => {
                       </Command>
                     </PopoverContent>
                   </Popover>
-                </div>
               </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="default-address">Endereço Principal (Dados Pessoais)</Label>
+                <Select value={defaultAddressId || "none"} onValueChange={(v) => setDefaultAddressId(v === "none" ? null : v)}>
+                  <SelectTrigger id="default-address">
+                    <SelectValue placeholder="Selecione um endereço" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">Nenhum selecionado</SelectItem>
+                    {addresses.map((addr) => (
+                      <SelectItem key={addr.id} value={addr.id}>
+                        {addr.label || `${addr.street}, ${addr.number}`}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <p className="text-[11px] text-muted-foreground">
+                  Este endereço será sugerido automaticamente em pedidos com entrega.
+                </p>
+              </div>
+
               <Button type="submit" className="w-full" size="lg" disabled={saving}>
                 <Save className="mr-2 h-4 w-4" />
                 {saving ? "Salvando..." : "Salvar alterações"}
