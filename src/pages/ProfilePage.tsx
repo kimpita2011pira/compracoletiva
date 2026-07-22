@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
@@ -127,6 +128,7 @@ const ChangePasswordCard = () => {
 
 const ProfilePage = () => {
   const { user, roles } = useAuth();
+  const navigate = useNavigate();
   const isOnlyCliente = roles.length > 0 && roles.every((r) => r === "CLIENTE");
   const isFranqueado = roles.includes("FRANQUEADO");
   const { toast } = useToast();
@@ -394,24 +396,31 @@ const ProfilePage = () => {
                 </div>
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="default-address">Endereço Principal (Dados Pessoais)</Label>
-                <Select value={defaultAddressId || "none"} onValueChange={(v) => setDefaultAddressId(v === "none" ? null : v)}>
-                  <SelectTrigger id="default-address">
-                    <SelectValue placeholder="Selecione um endereço" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="none">Nenhum selecionado</SelectItem>
-                    {addresses.map((addr) => (
-                      <SelectItem key={addr.id} value={addr.id}>
-                        {addr.label || `${addr.street}, ${addr.number}`}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+              <div className="space-y-4 rounded-lg border border-primary/20 bg-primary/5 p-4">
+                <div className="space-y-2">
+                  <Label htmlFor="default-address" className="flex items-center gap-2">
+                    📍 Endereço Principal (Dados Pessoais)
+                  </Label>
+                  <Select value={defaultAddressId || "none"} onValueChange={(v) => setDefaultAddressId(v === "none" ? null : v)}>
+                    <SelectTrigger id="default-address" className="bg-background">
+                      <SelectValue placeholder="Selecione um endereço" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">Nenhum selecionado</SelectItem>
+                      {addresses.map((addr) => (
+                        <SelectItem key={addr.id} value={addr.id}>
+                          {addr.label || `${addr.street}, ${addr.number}`}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 <p className="text-[11px] text-muted-foreground">
-                  Este endereço será sugerido automaticamente em pedidos com entrega.
+                  Este endereço será sugerido automaticamente em pedidos com entrega. Se não houver endereços na lista, adicione um em{" "}
+                  <button type="button" onClick={() => navigate("/profile/addresses")} className="text-primary font-bold hover:underline">
+                    Meus Endereços
+                  </button>.
                 </p>
+                </div>
               </div>
 
               <Button type="submit" className="w-full" size="lg" disabled={saving}>
