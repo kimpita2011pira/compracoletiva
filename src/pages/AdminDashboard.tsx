@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAdminVendors } from "@/hooks/useAdminVendors";
 import { useAdminMetrics } from "@/hooks/useAdminMetrics";
@@ -61,6 +62,7 @@ const PIE_COLORS = ["hsl(24, 95%, 53%)", "hsl(142, 70%, 45%)", "hsl(0, 84%, 60%)
 
 export default function AdminDashboard() {
   const [chartDays, setChartDays] = useState(14);
+  const queryClient = useQueryClient();
   const { vendors, isLoading, updateStatus } = useAdminVendors();
   const { data: metrics, isLoading: metricsLoading } = useAdminMetrics(chartDays);
 
