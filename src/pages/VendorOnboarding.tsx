@@ -110,7 +110,7 @@ const VendorOnboarding = () => {
       toast({ title: "Empresa cadastrada!", description: "Aguarde a aprovação do administrador." });
       navigate("/vendor");
     } catch (err: any) {
-      toast({ title: "erro ao cadastrar novo usuario", description: err.message, variant: "destructive" });
+      toast({ title: "Erro no cadastro", description: err.message, variant: "destructive" });
     }
   };
 
