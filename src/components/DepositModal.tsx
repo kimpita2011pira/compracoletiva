@@ -123,8 +123,16 @@ export default function DepositModal({ open, onOpenChange, onPollingChange, auto
           title: "Pix gerado com sucesso!",
           description: "Escaneie o QR Code ou copie o código para pagar.",
         });
-      } else if (method === "card" && data.init_point) {
-        setPixData(prev => ({ ...prev, init_point: data.init_point, payment_id: data.preference_id }));
+      } else if (method === "card" && (data.init_point || data.preference_id)) {
+        const initPoint = data.init_point;
+        const prefId = data.preference_id;
+        
+        setPixData(prev => ({ 
+          ...prev, 
+          init_point: initPoint, 
+          payment_id: prefId 
+        } as any));
+        
         onPollingChange?.(true);
         setStep("redirect");
         
