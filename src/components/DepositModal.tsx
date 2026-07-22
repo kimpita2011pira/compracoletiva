@@ -69,12 +69,31 @@ export default function DepositModal({ open, onOpenChange, onPollingChange }: Pr
         return;
       }
 
-      const res = await supabase.functions.invoke("mercadopago-create-payment", {
-        body: { amount: numAmount, method },
-      });
+      let res;
+      let retries = 0;
+      const maxRetries = 2;
 
-      if (res.error) {
-        throw new Error(res.error.message || "Erro ao processar pagamento");
+      while (retries <= maxRetries) {
+        try {
+          res = await supabase.functions.invoke("mercadopago-create-payment", {
+            body: { amount: numAmount, method },
+          });
+          
+          if (!res.error) break;
+          
+          console.warn(`Attempt ${retries + 1} failed:`, res.error);
+        } catch (e) {
+          console.warn(`Attempt ${retries + 1} threw error:`, e);
+        }
+        
+        retries++;
+        if (retries <= maxRetries) {
+          await new Promise(resolve => setTimeout(resolve, 1000 * retries));
+        }
+      }
+
+      if (!res || res.error) {
+        throw new Error(res?.error?.message || "O serviço de pagamento está temporariamente instável. Por favor, tente novamente em alguns instantes.");
       }
 
       const data = res.data;
@@ -93,29 +112,35 @@ export default function DepositModal({ open, onOpenChange, onPollingChange }: Pr
           description: "Escaneie o QR Code ou copie o código para pagar.",
         });
       } else if (method === "card" && data.init_point) {
-        // Safe redirect using history state if needed or direct location change
-        // We set step to redirect FIRST to ensure the modal state is consistent
-        // if the redirect is blocked or takes time.
         setPixData(prev => ({ ...prev, init_point: data.init_point, payment_id: data.preference_id } as any));
         onPollingChange?.(true);
+        setStep("redirect");
         
         toast({
           title: "Redirecionando para pagamento",
-          description: "Se a página não abrir, clique no link abaixo.",
+          description: "Aguarde enquanto abrimos a página de checkout.",
         });
 
-        // Use a small timeout to allow UI state to update before navigation
         setTimeout(() => {
-          window.location.href = data.init_point;
+          try {
+            window.location.href = data.init_point;
+          } catch (e) {
+            console.error("Redirect error:", e);
+            toast({
+              title: "Falha no redirecionamento",
+              description: "Use o botão na tela para abrir manualmente.",
+              variant: "destructive",
+            });
+          }
         }, 100);
       } else {
-        throw new Error("Resposta inesperada do servidor");
+        throw new Error("Não foi possível gerar os dados de pagamento. Tente novamente.");
       }
     } catch (err) {
       console.error("Deposit error:", err);
       toast({
         title: "Erro ao processar depósito",
-        description: err instanceof Error ? err.message : "Tente novamente",
+        description: err instanceof Error ? err.message : "Não conseguimos conectar com o provedor de pagamentos. Verifique sua conexão e tente novamente.",
         variant: "destructive",
       });
     } finally {
