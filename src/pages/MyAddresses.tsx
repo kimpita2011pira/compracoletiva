@@ -45,6 +45,16 @@ export default function MyAddresses() {
 
   useEffect(() => {
     loadAddresses();
+    
+    // Auto-fill state and city from profile
+    if (user) {
+      supabase.from("profiles").select("state, city").eq("id", user.id).single().then(({ data }) => {
+        if (data) {
+          setSelectedState(data.state || "");
+          setSelectedCity(data.city || "");
+        }
+      });
+    }
   }, [user]);
 
   const handleAddAddress = async (e: React.FormEvent) => {
@@ -143,23 +153,13 @@ export default function MyAddresses() {
                     <Label htmlFor="addr-zip">CEP</Label>
                     <Input id="addr-zip" value={zipCode} onChange={(e) => setZipCode(e.target.value)} required maxLength={9} />
                   </div>
-                  <div className="space-y-2">
+                  <div className="space-y-2 opacity-60">
                     <Label>Estado</Label>
-                    <Select value={selectedState} onValueChange={(v) => { setSelectedState(v); setSelectedCity(""); }}>
-                      <SelectTrigger><SelectValue placeholder="UF" /></SelectTrigger>
-                      <SelectContent>
-                        {states.map(s => <SelectItem key={s.sigla} value={s.sigla}>{s.sigla}</SelectItem>)}
-                      </SelectContent>
-                    </Select>
+                    <Input value={selectedState} disabled />
                   </div>
-                  <div className="space-y-2">
+                  <div className="space-y-2 opacity-60">
                     <Label>Cidade</Label>
-                    <Select value={selectedCity} onValueChange={setSelectedCity} disabled={!selectedState}>
-                      <SelectTrigger><SelectValue placeholder="Cidade" /></SelectTrigger>
-                      <SelectContent>
-                        {cities.map(c => <SelectItem key={c.id} value={c.nome}>{c.nome}</SelectItem>)}
-                      </SelectContent>
-                    </Select>
+                    <Input value={selectedCity} disabled />
                   </div>
                 </div>
                 <Button type="submit" className="w-full" disabled={saving}>

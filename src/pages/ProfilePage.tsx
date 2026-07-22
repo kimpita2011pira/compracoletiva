@@ -342,57 +342,14 @@ const ProfilePage = () => {
                   )}
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-2 gap-3 opacity-60 pointer-events-none">
                 <div className="space-y-2">
-                  <Label htmlFor="profile-state">Estado</Label>
-                  <Select value={selectedState} onValueChange={(v) => { setSelectedState(v); setSelectedCity(""); }}>
-                    <SelectTrigger id="profile-state">
-                      <SelectValue placeholder={loadingStates ? "Carregando..." : "Selecione"} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {states.map((s) => (
-                        <SelectItem key={s.sigla} value={s.sigla}>{s.nome}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <Label htmlFor="profile-state">Estado (Fixo do cadastro)</Label>
+                  <Input id="profile-state" value={selectedState} disabled />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="profile-city">Cidade</Label>
-                  <Popover open={cityOpen} onOpenChange={setCityOpen}>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        role="combobox"
-                        aria-expanded={cityOpen}
-                        className="w-full justify-between font-normal"
-                        disabled={!selectedState}
-                      >
-                        {selectedCity || (loadingCities ? "Carregando..." : "Selecione a cidade")}
-                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
-                      <Command>
-                        <CommandInput placeholder="Buscar cidade..." />
-                        <CommandList>
-                          <CommandEmpty>Nenhuma cidade encontrada.</CommandEmpty>
-                          {cities.map((c) => (
-                            <CommandItem
-                              key={c.id}
-                              value={c.nome}
-                              onSelect={() => {
-                                setSelectedCity(prev => prev === c.nome ? "" : c.nome);
-                                setCityOpen(false);
-                              }}
-                            >
-                              <Check className={cn("mr-2 h-4 w-4", selectedCity === c.nome ? "opacity-100" : "opacity-0")} />
-                              {c.nome}
-                            </CommandItem>
-                          ))}
-                        </CommandList>
-                      </Command>
-                    </PopoverContent>
-                  </Popover>
+                  <Label htmlFor="profile-city">Cidade (Fixo do cadastro)</Label>
+                  <Input id="profile-city" value={selectedCity} disabled />
                 </div>
               </div>
 
@@ -414,12 +371,12 @@ const ProfilePage = () => {
                       ))}
                     </SelectContent>
                   </Select>
-                <p className="text-[11px] text-muted-foreground">
-                  Este endereço será sugerido automaticamente em pedidos com entrega. Se não houver endereços na lista, adicione um em{" "}
-                  <button type="button" onClick={() => navigate("/profile/addresses")} className="text-primary font-bold hover:underline">
-                    Meus Endereços
-                  </button>.
-                </p>
+                  <p className="text-[11px] text-muted-foreground mt-2">
+                    Este endereço será sugerido automaticamente em pedidos com entrega. Se não houver endereços na lista, adicione um em{" "}
+                    <button type="button" onClick={() => navigate("/profile/addresses")} className="text-primary font-bold hover:underline">
+                      Meus Endereços
+                    </button>.
+                  </p>
                 </div>
               </div>
 
