@@ -460,6 +460,7 @@ export type Database = {
         Row: {
           address_id: string | null
           created_at: string
+          delivery_address_details: Json | null
           delivery_type: Database["public"]["Enums"]["delivery_type"]
           id: string
           offer_id: string
@@ -473,6 +474,7 @@ export type Database = {
         Insert: {
           address_id?: string | null
           created_at?: string
+          delivery_address_details?: Json | null
           delivery_type: Database["public"]["Enums"]["delivery_type"]
           id?: string
           offer_id: string
@@ -486,6 +488,7 @@ export type Database = {
         Update: {
           address_id?: string | null
           created_at?: string
+          delivery_address_details?: Json | null
           delivery_type?: Database["public"]["Enums"]["delivery_type"]
           id?: string
           offer_id?: string
@@ -597,6 +600,7 @@ export type Database = {
           avatar_url: string | null
           city: string | null
           created_at: string
+          default_address_id: string | null
           id: string
           name: string
           phone: string | null
@@ -609,6 +613,7 @@ export type Database = {
           avatar_url?: string | null
           city?: string | null
           created_at?: string
+          default_address_id?: string | null
           id: string
           name: string
           phone?: string | null
@@ -621,6 +626,7 @@ export type Database = {
           avatar_url?: string | null
           city?: string | null
           created_at?: string
+          default_address_id?: string | null
           id?: string
           name?: string
           phone?: string | null
@@ -628,7 +634,15 @@ export type Database = {
           updated_at?: string
           whatsapp?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "profiles_default_address_id_fkey"
+            columns: ["default_address_id"]
+            isOneToOne: false
+            referencedRelation: "addresses"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       promo_banners: {
         Row: {
