@@ -452,7 +452,7 @@ export default function OffersMarketplace() {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">Todas as cidades</SelectItem>
-                      {closedCities.map((city) => (
+                      {closedCities && closedCities.length > 0 && closedCities.map((city) => (
                         <SelectItem key={city} value={city}>{city}</SelectItem>
                       ))}
                     </SelectContent>
