@@ -144,10 +144,10 @@ export default function DepositModal({ open, onOpenChange, onPollingChange, auto
         // Use location.replace for a cleaner history and avoid popup issues
         // We add a small delay to ensure the UI updates first
         setTimeout(() => {
-          if (data.init_point) {
-            window.location.replace(data.init_point);
+          if (initPoint) {
+            window.location.replace(initPoint);
           }
-        }, 800);
+        }, 1000);
       } else {
         throw new Error("Não foi possível gerar os dados de pagamento. Tente novamente.");
       }
