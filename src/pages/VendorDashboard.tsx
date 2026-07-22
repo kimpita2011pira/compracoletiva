@@ -135,6 +135,33 @@ const VendorDashboard = () => {
           </div>
         )}
 
+        {isApproved && (
+          <div className="grid gap-4 sm:grid-cols-2">
+            <Card className="cursor-pointer border-2 border-transparent transition-all hover:border-primary/30 hover:shadow-md" onClick={() => navigate("/vendor/create-offer")}>
+              <CardContent className="flex items-center gap-4 p-6">
+                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+                  <Plus className="h-6 w-6 text-primary" />
+                </div>
+                <div>
+                  <h3 className="font-display font-bold">Criar Oferta</h3>
+                  <p className="text-sm text-muted-foreground">Nova oferta coletiva</p>
+                </div>
+              </CardContent>
+            </Card>
+            <Card className="cursor-pointer border-2 border-transparent transition-all hover:border-secondary/30 hover:shadow-md" onClick={() => navigate("/vendor/my-offers")}>
+              <CardContent className="flex items-center gap-4 p-6">
+                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-secondary/10">
+                  <Package className="h-6 w-6 text-secondary" />
+                </div>
+                <div>
+                  <h3 className="font-display font-bold">Minhas Ofertas</h3>
+                  <p className="text-sm text-muted-foreground">Gerencie suas ofertas</p>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
         {isApproved && salesHistory && salesHistory.length > 0 && (
           <Card>
             <CardHeader className="pb-2">
@@ -197,33 +224,6 @@ const VendorDashboard = () => {
         )}
 
         {isApproved && <VendorInterestsPanel />}
-
-        {isApproved && (
-          <div className="grid gap-4 sm:grid-cols-2">
-            <Card className="cursor-pointer border-2 border-transparent transition-all hover:border-primary/30 hover:shadow-md" onClick={() => navigate("/vendor/create-offer")}>
-              <CardContent className="flex items-center gap-4 p-6">
-                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
-                  <Plus className="h-6 w-6 text-primary" />
-                </div>
-                <div>
-                  <h3 className="font-display font-bold">Criar Oferta</h3>
-                  <p className="text-sm text-muted-foreground">Nova oferta coletiva</p>
-                </div>
-              </CardContent>
-            </Card>
-            <Card className="cursor-pointer border-2 border-transparent transition-all hover:border-secondary/30 hover:shadow-md" onClick={() => navigate("/vendor/my-offers")}>
-              <CardContent className="flex items-center gap-4 p-6">
-                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-secondary/10">
-                  <Package className="h-6 w-6 text-secondary" />
-                </div>
-                <div>
-                  <h3 className="font-display font-bold">Minhas Ofertas</h3>
-                  <p className="text-sm text-muted-foreground">Gerencie suas ofertas</p>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        )}
 
         {isPending && (
           <Card className="border-dashed">
