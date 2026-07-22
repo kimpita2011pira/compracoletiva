@@ -22,9 +22,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { toast } from "@/hooks/use-toast";
 import { Minus, Plus, Wallet, MapPin, Truck, ShoppingBag, Loader2 } from "lucide-react";
 
