@@ -412,9 +412,12 @@ const ProfilePage = () => {
                       ))}
                     </SelectContent>
                   </Select>
-                  <p className="text-[11px] text-muted-foreground">
-                    Este endereço será sugerido automaticamente em pedidos com entrega. Se não houver endereços na lista, adicione um em "Meus Endereços".
-                  </p>
+                <p className="text-[11px] text-muted-foreground">
+                  Este endereço será sugerido automaticamente em pedidos com entrega. Se não houver endereços na lista, adicione um em{" "}
+                  <button type="button" onClick={() => navigate("/profile/addresses")} className="text-primary font-bold hover:underline">
+                    Meus Endereços
+                  </button>.
+                </p>
                 </div>
               </div>
 
