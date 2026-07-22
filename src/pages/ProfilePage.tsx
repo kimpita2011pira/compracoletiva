@@ -394,24 +394,28 @@ const ProfilePage = () => {
                 </div>
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="default-address">Endereço Principal (Dados Pessoais)</Label>
-                <Select value={defaultAddressId || "none"} onValueChange={(v) => setDefaultAddressId(v === "none" ? null : v)}>
-                  <SelectTrigger id="default-address">
-                    <SelectValue placeholder="Selecione um endereço" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="none">Nenhum selecionado</SelectItem>
-                    {addresses.map((addr) => (
-                      <SelectItem key={addr.id} value={addr.id}>
-                        {addr.label || `${addr.street}, ${addr.number}`}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <p className="text-[11px] text-muted-foreground">
-                  Este endereço será sugerido automaticamente em pedidos com entrega.
-                </p>
+              <div className="space-y-4 rounded-lg border border-primary/20 bg-primary/5 p-4">
+                <div className="space-y-2">
+                  <Label htmlFor="default-address" className="flex items-center gap-2">
+                    📍 Endereço Principal (Dados Pessoais)
+                  </Label>
+                  <Select value={defaultAddressId || "none"} onValueChange={(v) => setDefaultAddressId(v === "none" ? null : v)}>
+                    <SelectTrigger id="default-address" className="bg-background">
+                      <SelectValue placeholder="Selecione um endereço" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">Nenhum selecionado</SelectItem>
+                      {addresses.map((addr) => (
+                        <SelectItem key={addr.id} value={addr.id}>
+                          {addr.label || `${addr.street}, ${addr.number}`}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <p className="text-[11px] text-muted-foreground">
+                    Este endereço será sugerido automaticamente em pedidos com entrega. Se não houver endereços na lista, adicione um em "Meus Endereços".
+                  </p>
+                </div>
               </div>
 
               <Button type="submit" className="w-full" size="lg" disabled={saving}>
