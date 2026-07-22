@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
 import { CreditCard, QrCode, Loader2, Wallet, Copy, Check, ExternalLink, RefreshCw } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
@@ -42,6 +43,7 @@ export default function DepositModal({ open, onOpenChange, onPollingChange, auto
   const [copied, setCopied] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (autoCheckPaymentId && open) {
@@ -122,7 +124,7 @@ export default function DepositModal({ open, onOpenChange, onPollingChange, auto
           description: "Escaneie o QR Code ou copie o código para pagar.",
         });
       } else if (method === "card" && data.init_point) {
-        setPixData(prev => ({ ...prev, init_point: data.init_point, payment_id: data.preference_id } as any));
+        setPixData(prev => ({ ...prev, init_point: data.init_point, payment_id: data.preference_id }));
         onPollingChange?.(true);
         setStep("redirect");
         
@@ -319,16 +321,18 @@ export default function DepositModal({ open, onOpenChange, onPollingChange, auto
 
           <div className="flex flex-col items-center gap-4 py-6">
             <ExternalLink className="h-12 w-12 text-primary animate-pulse" />
-            <p className="text-center text-sm text-muted-foreground">
-              Você está sendo redirecionado para o Mercado Pago.
+            <p className="text-center text-sm text-muted-foreground px-4">
+              Você está sendo redirecionado para o Mercado Pago. Se a página não abrir, use o botão abaixo:
             </p>
             {pixData?.init_point && (
               <Button 
-                variant="outline" 
-                className="gap-2" 
-                onClick={() => window.open(pixData.init_point, "_blank")}
+                variant="default" 
+                className="gap-2 font-bold w-full max-w-xs" 
+                onClick={() => {
+                  window.location.href = pixData.init_point!;
+                }}
               >
-                <ExternalLink className="h-4 w-4" /> Abrir checkout novamente
+                <ExternalLink className="h-4 w-4" /> Ir para pagamento
               </Button>
             )}
             {/* Fallback link if data.init_point was used (card) */}
@@ -348,6 +352,7 @@ export default function DepositModal({ open, onOpenChange, onPollingChange, auto
                 queryClient.invalidateQueries({ queryKey: ["wallet"] });
                 queryClient.invalidateQueries({ queryKey: ["wallet-transactions"] });
                 handleClose(false);
+                navigate("/wallet", { replace: true });
               }}
               className="gap-2 font-bold"
             >
