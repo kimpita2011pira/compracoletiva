@@ -23,6 +23,7 @@ import MyAddresses from "./pages/MyAddresses";
 import AboutPage from "./pages/AboutPage";
 import TermsPage from "./pages/TermsPage";
 import PrivacyPage from "./pages/PrivacyPage";
+import HowToUsePage from "./pages/HowToUsePage";
 import NotFound from "./pages/NotFound";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { ScrollToTop } from "@/components/ScrollToTop";
@@ -55,6 +56,7 @@ function AnimatedRoutes() {
         <Route path="/about" element={<AboutPage />} />
         <Route path="/terms" element={<TermsPage />} />
         <Route path="/privacy" element={<PrivacyPage />} />
+        <Route path="/how-to-use" element={<HowToUsePage />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </AnimatePresence>
