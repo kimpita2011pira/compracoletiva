@@ -384,7 +384,12 @@ export default function DepositModal({ open, onOpenChange, onPollingChange, auto
                 inputMode="decimal"
                 placeholder="0,00"
                 value={amount}
-                onChange={(e) => setAmount(e.target.value.replace(/[^0-9,\.]/g, ""))}
+                onFocus={(e) => e.target.select()}
+                onChange={(e) => {
+                  const val = e.target.value.replace(/[^0-9,\.]/g, "").replace(".", ",");
+                  if ((val.match(/,/g) || []).length > 1) return;
+                  setAmount(val);
+                }}
                 className="pl-10 text-lg font-display font-bold"
               />
             </div>
@@ -396,6 +401,7 @@ export default function DepositModal({ open, onOpenChange, onPollingChange, auto
                   size="sm"
                   className="flex-1 text-xs"
                   onClick={() => setAmount(v.toString())}
+                  type="button"
                 >
                   R$ {v}
                 </Button>
