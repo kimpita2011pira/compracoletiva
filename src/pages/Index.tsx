@@ -6,7 +6,7 @@ import { AppLayout } from "@/components/AppLayout";
 import { SEOHead } from "@/components/SEOHead";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { OfferSuggestions } from "@/components/OfferSuggestions";
-import { ShoppingBag, Wallet, Package } from "lucide-react";
+import { ShoppingBag, Wallet, Package, HelpCircle } from "lucide-react";
 
 const Index = () => {
   const { user, loading } = useAuth();
