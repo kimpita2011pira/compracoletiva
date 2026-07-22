@@ -109,7 +109,7 @@ const TermsPage = () => {
           <section>
             <h2 className="font-semibold text-foreground text-lg">9. Contato</h2>
             <p className="mt-2">
-              Para dúvidas sobre estes termos, entre em contato pelo e-mail kimpita2011@gmail.com.
+              Para dúvidas sobre estes termos, entre em contato pelo e-mail compracoletivapira@gmail.com.
             </p>
           </section>
         </article>

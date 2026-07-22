@@ -102,8 +102,8 @@ const PrivacyPage = () => {
             </ul>
             <p className="mt-2">
               Para exercer seus direitos, entre em contato pelo e-mail{" "}
-              <a href="mailto:kimpita2011@gmail.com" className="text-primary hover:underline">
-                kimpita2011@gmail.com
+              <a href="mailto:compracoletivapira@gmail.com" className="text-primary hover:underline">
+                compracoletivapira@gmail.com
               </a>.
             </p>
           </section>
@@ -152,8 +152,8 @@ const PrivacyPage = () => {
             </p>
             <address className="mt-2 space-y-1 not-italic">
               <p>
-                <a href="mailto:kimpita2011@gmail.com" className="hover:text-primary transition-colors">
-                  📧 kimpita2011@gmail.com
+                <a href="mailto:compracoletivapira@gmail.com" className="hover:text-primary transition-colors">
+                  📧 compracoletivapira@gmail.com
                 </a>
               </p>
               <p>

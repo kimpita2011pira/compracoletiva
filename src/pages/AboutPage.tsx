@@ -16,7 +16,7 @@ const AboutPage = () => {
           description: "Plataforma de compra coletiva que conecta consumidores e vendedores locais.",
           contactPoint: {
             "@type": "ContactPoint",
-            email: "kimpita2011@gmail.com",
+            email: "compracoletivapira@gmail.com",
             telephone: "+5519991973737",
             contactType: "customer service",
           },
@@ -56,7 +56,7 @@ const AboutPage = () => {
             Tem dúvidas ou sugestões? Entre em contato conosco:
           </p>
           <address className="mt-2 space-y-1 text-muted-foreground not-italic">
-            <p><a href="mailto:kimpita2011@gmail.com" className="hover:text-primary transition-colors">📧 kimpita2011@gmail.com</a></p>
+            <p><a href="mailto:compracoletivapira@gmail.com" className="hover:text-primary transition-colors">📧 compracoletivapira@gmail.com</a></p>
             <p><a href="https://wa.me/5519991973737" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">📱 (19) 99197-3737 (WhatsApp)</a></p>
           </address>
         </section>
