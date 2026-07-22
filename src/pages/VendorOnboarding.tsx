@@ -195,28 +195,47 @@ const VendorOnboarding = () => {
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-2">
                 <Label htmlFor="state">Estado *</Label>
-                <Select value={selectedState} onValueChange={(v) => { setSelectedState(v); setSelectedCity(""); }}>
+                <Select 
+                  value={selectedState} 
+                  onValueChange={(v) => { 
+                    console.log("Selecionando estado:", v);
+                    setSelectedState(v); 
+                    setSelectedCity(""); 
+                  }}
+                >
                   <SelectTrigger id="state">
                     <SelectValue placeholder={loadingStates ? "Carregando..." : "Selecione"} />
                   </SelectTrigger>
                   <SelectContent>
-                    {states.map((s) => (
-                      <SelectItem key={s.sigla} value={s.sigla}>{s.nome}</SelectItem>
-                    ))}
+                    {states && states.length > 0 ? (
+                      states.map((s) => (
+                        <SelectItem key={s.sigla} value={s.sigla}>{s.nome}</SelectItem>
+                      ))
+                    ) : (
+                      <div className="p-2 text-sm text-muted-foreground text-center">
+                        {loadingStates ? "Carregando estados..." : "Nenhum estado encontrado"}
+                      </div>
+                    )}
                   </SelectContent>
                 </Select>
                 {errors.state && <p className="text-sm text-destructive">{errors.state}</p>}
               </div>
               <div className="space-y-2">
                 <Label htmlFor="city">Cidade *</Label>
-                <Select value={selectedCity} onValueChange={setSelectedCity} disabled={!selectedState}>
+                <Select value={selectedCity} onValueChange={setSelectedCity} disabled={!selectedState || loadingCities}>
                   <SelectTrigger id="city">
                     <SelectValue placeholder={loadingCities ? "Carregando..." : "Selecione"} />
                   </SelectTrigger>
                   <SelectContent>
-                    {cities.map((c) => (
-                      <SelectItem key={c.id} value={c.nome}>{c.nome}</SelectItem>
-                    ))}
+                    {cities && cities.length > 0 ? (
+                      cities.map((c) => (
+                        <SelectItem key={c.id} value={c.nome}>{c.nome}</SelectItem>
+                      ))
+                    ) : (
+                      <div className="p-2 text-sm text-muted-foreground text-center">
+                        {loadingCities ? "Carregando cidades..." : "Selecione um estado primeiro"}
+                      </div>
+                    )}
                   </SelectContent>
                 </Select>
                 {errors.city && <p className="text-sm text-destructive">{errors.city}</p>}
