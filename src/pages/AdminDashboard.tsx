@@ -162,83 +162,6 @@ export default function AdminDashboard() {
                   <MetricCard icon={<Clock className="h-5 w-5" />} label="Vendedores Pendentes" value={pending.length} color="warning" />
                 </div>
 
-                <div className="rounded-xl border bg-card p-5 shadow-sm">
-                  <div className="mb-4 flex items-center justify-between">
-                    <h3 className="font-display text-lg font-bold">Receita</h3>
-                    <div className="flex gap-1 rounded-lg border bg-muted/50 p-0.5">
-                      {[7, 14, 30].map((d) => (
-                        <button
-                          key={d}
-                          onClick={() => setChartDays(d)}
-                          className={`rounded-md px-3 py-1 text-xs font-medium transition-colors ${
-                            chartDays === d
-                              ? "bg-primary text-primary-foreground shadow-sm"
-                              : "text-muted-foreground hover:text-foreground"
-                          }`}
-                        >
-                          {d}d
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                  <ResponsiveContainer width="100%" height={300}>
-                    <BarChart data={metrics.dailyRevenue}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                      <XAxis dataKey="date" tickFormatter={(d) => { const [, m, day] = d.split("-"); return `${day}/${m}`; }} fontSize={12} stroke="hsl(var(--muted-foreground))" />
-                      <YAxis fontSize={12} stroke="hsl(var(--muted-foreground))" />
-                      <Tooltip formatter={(v: number) => [`R$ ${v.toFixed(2)}`, "Receita"]} labelFormatter={(d) => { const [y, m, day] = d.split("-"); return `${day}/${m}/${y}`; }} contentStyle={{ borderRadius: "0.75rem", border: "1px solid hsl(var(--border))" }} />
-                      <Bar dataKey="revenue" fill="hsl(24, 95%, 53%)" radius={[6, 6, 0, 0]} />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </div>
-
-                <div className="rounded-xl border bg-card p-5 shadow-sm">
-                  <h3 className="mb-4 font-display text-lg font-bold">Pedidos — últimos {chartDays} dias</h3>
-                  <ResponsiveContainer width="100%" height={250}>
-                    <LineChart data={metrics.dailyRevenue}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                      <XAxis dataKey="date" tickFormatter={(d) => { const [, m, day] = d.split("-"); return `${day}/${m}`; }} fontSize={12} stroke="hsl(var(--muted-foreground))" />
-                      <YAxis fontSize={12} stroke="hsl(var(--muted-foreground))" allowDecimals={false} />
-                      <Tooltip labelFormatter={(d) => { const [y, m, day] = d.split("-"); return `${day}/${m}/${y}`; }} contentStyle={{ borderRadius: "0.75rem", border: "1px solid hsl(var(--border))" }} />
-                      <Line type="monotone" dataKey="orders" stroke="hsl(142, 70%, 45%)" strokeWidth={2} dot={{ r: 3 }} />
-                    </LineChart>
-                  </ResponsiveContainer>
-                </div>
-
-                <div className="grid gap-4 md:grid-cols-2">
-                  <div className="rounded-xl border bg-card p-5 shadow-sm">
-                    <h3 className="mb-4 font-display text-lg font-bold">Pedidos por Status</h3>
-                    {metrics.ordersByStatus.length === 0 ? (
-                      <p className="py-8 text-center text-muted-foreground">Sem dados</p>
-                    ) : (
-                      <ResponsiveContainer width="100%" height={220}>
-                        <PieChart>
-                          <Pie data={metrics.ordersByStatus} dataKey="count" nameKey="status" cx="50%" cy="50%" outerRadius={80} label={({ status, count }) => `${status} (${count})`} fontSize={11}>
-                            {metrics.ordersByStatus.map((_, i) => (<Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />))}
-                          </Pie>
-                          <Tooltip />
-                        </PieChart>
-                      </ResponsiveContainer>
-                    )}
-                  </div>
-
-                  <div className="rounded-xl border bg-card p-5 shadow-sm">
-                    <h3 className="mb-4 font-display text-lg font-bold">Ofertas por Status</h3>
-                    {metrics.offersByStatus.length === 0 ? (
-                      <p className="py-8 text-center text-muted-foreground">Sem dados</p>
-                    ) : (
-                      <ResponsiveContainer width="100%" height={220}>
-                        <PieChart>
-                          <Pie data={metrics.offersByStatus} dataKey="count" nameKey="status" cx="50%" cy="50%" outerRadius={80} label={({ status, count }) => `${status} (${count})`} fontSize={11}>
-                            {metrics.offersByStatus.map((_, i) => (<Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />))}
-                          </Pie>
-                          <Tooltip />
-                        </PieChart>
-                      </ResponsiveContainer>
-                    )}
-                  </div>
-                </div>
-
                 {pending.length > 0 && (
                   <div className="rounded-xl border-2 border-warning/40 bg-warning/5 p-5 shadow-sm">
                     <div className="mb-4 flex items-center justify-between">
@@ -323,6 +246,84 @@ export default function AdminDashboard() {
                     </div>
                   )}
                 </div>
+
+                <div className="rounded-xl border bg-card p-5 shadow-sm">
+                  <div className="mb-4 flex items-center justify-between">
+                    <h3 className="font-display text-lg font-bold">Receita</h3>
+                    <div className="flex gap-1 rounded-lg border bg-muted/50 p-0.5">
+                      {[7, 14, 30].map((d) => (
+                        <button
+                          key={d}
+                          onClick={() => setChartDays(d)}
+                          className={`rounded-md px-3 py-1 text-xs font-medium transition-colors ${
+                            chartDays === d
+                              ? "bg-primary text-primary-foreground shadow-sm"
+                              : "text-muted-foreground hover:text-foreground"
+                          }`}
+                        >
+                          {d}d
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <ResponsiveContainer width="100%" height={300}>
+                    <BarChart data={metrics.dailyRevenue}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                      <XAxis dataKey="date" tickFormatter={(d) => { const [, m, day] = d.split("-"); return `${day}/${m}`; }} fontSize={12} stroke="hsl(var(--muted-foreground))" />
+                      <YAxis fontSize={12} stroke="hsl(var(--muted-foreground))" />
+                      <Tooltip formatter={(v: number) => [`R$ ${v.toFixed(2)}`, "Receita"]} labelFormatter={(d) => { const [y, m, day] = d.split("-"); return `${day}/${m}/${y}`; }} contentStyle={{ borderRadius: "0.75rem", border: "1px solid hsl(var(--border))" }} />
+                      <Bar dataKey="revenue" fill="hsl(24, 95%, 53%)" radius={[6, 6, 0, 0]} />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+
+                <div className="rounded-xl border bg-card p-5 shadow-sm">
+                  <h3 className="mb-4 font-display text-lg font-bold">Pedidos — últimos {chartDays} dias</h3>
+                  <ResponsiveContainer width="100%" height={250}>
+                    <LineChart data={metrics.dailyRevenue}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                      <XAxis dataKey="date" tickFormatter={(d) => { const [, m, day] = d.split("-"); return `${day}/${m}`; }} fontSize={12} stroke="hsl(var(--muted-foreground))" />
+                      <YAxis fontSize={12} stroke="hsl(var(--muted-foreground))" allowDecimals={false} />
+                      <Tooltip labelFormatter={(d) => { const [y, m, day] = d.split("-"); return `${day}/${m}/${y}`; }} contentStyle={{ borderRadius: "0.75rem", border: "1px solid hsl(var(--border))" }} />
+                      <Line type="monotone" dataKey="orders" stroke="hsl(142, 70%, 45%)" strokeWidth={2} dot={{ r: 3 }} />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+
+                <div className="grid gap-4 md:grid-cols-2">
+                  <div className="rounded-xl border bg-card p-5 shadow-sm">
+                    <h3 className="mb-4 font-display text-lg font-bold">Pedidos por Status</h3>
+                    {metrics.ordersByStatus.length === 0 ? (
+                      <p className="py-8 text-center text-muted-foreground">Sem dados</p>
+                    ) : (
+                      <ResponsiveContainer width="100%" height={220}>
+                        <PieChart>
+                          <Pie data={metrics.ordersByStatus} dataKey="count" nameKey="status" cx="50%" cy="50%" outerRadius={80} label={({ status, count }) => `${status} (${count})`} fontSize={11}>
+                            {metrics.ordersByStatus.map((_, i) => (<Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />))}
+                          </Pie>
+                          <Tooltip />
+                        </PieChart>
+                      </ResponsiveContainer>
+                    )}
+                  </div>
+
+                  <div className="rounded-xl border bg-card p-5 shadow-sm">
+                    <h3 className="mb-4 font-display text-lg font-bold">Ofertas por Status</h3>
+                    {metrics.offersByStatus.length === 0 ? (
+                      <p className="py-8 text-center text-muted-foreground">Sem dados</p>
+                    ) : (
+                      <ResponsiveContainer width="100%" height={220}>
+                        <PieChart>
+                          <Pie data={metrics.offersByStatus} dataKey="count" nameKey="status" cx="50%" cy="50%" outerRadius={80} label={({ status, count }) => `${status} (${count})`} fontSize={11}>
+                            {metrics.offersByStatus.map((_, i) => (<Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />))}
+                          </Pie>
+                          <Tooltip />
+                        </PieChart>
+                      </ResponsiveContainer>
+                    )}
+                  </div>
+                </div>
+
               </>
             ) : null}
           </TabsContent>
