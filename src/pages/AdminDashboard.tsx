@@ -69,19 +69,19 @@ export default function AdminDashboard() {
   const rejected = vendors.filter((v) => v.status === "REJEITADO");
 
   const handleStatusChange = async (vendorId: string, status: VendorStatus) => {
-    // Clear previous_data when approving/rejecting
-    const { error: clearError } = await supabase
-      .from("vendors")
-      .update({ previous_data: null } as any)
-      .eq("id", vendorId);
+    try {
+      const { error } = await supabase.rpc("admin_approve_vendor", {
+        v_vendor_id: vendorId,
+        v_status: status
+      });
 
-    updateStatus.mutate(
-      { vendorId, status },
-      {
-        onSuccess: () => toast.success(`Vendedor ${status === "APROVADO" ? "aprovado" : "rejeitado"} com sucesso!`),
-        onError: (err) => toast.error(`Erro: ${err.message}`),
-      }
-    );
+      if (error) throw error;
+      
+      queryClient.invalidateQueries({ queryKey: ["admin-vendors"] });
+      toast.success(`Vendedor ${status === "APROVADO" ? "aprovado" : "rejeitado"} com sucesso!`);
+    } catch (err: any) {
+      toast.error(`Erro: ${err.message}`);
+    }
   };
 
   if (isLoading) {
