@@ -386,9 +386,13 @@ export default function DepositModal({ open, onOpenChange, onPollingChange, auto
                 value={amount}
                 onFocus={(e) => e.target.select()}
                 onChange={(e) => {
-                  const val = e.target.value.replace(/[^0-9,\.]/g, "").replace(".", ",");
-                  if ((val.match(/,/g) || []).length > 1) return;
-                  setAmount(val);
+                  const raw = e.target.value.replace(/,/g, ".");
+                  const val = raw.replace(/[^0-9.]/g, "");
+                  const parts = val.split(".");
+                  const formatted = parts.length > 2 
+                    ? `${parts[0]}.${parts.slice(1).join("")}`
+                    : val;
+                  setAmount(formatted.replace(".", ","));
                 }}
                 className="pl-10 text-lg font-display font-bold"
               />
