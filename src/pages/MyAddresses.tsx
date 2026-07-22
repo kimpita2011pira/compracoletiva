@@ -129,6 +129,20 @@ export default function MyAddresses() {
                   <Input id="addr-label" value={label} onChange={(e) => setLabel(e.target.value)} placeholder="Opcional" />
                 </div>
                 <div className="grid grid-cols-3 gap-3">
+                  <div className="space-y-2">
+                    <Label htmlFor="addr-zip">CEP</Label>
+                    <Input id="addr-zip" value={zipCode} onChange={(e) => setZipCode(e.target.value)} required maxLength={9} placeholder="00000-000" />
+                  </div>
+                  <div className="space-y-2 opacity-60">
+                    <Label>Estado</Label>
+                    <Input value={selectedState} disabled />
+                  </div>
+                  <div className="space-y-2 opacity-60">
+                    <Label>Cidade</Label>
+                    <Input value={selectedCity} disabled />
+                  </div>
+                </div>
+                <div className="grid grid-cols-3 gap-3">
                    <div className="col-span-2 space-y-2">
                     <Label htmlFor="addr-street">Rua/Logradouro</Label>
                     <Input id="addr-street" value={street} onChange={(e) => setStreet(e.target.value)} required />
@@ -146,20 +160,6 @@ export default function MyAddresses() {
                   <div className="space-y-2">
                     <Label htmlFor="addr-neigh">Bairro</Label>
                     <Input id="addr-neigh" value={neighborhood} onChange={(e) => setNeighborhood(e.target.value)} required />
-                  </div>
-                </div>
-                <div className="grid grid-cols-3 gap-3">
-                  <div className="space-y-2">
-                    <Label htmlFor="addr-zip">CEP</Label>
-                    <Input id="addr-zip" value={zipCode} onChange={(e) => setZipCode(e.target.value)} required maxLength={9} />
-                  </div>
-                  <div className="space-y-2 opacity-60">
-                    <Label>Estado</Label>
-                    <Input value={selectedState} disabled />
-                  </div>
-                  <div className="space-y-2 opacity-60">
-                    <Label>Cidade</Label>
-                    <Input value={selectedCity} disabled />
                   </div>
                 </div>
                 <Button type="submit" className="w-full" disabled={saving}>
