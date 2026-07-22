@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
+import { useSearchParams } from "react-router-dom";
 import { useWallet, useWalletTransactions } from "@/hooks/useWallet";
 import type { WalletTransaction } from "@/hooks/useWallet";
 import { useVendor } from "@/hooks/useVendor";
@@ -21,6 +22,7 @@ import {
   XCircle,
 } from "lucide-react";
 
+
 const TX_CONFIG: Record<string, { label: string; icon: typeof ArrowDownLeft; colorClass: string }> = {
   DEPOSITO: { label: "Depósito", icon: ArrowDownLeft, colorClass: "text-success" },
   CREDITO: { label: "Crédito", icon: ArrowDownLeft, colorClass: "text-success" },
@@ -32,6 +34,7 @@ const TX_CONFIG: Record<string, { label: string; icon: typeof ArrowDownLeft; col
 };
 
 export default function WalletPage() {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [depositOpen, setDepositOpen] = useState(false);
   const [withdrawOpen, setWithdrawOpen] = useState(false);
   const [polling, setPolling] = useState(false);
@@ -41,7 +44,29 @@ export default function WalletPage() {
   const { data: withdrawals } = useVendorWithdrawals();
   const isVendor = !!vendor && vendor.status === "APROVADO";
 
+  const paymentId = useMemo(() => 
+    searchParams.get("payment_id") || searchParams.get("preference_id"),
+    [searchParams]
+  );
+  const autoOpenedRef = useRef(false);
+
+  useEffect(() => {
+    if (paymentId && !autoOpenedRef.current) {
+      console.log("Detectado retorno de pagamento, abrindo modal:", paymentId);
+      autoOpenedRef.current = true;
+      setDepositOpen(true);
+      
+      const newParams = new URLSearchParams(window.location.search);
+      newParams.delete("payment_id");
+      newParams.delete("preference_id");
+      newParams.delete("status");
+      newParams.delete("merchant_order_id");
+      setSearchParams(newParams, { replace: true });
+    }
+  }, [paymentId, setSearchParams]);
+
   const balance = wallet?.balance ?? 0;
+
 
   return (
     <AppLayout title="💰 Minha Carteira">
@@ -161,7 +186,13 @@ export default function WalletPage() {
         </div>
       </main>
 
-      <DepositModal open={depositOpen} onOpenChange={setDepositOpen} onPollingChange={setPolling} />
+      <DepositModal 
+        open={depositOpen} 
+        onOpenChange={setDepositOpen} 
+        onPollingChange={setPolling} 
+        autoCheckPaymentId={paymentId}
+      />
+
       {isVendor && <WithdrawModal open={withdrawOpen} onOpenChange={setWithdrawOpen} />}
     </AppLayout>
   );

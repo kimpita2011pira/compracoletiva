@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useToast } from "@/hooks/use-toast";
-import { CreditCard, QrCode, Loader2, Wallet, Copy, Check, ExternalLink } from "lucide-react";
+import { CreditCard, QrCode, Loader2, Wallet, Copy, Check, ExternalLink, RefreshCw } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
 
@@ -20,9 +20,10 @@ interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onPollingChange?: (polling: boolean) => void;
+  autoCheckPaymentId?: string | null;
 }
 
-type Step = "form" | "pix" | "redirect";
+type Step = "form" | "pix" | "redirect" | "checking";
 
 interface PixData {
   pix_qr_code: string;
@@ -31,7 +32,8 @@ interface PixData {
   payment_id: string;
 }
 
-export default function DepositModal({ open, onOpenChange, onPollingChange }: Props) {
+
+export default function DepositModal({ open, onOpenChange, onPollingChange, autoCheckPaymentId }: Props) {
   const [amount, setAmount] = useState("");
   const [method, setMethod] = useState<"pix" | "card">("pix");
   const [loading, setLoading] = useState(false);
@@ -40,6 +42,14 @@ export default function DepositModal({ open, onOpenChange, onPollingChange }: Pr
   const [copied, setCopied] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
+
+  useEffect(() => {
+    if (autoCheckPaymentId && open) {
+      setStep("checking");
+      handleCheckPayment(autoCheckPaymentId);
+    }
+  }, [autoCheckPaymentId, open]);
+
 
   const presetAmounts = [20, 50, 100, 200];
   const numAmount = parseFloat(amount.replace(",", ".")) || 0;
@@ -157,18 +167,15 @@ export default function DepositModal({ open, onOpenChange, onPollingChange }: Pr
     }
   };
 
-  const handlePixDone = async () => {
-    if (!pixData?.payment_id) {
-      handleClose(false);
-      return;
-    }
+  const handleCheckPayment = async (paymentId: string) => {
     setLoading(true);
     try {
       const res = await supabase.functions.invoke("mercadopago-check-payment", {
-        body: { payment_id: pixData.payment_id },
+        body: { payment_id: paymentId },
       });
       if (res.error) throw new Error(res.error.message);
       const data = res.data;
+      
       queryClient.invalidateQueries({ queryKey: ["wallet"] });
       queryClient.invalidateQueries({ queryKey: ["wallet-transactions"] });
       queryClient.invalidateQueries({ queryKey: ["wallet-balance"] });
@@ -176,20 +183,26 @@ export default function DepositModal({ open, onOpenChange, onPollingChange }: Pr
       if (data?.credited) {
         toast({
           title: "Pagamento confirmado! ✅",
-          description: `R$ ${numAmount.toFixed(2).replace(".", ",")} creditado na sua carteira.`,
+          description: "Seu saldo foi atualizado com sucesso.",
         });
         handleClose(false);
       } else if (data?.status === "not_found" || data?.retryable) {
-        toast({
-          title: "Pagamento em processamento",
-          description: "A confirmação do provedor ainda não chegou. Aguarde alguns segundos e toque em “Já paguei” novamente.",
-        });
+        if (!autoCheckPaymentId) {
+          toast({
+            title: "Pagamento em processamento",
+            description: "A confirmação do provedor ainda não chegou. Aguarde alguns segundos e tente novamente.",
+          });
+        }
+        setStep("form");
       } else {
-        toast({
-          title: "Pagamento ainda não confirmado",
-          description: "Aguarde alguns segundos e tente novamente. O Pix pode levar alguns instantes.",
-          variant: "destructive",
-        });
+        if (!autoCheckPaymentId) {
+          toast({
+            title: "Pagamento ainda não confirmado",
+            description: "O pagamento pode levar alguns instantes para ser processado.",
+            variant: "destructive",
+          });
+        }
+        setStep("form");
       }
     } catch (err) {
       console.error("Check payment error:", err);
@@ -198,12 +211,40 @@ export default function DepositModal({ open, onOpenChange, onPollingChange }: Pr
         description: err instanceof Error ? err.message : "Tente novamente",
         variant: "destructive",
       });
+      setStep("form");
     } finally {
       setLoading(false);
     }
   };
 
+  const handlePixDone = async () => {
+    if (!pixData?.payment_id) {
+      handleClose(false);
+      return;
+    }
+    handleCheckPayment(pixData.payment_id);
+  };
+
+
+  // Checking step
+  if (step === "checking") {
+    return (
+      <Dialog open={open} onOpenChange={handleClose}>
+        <DialogContent className="sm:max-w-md">
+          <div className="flex flex-col items-center gap-4 py-12">
+            <Loader2 className="h-12 w-12 text-primary animate-spin" />
+            <div className="text-center space-y-2">
+              <h2 className="font-display text-xl font-bold text-primary">Verificando pagamento...</h2>
+              <p className="text-sm text-muted-foreground">Isso pode levar alguns segundos.</p>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+    );
+  }
+
   // PIX step
+
   if (step === "pix" && pixData) {
     return (
       <Dialog open={open} onOpenChange={handleClose}>
