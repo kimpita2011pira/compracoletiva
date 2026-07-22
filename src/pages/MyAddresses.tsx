@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { MapPin, Plus, Trash2, Home, Check } from "lucide-react";
+import { MapPin, Plus, Trash2, Home } from "lucide-react";
 import { useBrazilLocations } from "@/hooks/useBrazilLocations";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
@@ -188,10 +188,9 @@ export default function MyAddresses() {
                   <div className="flex-1 min-w-0">
                     <h3 className="font-bold flex items-center gap-2">
                       {addr.label || "Endereço"}
-                      {addr.is_default && <span className="text-[10px] bg-primary/20 text-primary px-2 py-0.5 rounded-full">Principal</span>}
                     </h3>
                     <p className="text-sm text-muted-foreground truncate">
-                      {addr.street}, {addr.number} {addr.complement && }
+                      {addr.street}, {addr.number} {addr.complement && `- ${addr.complement}`}
                     </p>
                     <p className="text-sm text-muted-foreground">
                       {addr.neighborhood} — {addr.city}, {addr.state}
