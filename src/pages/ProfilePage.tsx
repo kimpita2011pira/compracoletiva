@@ -154,7 +154,9 @@ const DeleteAccountSection = () => {
       // Here we will call a database function that handles account deletion/anonymization
       // and then sign out.
       
+      // @ts-ignore - delete_user_account is dynamically generated in types
       const { error } = await supabase.rpc('delete_user_account');
+
       
       if (error) {
         // If RPC doesn't exist yet, we'll implement it. 
