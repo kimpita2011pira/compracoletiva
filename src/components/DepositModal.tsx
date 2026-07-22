@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
 import { CreditCard, QrCode, Loader2, Wallet, Copy, Check, ExternalLink, RefreshCw } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
@@ -42,6 +43,7 @@ export default function DepositModal({ open, onOpenChange, onPollingChange, auto
   const [copied, setCopied] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (autoCheckPaymentId && open) {
@@ -121,8 +123,16 @@ export default function DepositModal({ open, onOpenChange, onPollingChange, auto
           title: "Pix gerado com sucesso!",
           description: "Escaneie o QR Code ou copie o código para pagar.",
         });
-      } else if (method === "card" && data.init_point) {
-        setPixData(prev => ({ ...prev, init_point: data.init_point, payment_id: data.preference_id } as any));
+      } else if (method === "card" && (data.init_point || data.preference_id)) {
+        const initPoint = data.init_point;
+        const prefId = data.preference_id;
+        
+        setPixData(prev => ({ 
+          ...prev, 
+          init_point: initPoint, 
+          payment_id: prefId 
+        } as any));
+        
         onPollingChange?.(true);
         setStep("redirect");
         
@@ -131,18 +141,13 @@ export default function DepositModal({ open, onOpenChange, onPollingChange, auto
           description: "Aguarde enquanto abrimos a página de checkout.",
         });
 
+        // Use location.replace for a cleaner history and avoid popup issues
+        // We add a small delay to ensure the UI updates first
         setTimeout(() => {
-          try {
-            window.location.href = data.init_point;
-          } catch (e) {
-            console.error("Redirect error:", e);
-            toast({
-              title: "Falha no redirecionamento",
-              description: "Use o botão na tela para abrir manualmente.",
-              variant: "destructive",
-            });
+          if (initPoint) {
+            window.location.replace(initPoint);
           }
-        }, 100);
+        }, 1000);
       } else {
         throw new Error("Não foi possível gerar os dados de pagamento. Tente novamente.");
       }
@@ -319,16 +324,18 @@ export default function DepositModal({ open, onOpenChange, onPollingChange, auto
 
           <div className="flex flex-col items-center gap-4 py-6">
             <ExternalLink className="h-12 w-12 text-primary animate-pulse" />
-            <p className="text-center text-sm text-muted-foreground">
-              Você está sendo redirecionado para o Mercado Pago.
+            <p className="text-center text-sm text-muted-foreground px-4">
+              Você está sendo redirecionado para o Mercado Pago. Se a página não abrir em alguns segundos, clique no botão abaixo:
             </p>
             {pixData?.init_point && (
               <Button 
-                variant="outline" 
-                className="gap-2" 
-                onClick={() => window.open(pixData.init_point, "_blank")}
+                variant="default" 
+                className="gap-2 font-bold w-full max-w-xs shadow-lg animate-bounce" 
+                onClick={() => {
+                  window.location.replace(pixData.init_point!);
+                }}
               >
-                <ExternalLink className="h-4 w-4" /> Abrir checkout novamente
+                <ExternalLink className="h-4 w-4" /> IR PARA PAGAMENTO
               </Button>
             )}
             {/* Fallback link if data.init_point was used (card) */}
@@ -348,6 +355,7 @@ export default function DepositModal({ open, onOpenChange, onPollingChange, auto
                 queryClient.invalidateQueries({ queryKey: ["wallet"] });
                 queryClient.invalidateQueries({ queryKey: ["wallet-transactions"] });
                 handleClose(false);
+                navigate("/wallet", { replace: true });
               }}
               className="gap-2 font-bold"
             >
