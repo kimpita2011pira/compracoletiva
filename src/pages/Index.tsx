@@ -76,7 +76,7 @@ const Index = () => {
           </TabsList>
 
           <TabsContent value="home" className="mt-6">
-            <div className="grid gap-4 md:grid-cols-3">
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               <QuickCard
                 icon={<ShoppingBag className="h-8 w-8" />}
                 title="Ofertas"
@@ -97,6 +97,13 @@ const Index = () => {
                 description="Acompanhe suas reservas e compras"
                 color="accent"
                 onClick={() => navigate("/orders")}
+              />
+              <QuickCard
+                icon={<HelpCircle className="h-8 w-8" />}
+                title="Como Usar"
+                description="Manuais e vídeos explicativos"
+                color="primary"
+                onClick={() => navigate("/how-to-use")}
               />
             </div>
           </TabsContent>
