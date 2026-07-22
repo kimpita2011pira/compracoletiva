@@ -65,27 +65,27 @@ export type Database = {
           admin_id: string
           created_at: string
           details: Json | null
-          entity_id: string
-          entity_type: string
           id: string
+          record_id: string
+          table_name: string
         }
         Insert: {
           action: string
           admin_id: string
           created_at?: string
           details?: Json | null
-          entity_id: string
-          entity_type: string
           id?: string
+          record_id: string
+          table_name: string
         }
         Update: {
           action?: string
           admin_id?: string
           created_at?: string
           details?: Json | null
-          entity_id?: string
-          entity_type?: string
           id?: string
+          record_id?: string
+          table_name?: string
         }
         Relationships: []
       }
