@@ -127,6 +127,7 @@ const ChangePasswordCard = () => {
 
 const ProfilePage = () => {
   const { user, roles } = useAuth();
+  const navigate = useNavigate();
   const isOnlyCliente = roles.length > 0 && roles.every((r) => r === "CLIENTE");
   const isFranqueado = roles.includes("FRANQUEADO");
   const { toast } = useToast();
