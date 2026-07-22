@@ -109,6 +109,7 @@ export default function DepositModal({ open, onOpenChange, onPollingChange, auto
       }
 
       const data = res.data;
+      console.log("Mercado Pago response data:", data);
 
       if (method === "pix" && data.pix_qr_code) {
         setPixData({
@@ -137,8 +138,8 @@ export default function DepositModal({ open, onOpenChange, onPollingChange, auto
         setStep("redirect");
         
         toast({
-          title: "Redirecionando para pagamento",
-          description: "Aguarde enquanto abrimos a página de checkout.",
+          title: "Redirecionando...",
+          description: "Abriremos o Mercado Pago em instantes. Caso não abra, use o botão abaixo.",
         });
 
         // Use location.replace for a cleaner history and avoid popup issues
@@ -180,6 +181,7 @@ export default function DepositModal({ open, onOpenChange, onPollingChange, auto
       });
       if (res.error) throw new Error(res.error.message);
       const data = res.data;
+      console.log("Check payment status response:", data);
       
       queryClient.invalidateQueries({ queryKey: ["wallet"] });
       queryClient.invalidateQueries({ queryKey: ["wallet-transactions"] });
