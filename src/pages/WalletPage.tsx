@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useWallet, useWalletTransactions } from "@/hooks/useWallet";
 import type { WalletTransaction } from "@/hooks/useWallet";
@@ -48,23 +48,20 @@ export default function WalletPage() {
     searchParams.get("payment_id") || searchParams.get("preference_id"),
     [searchParams]
   );
+  const autoOpenedRef = useRef(false);
 
   useEffect(() => {
-    if (paymentId) {
+    if (paymentId && !autoOpenedRef.current) {
       console.log("Detectado retorno de pagamento, abrindo modal:", paymentId);
+      autoOpenedRef.current = true;
       setDepositOpen(true);
       
-      // Use setTimeOut to avoid race conditions with initial render
-      const timeout = setTimeout(() => {
-        const newParams = new URLSearchParams(window.location.search);
-        newParams.delete("payment_id");
-        newParams.delete("preference_id");
-        newParams.delete("status");
-        newParams.delete("merchant_order_id");
-        setSearchParams(newParams, { replace: true });
-      }, 500);
-      
-      return () => clearTimeout(timeout);
+      const newParams = new URLSearchParams(window.location.search);
+      newParams.delete("payment_id");
+      newParams.delete("preference_id");
+      newParams.delete("status");
+      newParams.delete("merchant_order_id");
+      setSearchParams(newParams, { replace: true });
     }
   }, [paymentId, setSearchParams]);
 
