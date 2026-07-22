@@ -53,6 +53,18 @@ const Index = () => {
         }}
       />
       <main>
+      {/* Alerta de Instalação PWA */}
+      <section className="container mt-6">
+        <div className="rounded-xl border border-primary/20 bg-primary/5 p-4 flex items-center gap-4 text-sm md:text-base">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10">
+            <HelpCircle className="h-5 w-5 text-primary" />
+          </div>
+          <div className="flex-1 text-muted-foreground leading-relaxed">
+            Para uma melhor experiência, <span className="font-bold text-primary">instale o app no seu navegador</span>, mantenha-o sempre atualizado e limpe o cache regularmente.
+          </div>
+        </div>
+      </section>
+
       {/* Hero */}
       <section className="container py-12 text-center">
         <p className="text-lg text-muted-foreground">
