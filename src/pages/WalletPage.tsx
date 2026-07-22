@@ -47,9 +47,10 @@ export default function WalletPage() {
   const paymentId = searchParams.get("payment_id") || searchParams.get("preference_id");
 
   useEffect(() => {
-    if (paymentId) {
+    if (paymentId && !depositOpen) {
+      console.log("Detectado retorno de pagamento, abrindo modal:", paymentId);
       setDepositOpen(true);
-      // Remove params from URL after opening modal to avoid repeated checks on refresh
+      
       const newParams = new URLSearchParams(searchParams);
       newParams.delete("payment_id");
       newParams.delete("preference_id");
@@ -57,7 +58,7 @@ export default function WalletPage() {
       newParams.delete("merchant_order_id");
       setSearchParams(newParams, { replace: true });
     }
-  }, [paymentId]);
+  }, [paymentId, depositOpen, searchParams, setSearchParams]);
 
   const balance = wallet?.balance ?? 0;
 
