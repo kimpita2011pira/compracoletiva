@@ -141,13 +141,15 @@ const ProfilePage = () => {
   const [selectedCity, setSelectedCity] = useState("");
   const [cityOpen, setCityOpen] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [defaultAddressId, setDefaultAddressId] = useState<string | null>(null);
+  const [addresses, setAddresses] = useState<any[]>([]);
   const { states, cities, loadingStates, loadingCities } = useBrazilLocations(selectedState);
 
   useEffect(() => {
     if (!user) return;
     supabase
       .from("profiles")
-      .select("name, phone, whatsapp, avatar_url, state, city")
+      .select("name, phone, whatsapp, avatar_url, state, city, default_address_id")
       .eq("id", user.id)
       .single()
       .then(({ data, error }) => {
@@ -158,8 +160,17 @@ const ProfilePage = () => {
           setAvatarUrl(data.avatar_url || null);
           setSelectedState(data.state || "");
           setSelectedCity(data.city || "");
+          setDefaultAddressId(data.default_address_id || null);
         }
         if (error) console.error("Error loading profile:", error);
+      });
+
+    supabase
+      .from("addresses")
+      .select("*")
+      .eq("user_id", user.id)
+      .then(({ data }) => {
+        setAddresses(data || []);
         setLoading(false);
       });
   }, [user]);
@@ -228,6 +239,7 @@ const ProfilePage = () => {
         whatsapp: whatsapp.trim() || null,
         state: selectedState || null,
         city: selectedCity || null,
+        default_address_id: defaultAddressId || null,
       })
       .eq("id", user.id);
     setSaving(false);
@@ -381,6 +393,27 @@ const ProfilePage = () => {
                   </Popover>
                 </div>
               </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="default-address">Endereço Principal (Dados Pessoais)</Label>
+                <Select value={defaultAddressId || "none"} onValueChange={(v) => setDefaultAddressId(v === "none" ? null : v)}>
+                  <SelectTrigger id="default-address">
+                    <SelectValue placeholder="Selecione um endereço" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">Nenhum selecionado</SelectItem>
+                    {addresses.map((addr) => (
+                      <SelectItem key={addr.id} value={addr.id}>
+                        {addr.label || `${addr.street}, ${addr.number}`}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <p className="text-[11px] text-muted-foreground">
+                  Este endereço será sugerido automaticamente em pedidos com entrega.
+                </p>
+              </div>
+
               <Button type="submit" className="w-full" size="lg" disabled={saving}>
                 <Save className="mr-2 h-4 w-4" />
                 {saving ? "Salvando..." : "Salvar alterações"}

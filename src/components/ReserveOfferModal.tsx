@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import type { OfferWithVendor } from "@/hooks/useOffers";
 import { useReserveOffer, useWalletBalance, useUserAddresses } from "@/hooks/useReserveOffer";
 import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
 import {
   Dialog,
   DialogContent,
@@ -36,6 +37,15 @@ export default function ReserveOfferModal({ offer, open, onOpenChange }: Props) 
   const { data: balance, isLoading: balanceLoading } = useWalletBalance();
   const { data: addresses } = useUserAddresses();
   const reserve = useReserveOffer();
+  const [profile, setProfile] = useState<any>(null);
+  const [useProfileAddress, setUseProfileAddress] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    if (user) {
+      supabase.from("profiles").select("default_address_id").eq("id", user.id).single()
+        .then(({ data }) => setProfile(data));
+    }
+  }, [user]);
 
   const [quantity, setQuantity] = useState(1);
   const [deliveryType, setDeliveryType] = useState<"RETIRADA" | "DELIVERY">(
@@ -150,25 +160,56 @@ export default function ReserveOfferModal({ offer, open, onOpenChange }: Props) 
 
           {/* Address selector for delivery */}
           {deliveryType === "DELIVERY" && (
-            <div className="space-y-2">
+            <div className="space-y-4">
               <Label className="text-sm font-semibold">Endereço de entrega</Label>
-              {addresses && addresses.length > 0 ? (
-                <Select value={addressId} onValueChange={setAddressId}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione um endereço" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {addresses.map((addr) => (
-                      <SelectItem key={addr.id} value={addr.id}>
-                        {addr.label || `${addr.street}, ${addr.number ?? "s/n"}`} – {addr.city}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              ) : (
-                <p className="text-sm text-muted-foreground">
-                  Nenhum endereço cadastrado. Cadastre um endereço antes de pedir entrega.
-                </p>
+              
+              {profile?.default_address_id && addresses?.find(a => a.id === profile.default_address_id) && (
+                <RadioGroup 
+                  value={useProfileAddress === null ? "" : useProfileAddress ? "profile" : "other"} 
+                  onValueChange={(v) => {
+                    const isProfile = v === "profile";
+                    setUseProfileAddress(isProfile);
+                    if (isProfile) setAddressId(profile.default_address_id);
+                    else setAddressId("");
+                  }}
+                  className="space-y-2"
+                >
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="profile" id="use-profile" />
+                    <Label htmlFor="use-profile" className="text-sm font-normal cursor-pointer">
+                      Usar endereço do meu perfil
+                    </Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="other" id="use-other" />
+                    <Label htmlFor="use-other" className="text-sm font-normal cursor-pointer">
+                      Usar outro endereço
+                    </Label>
+                  </div>
+                </RadioGroup>
+              )}
+
+              {(useProfileAddress === false || !profile?.default_address_id) && (
+                <div className="space-y-2 pt-2">
+                  {addresses && addresses.length > 0 ? (
+                    <Select value={addressId} onValueChange={setAddressId}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecione um endereço" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {addresses.map((addr) => (
+                          <SelectItem key={addr.id} value={addr.id}>
+                            {addr.label || `${addr.street}, ${addr.number ?? "s/n"}`} – {addr.city}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  ) : (
+                    <p className="text-sm text-muted-foreground">
+                      Nenhum endereço cadastrado. Cadastre um endereço antes de pedir entrega.
+                    </p>
+                  )}
+                </div>
               )}
             </div>
           )}
