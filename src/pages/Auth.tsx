@@ -288,9 +288,15 @@ const Auth = () => {
                                 <SelectValue placeholder={loadingStates ? "Carregando..." : "Selecione"} />
                               </SelectTrigger>
                               <SelectContent>
-                                {states.map((s) => (
-                                  <SelectItem key={s.sigla} value={s.sigla}>{s.nome}</SelectItem>
-                                ))}
+                                {states && states.length > 0 ? (
+                                  states.map((s) => (
+                                    <SelectItem key={s.sigla} value={s.sigla}>{s.nome}</SelectItem>
+                                  ))
+                                ) : (
+                                  <div className="p-2 text-sm text-muted-foreground text-center">
+                                    {loadingStates ? "Carregando estados..." : "Nenhum estado encontrado"}
+                                  </div>
+                                )}
                               </SelectContent>
                             </Select>
                           </div>
@@ -314,7 +320,7 @@ const Auth = () => {
                                   <CommandInput placeholder="Buscar cidade..." />
                                   <CommandList>
                                     <CommandEmpty>Nenhuma cidade encontrada.</CommandEmpty>
-                                    {cities.map((c) => (
+                                    {cities && cities.length > 0 && cities.map((c) => (
                                       <CommandItem
                                         key={c.id}
                                         value={c.nome}
