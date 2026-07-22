@@ -93,13 +93,21 @@ export default function DepositModal({ open, onOpenChange, onPollingChange }: Pr
           description: "Escaneie o QR Code ou copie o código para pagar.",
         });
       } else if (method === "card" && data.init_point) {
-        window.location.href = data.init_point;
+        // Safe redirect using history state if needed or direct location change
+        // We set step to redirect FIRST to ensure the modal state is consistent
+        // if the redirect is blocked or takes time.
         setStep("redirect");
         onPollingChange?.(true);
+        
         toast({
           title: "Redirecionando para pagamento",
-          description: "Complete o pagamento na página do Mercado Pago.",
+          description: "Se a página não abrir, clique no link abaixo.",
         });
+
+        // Use a small timeout to allow UI state to update before navigation
+        setTimeout(() => {
+          window.location.href = data.init_point;
+        }, 100);
       } else {
         throw new Error("Resposta inesperada do servidor");
       }
@@ -244,10 +252,25 @@ export default function DepositModal({ open, onOpenChange, onPollingChange }: Pr
           </DialogHeader>
 
           <div className="flex flex-col items-center gap-4 py-6">
-            <ExternalLink className="h-12 w-12 text-muted-foreground/40" />
+            <ExternalLink className="h-12 w-12 text-primary animate-pulse" />
             <p className="text-center text-sm text-muted-foreground">
-              Uma nova aba foi aberta para você completar o pagamento. Após a confirmação, seu saldo será atualizado automaticamente.
+              Você está sendo redirecionado para o Mercado Pago.
             </p>
+            {pixData?.payment_id && (
+              <Button 
+                variant="link" 
+                className="text-xs" 
+                onClick={() => window.open(pixData.pix_qr_code, "_blank")}
+              >
+                Abrir manualmente
+              </Button>
+            )}
+            {/* Fallback link if data.init_point was used (card) */}
+            {method === "card" && (
+              <p className="text-xs text-muted-foreground mt-2">
+                Após a confirmação, seu saldo será atualizado automaticamente.
+              </p>
+            )}
           </div>
 
           <DialogFooter>
