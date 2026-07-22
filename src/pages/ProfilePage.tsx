@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Save, User, Camera, Lock, ChevronsUpDown, Check } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -294,7 +295,14 @@ const ProfilePage = () => {
             </div>
             {uploading && <p className="text-xs text-muted-foreground">Enviando...</p>}
             <CardTitle className="font-display text-xl">Meu Perfil</CardTitle>
-            <CardDescription>Edite suas informações pessoais</CardDescription>
+            <div className="mt-2 flex flex-wrap justify-center gap-2">
+              {roles.map((role) => (
+                <Badge key={role} variant="secondary" className="bg-primary/10 text-primary border-primary/20">
+                  {role}
+                </Badge>
+              ))}
+            </div>
+            <CardDescription className="mt-2">Edite suas informações pessoais</CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSave} className="space-y-4">

@@ -895,6 +895,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_approve_vendor: {
+        Args: { v_status: string; v_vendor_id: string }
+        Returns: undefined
+      }
       admin_list_vendors: {
         Args: never
         Returns: {

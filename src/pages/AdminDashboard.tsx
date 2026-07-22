@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAdminVendors } from "@/hooks/useAdminVendors";
 import { useAdminMetrics } from "@/hooks/useAdminMetrics";
@@ -61,6 +62,7 @@ const PIE_COLORS = ["hsl(24, 95%, 53%)", "hsl(142, 70%, 45%)", "hsl(0, 84%, 60%)
 
 export default function AdminDashboard() {
   const [chartDays, setChartDays] = useState(14);
+  const queryClient = useQueryClient();
   const { vendors, isLoading, updateStatus } = useAdminVendors();
   const { data: metrics, isLoading: metricsLoading } = useAdminMetrics(chartDays);
 
@@ -69,19 +71,19 @@ export default function AdminDashboard() {
   const rejected = vendors.filter((v) => v.status === "REJEITADO");
 
   const handleStatusChange = async (vendorId: string, status: VendorStatus) => {
-    // Clear previous_data when approving/rejecting
-    const { error: clearError } = await supabase
-      .from("vendors")
-      .update({ previous_data: null } as any)
-      .eq("id", vendorId);
+    try {
+      const { error } = await supabase.rpc("admin_approve_vendor", {
+        v_vendor_id: vendorId,
+        v_status: status
+      });
 
-    updateStatus.mutate(
-      { vendorId, status },
-      {
-        onSuccess: () => toast.success(`Vendedor ${status === "APROVADO" ? "aprovado" : "rejeitado"} com sucesso!`),
-        onError: (err) => toast.error(`Erro: ${err.message}`),
-      }
-    );
+      if (error) throw error;
+      
+      queryClient.invalidateQueries({ queryKey: ["admin-vendors"] });
+      toast.success(`Vendedor ${status === "APROVADO" ? "aprovado" : "rejeitado"} com sucesso!`);
+    } catch (err: any) {
+      toast.error(`Erro: ${err.message}`);
+    }
   };
 
   if (isLoading) {
