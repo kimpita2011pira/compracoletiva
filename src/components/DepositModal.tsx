@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { toast } from "@/hooks/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { CreditCard, QrCode, Loader2, Wallet, Copy, Check, ExternalLink } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
@@ -38,6 +38,7 @@ export default function DepositModal({ open, onOpenChange, onPollingChange }: Pr
   const [step, setStep] = useState<Step>("form");
   const [pixData, setPixData] = useState<PixData | null>(null);
   const [copied, setCopied] = useState(false);
+  const { toast } = useToast();
   const queryClient = useQueryClient();
 
   const presetAmounts = [20, 50, 100, 200];
@@ -92,7 +93,7 @@ export default function DepositModal({ open, onOpenChange, onPollingChange }: Pr
           description: "Escaneie o QR Code ou copie o código para pagar.",
         });
       } else if (method === "card" && data.init_point) {
-        window.open(data.init_point, "_blank");
+        window.location.href = data.init_point;
         setStep("redirect");
         onPollingChange?.(true);
         toast({
