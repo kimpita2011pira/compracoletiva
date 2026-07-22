@@ -207,6 +207,11 @@ function Footer() {
                 </button>
               </li>
               <li>
+                <button onClick={() => navigate("/how-to-use")} className="hover:text-primary transition-colors">
+                  Como Usar
+                </button>
+              </li>
+              <li>
                 <button onClick={() => navigate("/about")} className="hover:text-primary transition-colors">
                   Sobre
                 </button>
