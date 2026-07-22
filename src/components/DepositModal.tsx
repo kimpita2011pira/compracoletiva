@@ -93,7 +93,7 @@ export default function DepositModal({ open, onOpenChange, onPollingChange }: Pr
           description: "Escaneie o QR Code ou copie o código para pagar.",
         });
       } else if (method === "card" && data.init_point) {
-        window.open(data.init_point, "_blank");
+        window.location.href = data.init_point;
         setStep("redirect");
         onPollingChange?.(true);
         toast({
