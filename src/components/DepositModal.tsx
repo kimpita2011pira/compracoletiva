@@ -36,7 +36,7 @@ export default function DepositModal({ open, onOpenChange, onPollingChange }: Pr
   const [method, setMethod] = useState<"pix" | "card">("pix");
   const [loading, setLoading] = useState(false);
   const [step, setStep] = useState<Step>("form");
-  const [pixData, setPixData] = useState<PixData | null>(null);
+  const [pixData, setPixData] = useState<(PixData & { init_point?: string }) | null>(null);
   const [copied, setCopied] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -96,7 +96,7 @@ export default function DepositModal({ open, onOpenChange, onPollingChange }: Pr
         // Safe redirect using history state if needed or direct location change
         // We set step to redirect FIRST to ensure the modal state is consistent
         // if the redirect is blocked or takes time.
-        setStep("redirect");
+        setPixData(prev => ({ ...prev, init_point: data.init_point, payment_id: data.preference_id } as any));
         onPollingChange?.(true);
         
         toast({
@@ -256,13 +256,13 @@ export default function DepositModal({ open, onOpenChange, onPollingChange }: Pr
             <p className="text-center text-sm text-muted-foreground">
               Você está sendo redirecionado para o Mercado Pago.
             </p>
-            {pixData?.payment_id && (
+            {pixData?.init_point && (
               <Button 
-                variant="link" 
-                className="text-xs" 
-                onClick={() => window.open(pixData.pix_qr_code, "_blank")}
+                variant="outline" 
+                className="gap-2" 
+                onClick={() => window.open(pixData.init_point, "_blank")}
               >
-                Abrir manualmente
+                <ExternalLink className="h-4 w-4" /> Abrir checkout novamente
               </Button>
             )}
             {/* Fallback link if data.init_point was used (card) */}
