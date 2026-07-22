@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useWallet, useWalletTransactions } from "@/hooks/useWallet";
 import type { WalletTransaction } from "@/hooks/useWallet";
@@ -44,21 +44,29 @@ export default function WalletPage() {
   const { data: withdrawals } = useVendorWithdrawals();
   const isVendor = !!vendor && vendor.status === "APROVADO";
 
-  const paymentId = searchParams.get("payment_id") || searchParams.get("preference_id");
+  const paymentId = useMemo(() => 
+    searchParams.get("payment_id") || searchParams.get("preference_id"),
+    [searchParams]
+  );
 
   useEffect(() => {
-    if (paymentId && !depositOpen) {
+    if (paymentId) {
       console.log("Detectado retorno de pagamento, abrindo modal:", paymentId);
       setDepositOpen(true);
       
-      const newParams = new URLSearchParams(searchParams);
-      newParams.delete("payment_id");
-      newParams.delete("preference_id");
-      newParams.delete("status");
-      newParams.delete("merchant_order_id");
-      setSearchParams(newParams, { replace: true });
+      // Use setTimeOut to avoid race conditions with initial render
+      const timeout = setTimeout(() => {
+        const newParams = new URLSearchParams(window.location.search);
+        newParams.delete("payment_id");
+        newParams.delete("preference_id");
+        newParams.delete("status");
+        newParams.delete("merchant_order_id");
+        setSearchParams(newParams, { replace: true });
+      }, 500);
+      
+      return () => clearTimeout(timeout);
     }
-  }, [paymentId, depositOpen, searchParams, setSearchParams]);
+  }, [paymentId, setSearchParams]);
 
   const balance = wallet?.balance ?? 0;
 
