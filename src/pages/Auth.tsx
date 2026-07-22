@@ -504,6 +504,15 @@ const Auth = () => {
           )}
         </AnimatePresence>
       </div>
+      <div className="pb-8 text-center">
+        <button
+          onClick={() => navigate("/how-to-use")}
+          className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors"
+        >
+          <HelpCircle className="h-4 w-4" />
+          Como Usar / Central de Ajuda
+        </button>
+      </div>
     </div>
   );
 };
