@@ -401,6 +401,7 @@ export default function DepositModal({ open, onOpenChange, onPollingChange, auto
                   size="sm"
                   className="flex-1 text-xs"
                   onClick={() => setAmount(v.toString())}
+                  type="button"
                 >
                   R$ {v}
                 </Button>
