@@ -1,0 +1,1 @@
+REVOKE SELECT (cnpj, pix_key) ON public.vendors FROM anon, authenticated;
