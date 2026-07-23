@@ -48,6 +48,15 @@ const HowToUsePage = () => {
                   <PlayCircle className="h-4 w-4" />
                   <span>Em breve: Ver vídeos</span>
                 </div>
+                <div className="mt-6 pt-4 border-t">
+                  <h4 className="font-semibold mb-3 flex items-center gap-2">
+                    <PlayCircle className="h-4 w-4 text-secondary" />
+                    Como instalar (Vídeo)
+                  </h4>
+                  <div className="aspect-video bg-muted rounded-lg flex items-center justify-center text-muted-foreground text-sm border-2 border-dashed">
+                    [Espaço reservado para vídeo: Instalação PWA]
+                  </div>
+                </div>
               </CardContent>
             </Card>
           </div>
