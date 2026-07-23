@@ -33,16 +33,18 @@ const HowToUsePage = () => {
                 {isLoading ? (
                   <Skeleton className="h-6 w-32" />
                 ) : settings?.how_to_use_manual_url ? (
-                  <a 
-                    href={settings.how_to_use_manual_url} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 text-primary font-medium hover:underline"
-                  >
-                    <FileText className="h-4 w-4" />
-                    <span>Acessar Manual</span>
-                    <ExternalLink className="h-3 w-3" />
-                  </a>
+                  <div className="space-y-3">
+                    <a 
+                      href={settings.how_to_use_manual_url} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 text-primary font-medium hover:underline"
+                    >
+                      <FileText className="h-4 w-4" />
+                      <span>{settings.how_to_use_manual_url.includes('/storage/v1/object/public/') ? 'Baixar Manual PDF' : 'Acessar Manual'}</span>
+                      <ExternalLink className="h-3 w-3" />
+                    </a>
+                  </div>
                 ) : (
                   <div className="flex items-center gap-2 text-muted-foreground font-medium italic">
                     <FileText className="h-4 w-4" />
