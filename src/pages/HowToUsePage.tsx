@@ -1,6 +1,6 @@
 import { AppLayout } from "@/components/AppLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { BookOpen, PlayCircle, FileText } from "lucide-react";
+import { BookOpen, PlayCircle, FileText, WifiOff } from "lucide-react";
 
 const HowToUsePage = () => {
   return (
@@ -48,6 +48,15 @@ const HowToUsePage = () => {
                   <PlayCircle className="h-4 w-4" />
                   <span>Em breve: Ver vídeos</span>
                 </div>
+                <div className="mt-6 pt-4 border-t">
+                  <h4 className="font-semibold mb-3 flex items-center gap-2">
+                    <PlayCircle className="h-4 w-4 text-secondary" />
+                    Como instalar (Vídeo)
+                  </h4>
+                  <div className="aspect-video bg-muted rounded-lg flex items-center justify-center text-muted-foreground text-sm border-2 border-dashed">
+                    [Espaço reservado para vídeo: Instalação PWA]
+                  </div>
+                </div>
               </CardContent>
             </Card>
           </div>
@@ -84,8 +93,17 @@ const HowToUsePage = () => {
                   Se o app não estiver atualizando ou apresentar tela branca, acesse as configurações do seu navegador, procure por "Limpar dados de navegação" e limpe o "Cache". Isso garante que você está usando a versão mais recente.
                 </p>
               </div>
-              <div className="pt-4 border-t">
-                <h4 className="font-semibold mb-2">Outras Dúvidas</h4>
+                  <div className="space-y-2">
+                    <h4 className="font-semibold flex items-center gap-2 text-primary">
+                      <WifiOff className="h-4 w-4" />
+                      Uso Offline (PWA)
+                    </h4>
+                    <p className="text-sm text-muted-foreground">
+                      Uma das grandes vantagens do nosso App é a capacidade de funcionar parcialmente offline. Se você perder a conexão, poderá continuar visualizando as páginas que já carregou. O app avisará automaticamente quando você estiver sem internet.
+                    </p>
+                  </div>
+                  <div className="pt-4 border-t">
+                    <h4 className="font-semibold mb-2">Outras Dúvidas</h4>
                 <div className="space-y-4">
                   <div className="space-y-1">
                     <h5 className="text-sm font-medium">Como funciona o cashback?</h5>

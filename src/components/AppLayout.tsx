@@ -16,6 +16,7 @@ import { NotificationBell } from "@/components/NotificationBell";
 import { ArrowLeft, Store, Shield, LogOut, Wallet, Package, User } from "lucide-react";
 import { BottomNav } from "@/components/BottomNav";
 import { PromoBanner } from "@/components/PromoBanner";
+import { OfflineIndicator } from "@/components/OfflineIndicator";
 
 interface AppLayoutProps {
   children: React.ReactNode;
@@ -55,6 +56,7 @@ export function AppLayout({
 
       {showFooter && <Footer />}
       {!isPublic && <BottomNav />}
+      <OfflineIndicator />
     </div>
   );
 }
