@@ -172,9 +172,18 @@ const Auth = () => {
         <motion.div 
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-6 w-full max-w-md rounded-xl border border-primary/20 bg-white/50 backdrop-blur-sm p-3 text-center text-xs sm:text-sm text-muted-foreground shadow-sm"
+          className="mb-6 w-full max-w-md rounded-xl border border-primary/20 bg-white/50 backdrop-blur-sm p-4 text-center text-sm text-muted-foreground shadow-sm relative group"
         >
-          💡 <span className="font-semibold text-primary">Dica:</span> Instale este app no seu navegador para acesso rápido. Mantenha seu navegador atualizado e limpe o cache para melhor navegação.
+          <div className="flex items-center justify-center gap-2 mb-2">
+            <HelpCircle className="h-4 w-4 text-primary" />
+            <span className="font-semibold text-primary">Dica de Acesso</span>
+          </div>
+          <p className="leading-relaxed">
+            Cadastre-se para aproveitar as ofertas! Para navegar sem travamentos, <span className="font-medium text-foreground">instale o app via navegador</span> e mantenha-o sempre atualizado.
+          </p>
+          <Link to="/how-to-use" className="mt-2 inline-block text-xs font-medium text-primary hover:underline">
+            Ver tutorial de instalação →
+          </Link>
         </motion.div>
         <AnimatePresence mode="wait">
           {mode === "register" && !roleChoice ? (
