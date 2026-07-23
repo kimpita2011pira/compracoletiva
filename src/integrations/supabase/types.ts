@@ -518,16 +518,22 @@ export type Database = {
       }
       platform_settings: {
         Row: {
+          how_to_use_manual_url: string | null
+          how_to_use_video_url: string | null
           id: boolean
           monthly_admin_fee: number
           updated_at: string
         }
         Insert: {
+          how_to_use_manual_url?: string | null
+          how_to_use_video_url?: string | null
           id?: boolean
           monthly_admin_fee?: number
           updated_at?: string
         }
         Update: {
+          how_to_use_manual_url?: string | null
+          how_to_use_video_url?: string | null
           id?: boolean
           monthly_admin_fee?: number
           updated_at?: string

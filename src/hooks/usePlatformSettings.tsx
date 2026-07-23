@@ -12,12 +12,16 @@ export function usePlatformSettings() {
     queryKey: ["platform-settings"],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("platform_settings" as any)
+        .from("platform_settings")
         .select("monthly_admin_fee, how_to_use_video_url, how_to_use_manual_url")
         .eq("id", true)
         .maybeSingle();
+      
       if (error) throw error;
-      return (data as PlatformSettings | null) ?? { monthly_admin_fee: 0 };
+      
+      // Use cast to any then to PlatformSettings to bypass strict type checking on auto-gen client
+      const result = (data as any) as PlatformSettings | null;
+      return result ?? { monthly_admin_fee: 0 };
     },
   });
 }
@@ -27,9 +31,10 @@ export function useUpdatePlatformSettings() {
   return useMutation({
     mutationFn: async (updates: Partial<PlatformSettings>) => {
       const { error } = await supabase
-        .from("platform_settings" as any)
-        .update({ ...updates, updated_at: new Date().toISOString() })
+        .from("platform_settings")
+        .update({ ...updates, updated_at: new Date().toISOString() } as any)
         .eq("id", true);
+      
       if (error) throw error;
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ["platform-settings"] }),
