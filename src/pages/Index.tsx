@@ -12,6 +12,38 @@ const Index = () => {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
   const [profileName, setProfileName] = useState<string | null>(null);
+  const [showPwaBanner, setShowPwaBanner] = useState(false);
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+
+  useEffect(() => {
+    const isDismissed = localStorage.getItem("pwa-banner-dismissed");
+    if (!isDismissed) {
+      setShowPwaBanner(true);
+    }
+
+    const handler = (e: any) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+    };
+
+    window.addEventListener("beforeinstallprompt", handler);
+    return () => window.removeEventListener("beforeinstallprompt", handler);
+  }, []);
+
+  const handleInstall = async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    if (outcome === "accepted") {
+      setDeferredPrompt(null);
+      setShowPwaBanner(false);
+    }
+  };
+
+  const dismissBanner = () => {
+    localStorage.setItem("pwa-banner-dismissed", "true");
+    setShowPwaBanner(false);
+  };
 
   useEffect(() => {
     if (!user) return;
@@ -54,16 +86,41 @@ const Index = () => {
       />
       <main>
       {/* Alerta de Instalação PWA */}
-      <section className="container mt-6">
-        <div className="rounded-xl border border-primary/20 bg-primary/5 p-4 flex items-center gap-4 text-sm md:text-base">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10">
-            <HelpCircle className="h-5 w-5 text-primary" />
+      {showPwaBanner && (
+        <section className="container mt-6">
+          <div className="rounded-xl border border-primary/20 bg-primary/5 p-4 flex flex-col md:flex-row items-center gap-4 text-sm md:text-base relative group">
+            <button 
+              onClick={dismissBanner}
+              className="absolute top-2 right-2 p-1 text-muted-foreground hover:text-foreground opacity-0 group-hover:opacity-100 transition-opacity"
+              aria-label="Fechar aviso"
+            >
+              <HelpCircle className="h-4 w-4 rotate-45" />
+            </button>
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10">
+              <HelpCircle className="h-5 w-5 text-primary" />
+            </div>
+            <div className="flex-1 text-muted-foreground leading-relaxed text-center md:text-left">
+              Para uma melhor experiência, <span className="font-bold text-primary">instale o app no seu navegador</span>. Mantenha-o atualizado e limpe o cache regularmente para garantir o melhor desempenho.
+            </div>
+            <div className="flex gap-2 w-full md:w-auto">
+              {deferredPrompt && (
+                <button
+                  onClick={handleInstall}
+                  className="flex-1 md:flex-none px-4 py-2 bg-primary text-primary-foreground rounded-lg font-semibold text-sm hover:bg-primary/90 transition-colors"
+                >
+                  Instalar App
+                </button>
+              )}
+              <button
+                onClick={() => navigate("/how-to-use")}
+                className="flex-1 md:flex-none px-4 py-2 bg-background border border-input rounded-lg font-semibold text-sm hover:bg-accent transition-colors"
+              >
+                Como Instalar
+              </button>
+            </div>
           </div>
-          <div className="flex-1 text-muted-foreground leading-relaxed">
-            Para uma melhor experiência, <span className="font-bold text-primary">instale o app no seu navegador</span>, mantenha-o sempre atualizado e limpe o cache regularmente.
-          </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* Hero */}
       <section className="container py-12 text-center">

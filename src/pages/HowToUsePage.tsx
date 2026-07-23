@@ -54,20 +54,52 @@ const HowToUsePage = () => {
 
           <Card>
             <CardHeader>
-              <CardTitle>Dúvidas Frequentes</CardTitle>
+              <CardTitle>Dúvidas Técnicas e Instalação</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-6">
               <div className="space-y-2">
-                <h4 className="font-semibold">Como funciona o cashback?</h4>
+                <h4 className="font-semibold flex items-center gap-2 text-primary">
+                  <FileText className="h-4 w-4" />
+                  Como instalar no Android (Chrome)?
+                </h4>
                 <p className="text-sm text-muted-foreground">
-                  Ao completar uma compra coletiva, parte do valor pode retornar para sua carteira dependendo das condições da oferta.
+                  Toque nos três pontos (menu) no canto superior direito do Chrome e selecione "Instalar aplicativo" ou "Adicionar à tela inicial".
                 </p>
               </div>
               <div className="space-y-2">
-                <h4 className="font-semibold">Como realizar um saque?</h4>
+                <h4 className="font-semibold flex items-center gap-2 text-primary">
+                  <FileText className="h-4 w-4" />
+                  Como instalar no iPhone/iOS (Safari)?
+                </h4>
                 <p className="text-sm text-muted-foreground">
-                  Vendedores e franqueados podem solicitar saques via Pix através de suas respectivas áreas de gestão.
+                  Toque no botão "Compartilhar" (ícone de quadrado com seta para cima) na parte inferior do Safari e escolha "Adicionar à Tela de Início".
                 </p>
+              </div>
+              <div className="space-y-2">
+                <h4 className="font-semibold flex items-center gap-2 text-primary">
+                  <FileText className="h-4 w-4" />
+                  Limpeza de Cache e Erros
+                </h4>
+                <p className="text-sm text-muted-foreground">
+                  Se o app não estiver atualizando ou apresentar tela branca, acesse as configurações do seu navegador, procure por "Limpar dados de navegação" e limpe o "Cache". Isso garante que você está usando a versão mais recente.
+                </p>
+              </div>
+              <div className="pt-4 border-t">
+                <h4 className="font-semibold mb-2">Outras Dúvidas</h4>
+                <div className="space-y-4">
+                  <div className="space-y-1">
+                    <h5 className="text-sm font-medium">Como funciona o cashback?</h5>
+                    <p className="text-sm text-muted-foreground">
+                      Ao completar uma compra coletiva, parte do valor pode retornar para sua carteira dependendo das condições da oferta.
+                    </p>
+                  </div>
+                  <div className="space-y-1">
+                    <h5 className="text-sm font-medium">Como realizar um saque?</h5>
+                    <p className="text-sm text-muted-foreground">
+                      Vendedores e franqueados podem solicitar saques via Pix através de suas respectivas áreas de gestão.
+                    </p>
+                  </div>
+                </div>
               </div>
             </CardContent>
           </Card>
