@@ -521,6 +521,7 @@ export type Database = {
           how_to_use_manual_url: string | null
           how_to_use_video_url: string | null
           id: boolean
+          logo_url: string | null
           monthly_admin_fee: number
           updated_at: string
         }
@@ -528,6 +529,7 @@ export type Database = {
           how_to_use_manual_url?: string | null
           how_to_use_video_url?: string | null
           id?: boolean
+          logo_url?: string | null
           monthly_admin_fee?: number
           updated_at?: string
         }
@@ -535,6 +537,7 @@ export type Database = {
           how_to_use_manual_url?: string | null
           how_to_use_video_url?: string | null
           id?: boolean
+          logo_url?: string | null
           monthly_admin_fee?: number
           updated_at?: string
         }

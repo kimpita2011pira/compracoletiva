@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { usePlatformSettings } from "@/hooks/usePlatformSettings";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -12,6 +13,7 @@ const Index = () => {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
   const [profileName, setProfileName] = useState<string | null>(null);
+  const { data: settings } = usePlatformSettings();
   const [showPwaBanner, setShowPwaBanner] = useState(false);
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
 
@@ -127,9 +129,14 @@ const Index = () => {
         <p className="text-lg text-muted-foreground">
           Olá, <span className="font-semibold text-foreground">{profileName || "visitante"}</span>! 👋
         </p>
-        <h2 className="mt-2 font-display text-4xl font-bold md:text-5xl">
-          Ofertas incríveis em{" "}
-          <span className="text-primary">compra coletiva</span>
+        <h2 className="mt-2 font-display text-4xl font-bold md:text-5xl flex flex-col items-center gap-4">
+          {settings?.logo_url && (
+            <img src={settings.logo_url} alt="Logo" className="h-20 w-auto object-contain mb-2" />
+          )}
+          <span>
+            Ofertas incríveis em{" "}
+            <span className="text-primary">compra coletiva</span>
+          </span>
         </h2>
         <p className="mx-auto mt-4 max-w-xl text-lg text-muted-foreground">
           Quanto mais gente compra, mais todo mundo economiza! 🔥

@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { usePlatformSettings } from "@/hooks/usePlatformSettings";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -13,6 +14,7 @@ const ResetPassword = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { data: settings } = usePlatformSettings();
   const { toast } = useToast();
 
   const isRecoveryFlow = useMemo(() => {
@@ -50,6 +52,7 @@ const ResetPassword = () => {
     <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-primary/10 via-background to-secondary/10 p-4">
       <Card className="w-full max-w-md border-0 shadow-xl">
         <CardHeader className="text-center">
+          <img src={settings?.logo_url || "/logo.png"} alt="Logo" className="mx-auto h-16 w-auto object-contain mb-4" />
           <CardTitle className="font-display text-2xl">Redefinir senha</CardTitle>
           <CardDescription>
             {isRecoveryFlow

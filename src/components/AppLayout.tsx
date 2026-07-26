@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { usePlatformSettings } from "@/hooks/usePlatformSettings";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -63,6 +64,7 @@ export function AppLayout({
 
 function PublicHeader({ title }: { title?: string }) {
   const navigate = useNavigate();
+  const { data: settings } = usePlatformSettings();
   return (
     <header className="sticky top-0 z-50 border-b bg-card/80 backdrop-blur-sm [.h-8~&]:top-8">
       <div className="container flex h-16 items-center gap-3">
@@ -70,7 +72,11 @@ function PublicHeader({ title }: { title?: string }) {
           <ArrowLeft className="h-5 w-5" />
         </Button>
         <h1 className="font-display text-xl font-bold text-primary">
-          {title || "🛒 Compra Coletiva"}
+          {title || (
+            settings?.logo_url ? (
+              <img src={settings.logo_url} alt="Logo" className="h-8 w-auto object-contain" />
+            ) : "🛒 Compra Coletiva"
+          )}
         </h1>
       </div>
     </header>
@@ -86,6 +92,7 @@ function AuthHeader({
 }) {
   const { user, roles, signOut } = useAuth();
   const navigate = useNavigate();
+  const { data: settings } = usePlatformSettings();
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
 
   useEffect(() => {
@@ -119,7 +126,9 @@ function AuthHeader({
               className="font-display text-2xl font-bold text-primary cursor-pointer"
               onClick={() => navigate("/")}
             >
-              🛒 Compra Coletiva
+              {settings?.logo_url ? (
+                <img src={settings.logo_url} alt="Logo" className="h-8 w-auto object-contain" />
+              ) : "🛒 Compra Coletiva"}
             </h1>
           )}
         </div>
@@ -175,12 +184,17 @@ function AuthHeader({
 
 function Footer() {
   const navigate = useNavigate();
+  const { data: settings } = usePlatformSettings();
   return (
     <footer className="border-t bg-card/50 mt-auto">
       <div className="container py-10">
         <div className="grid gap-8 md:grid-cols-3">
           <div>
-            <h3 className="font-display text-lg font-bold text-primary">🛒 Compra Coletiva</h3>
+            <h3 className="font-display text-lg font-bold text-primary">
+              {settings?.logo_url ? (
+                <img src={settings.logo_url} alt="Logo" className="h-8 w-auto object-contain" />
+              ) : "🛒 Compra Coletiva"}
+            </h3>
             <p className="mt-2 text-sm text-muted-foreground">
               A plataforma de compra coletiva que conecta você às melhores ofertas da sua cidade.
             </p>
