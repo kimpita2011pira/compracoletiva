@@ -197,7 +197,7 @@ const Auth = () => {
             >
               <motion.div variants={staggerChildren} initial="initial" animate="animate" className="space-y-4 sm:space-y-6">
                 <motion.div variants={childVariants} className="text-center">
-                  <img src="/logo.png" alt="Compra Coletiva" className="mx-auto h-24 sm:h-32 w-auto object-contain" />
+                  <img src={platformSettings?.logo_url || "/logo.png"} alt="Compra Coletiva" className="mx-auto h-24 sm:h-32 w-auto object-contain" />
                   <p className="mt-3 sm:mt-4 text-sm sm:text-base text-muted-foreground">Como você quer usar a plataforma?</p>
                 </motion.div>
                 <div className="grid gap-3 sm:gap-4">
@@ -257,7 +257,7 @@ const Auth = () => {
             >
               <Card className="border-0 shadow-xl">
                 <CardHeader className="text-center pb-2 sm:pb-4">
-                  <img src="/logo.png" alt="Compra Coletiva" className="mx-auto h-20 sm:h-24 w-auto object-contain" />
+                  <img src={platformSettings?.logo_url || "/logo.png"} alt="Compra Coletiva" className="mx-auto h-20 sm:h-24 w-auto object-contain" />
                   <CardTitle className="font-display text-base sm:text-lg mt-3">
                     {mode === "login" ? "Entrar na sua conta" : "Criar sua conta"}
                   </CardTitle>
