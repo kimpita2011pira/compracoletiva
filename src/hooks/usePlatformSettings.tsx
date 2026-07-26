@@ -5,6 +5,7 @@ export interface PlatformSettings {
   monthly_admin_fee: number;
   how_to_use_video_url?: string;
   how_to_use_manual_url?: string;
+  logo_url?: string;
 }
 
 export function usePlatformSettings() {
@@ -13,7 +14,7 @@ export function usePlatformSettings() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("platform_settings")
-        .select("monthly_admin_fee, how_to_use_video_url, how_to_use_manual_url")
+        .select("monthly_admin_fee, how_to_use_video_url, how_to_use_manual_url, logo_url")
         .eq("id", true)
         .maybeSingle();
       

@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { usePlatformSettings, useUpdatePlatformSettings } from "@/hooks/usePlatformSettings";
-import { Settings2, PlayCircle, FileText, Upload, Link, Loader2 } from "lucide-react";
+import { Settings2, PlayCircle, FileText, Upload, Link, Loader2, Image as ImageIcon } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
@@ -16,7 +16,9 @@ export function AdminPlatformSettings() {
   const [videoUrl, setVideoUrl] = useState<string>("");
   const [manualUrl, setManualUrl] = useState<string>("");
   const [isUploading, setIsUploading] = useState(false);
+  const [isUploadingLogo, setIsUploadingLogo] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const logoInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (data) {
@@ -85,8 +87,88 @@ export function AdminPlatformSettings() {
     }
   };
 
+  const handleLogoUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      toast.error("Por favor, selecione uma imagem.");
+      return;
+    }
+
+    setIsUploadingLogo(true);
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `logo_${Date.now()}.${fileExt}`;
+      const filePath = `branding/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('platform-settings')
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('platform-settings')
+        .getPublicUrl(filePath);
+
+      update.mutate({ logo_url: publicUrl }, {
+        onSuccess: () => toast.success("Logo atualizada com sucesso!"),
+        onError: () => toast.error("Erro ao salvar URL da logo.")
+      });
+    } catch (error) {
+      console.error('Error uploading logo:', error);
+      toast.error("Erro ao enviar imagem.");
+    } finally {
+      setIsUploadingLogo(false);
+      if (logoInputRef.current) logoInputRef.current.value = "";
+    }
+  };
+
   return (
-    <div className="space-y-6 max-w-xl">
+    <div className="space-y-6 max-w-xl pb-10">
+      <div className="rounded-2xl border bg-card p-6 space-y-4">
+        <div className="flex items-center gap-2">
+          <ImageIcon className="h-5 w-5 text-primary" />
+          <h2 className="font-display text-lg font-bold">Identidade Visual (Logo)</h2>
+        </div>
+        <p className="text-sm text-muted-foreground">
+          Substitua o logo exibido no aplicativo. Recomenda-se uma imagem quadrada com fundo transparente.
+        </p>
+        
+        <div className="flex flex-col items-center gap-4 p-4 border rounded-lg bg-muted/20">
+          {data?.logo_url ? (
+            <img 
+              src={data.logo_url} 
+              alt="Logo Atual" 
+              className="h-24 w-24 object-contain rounded-md border bg-white p-2"
+            />
+          ) : (
+            <div className="h-24 w-24 rounded-md border border-dashed flex items-center justify-center bg-background text-muted-foreground">
+              <ImageIcon className="h-8 w-8 opacity-20" />
+            </div>
+          )}
+          
+          <div className="flex gap-2">
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => logoInputRef.current?.click()}
+              disabled={isUploadingLogo || isLoading}
+            >
+              {isUploadingLogo ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Upload className="h-4 w-4 mr-2" />}
+              Alterar Logo
+            </Button>
+            <input
+              type="file"
+              ref={logoInputRef}
+              className="hidden"
+              onChange={handleLogoUpload}
+              accept="image/*"
+            />
+          </div>
+        </div>
+      </div>
       <div className="rounded-2xl border bg-card p-6 space-y-4">
         <div className="flex items-center gap-2">
           <Settings2 className="h-5 w-5 text-primary" />
