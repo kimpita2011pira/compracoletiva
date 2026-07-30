@@ -130,7 +130,7 @@ export default function OfferDetailPage() {
           url: `https://compracoletiva.lovable.app/offers/${offer.id}`,
           offers: {
             "@type": "Offer",
-            price: offer.offer_price.toFixed(2),
+            price: offerPrice.toFixed(2),
             priceCurrency: "BRL",
             availability: canReserve
               ? "https://schema.org/InStock"
