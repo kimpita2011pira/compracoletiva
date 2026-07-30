@@ -4,7 +4,7 @@ import { MemoryRouter, Routes, Route } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { HelmetProvider } from "react-helmet-async";
 
-vi.mock("@/hooks/useAuth", () => ({ useAuth: () => ({ user: null, roles: [], loading: false, signOut: vi.fn() }) }));
+vi.mock("@/hooks/useAuth", () => ({ useAuth: () => ({ user: { id: "f95c610e-83b9-4bc5-9afb-c9c0be4ac074", email: "t@t.com" }, roles: ["CLIENTE"], loading: false, signOut: vi.fn() }) }));
 
 import OfferDetailPage from "@/pages/OfferDetailPage";
 
