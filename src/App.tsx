@@ -61,6 +61,7 @@ function AnimatedRoutes() {
         <Route path="/how-to-use" element={<HowToUsePage />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
+      </ErrorBoundary>
     </AnimatePresence>
   );
 }
