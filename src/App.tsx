@@ -28,6 +28,7 @@ import NotFound from "./pages/NotFound";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { ScrollToTop } from "@/components/ScrollToTop";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 
 const queryClient = new QueryClient();
 
@@ -35,6 +36,7 @@ function AnimatedRoutes() {
   const location = useLocation();
   return (
     <AnimatePresence mode="wait">
+      <ErrorBoundary key={location.pathname} area={location.pathname}>
       <Routes location={location} key={location.pathname}>
         <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
         <Route path="/auth" element={<Auth />} />
@@ -59,6 +61,7 @@ function AnimatedRoutes() {
         <Route path="/how-to-use" element={<HowToUsePage />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
+      </ErrorBoundary>
     </AnimatePresence>
   );
 }

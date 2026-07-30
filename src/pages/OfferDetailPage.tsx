@@ -57,21 +57,37 @@ export default function OfferDetailPage() {
     );
   }
 
-  const discount = Math.round(((offer.original_price - offer.offer_price) / offer.original_price) * 100);
-  const progress = Math.min((offer.sold_quantity / offer.min_quantity) * 100, 100);
-  const remaining = Math.max(offer.min_quantity - offer.sold_quantity, 0);
-  const endDate = new Date(offer.end_date);
-  const hoursLeft = Math.max(Math.round((endDate.getTime() - Date.now()) / (1000 * 60 * 60)), 0);
-  const isGoalReached = offer.sold_quantity >= offer.min_quantity;
+  // Normalização defensiva: o backend pode devolver numeric como string ou null.
+  const toNumber = (value: unknown): number => {
+    const parsed = typeof value === "number" ? value : Number(value ?? 0);
+    return Number.isFinite(parsed) ? parsed : 0;
+  };
+
+  const originalPrice = toNumber(offer.original_price);
+  const offerPrice = toNumber(offer.offer_price);
+  const minQuantity = Math.max(toNumber(offer.min_quantity), 0);
+  const soldQuantity = Math.max(toNumber(offer.sold_quantity), 0);
+
+  const discount = originalPrice > 0
+    ? Math.max(Math.round(((originalPrice - offerPrice) / originalPrice) * 100), 0)
+    : 0;
+  const progress = minQuantity > 0 ? Math.min((soldQuantity / minQuantity) * 100, 100) : 0;
+  const remaining = Math.max(minQuantity - soldQuantity, 0);
+  const endDateRaw = offer.end_date ? new Date(offer.end_date) : null;
+  const endDate = endDateRaw && !Number.isNaN(endDateRaw.getTime()) ? endDateRaw : null;
+  const hoursLeft = endDate
+    ? Math.max(Math.round((endDate.getTime() - Date.now()) / (1000 * 60 * 60)), 0)
+    : 0;
+  const isGoalReached = minQuantity > 0 && soldQuantity >= minQuantity;
   const isAlmostDone = hoursLeft <= 24;
-  const isExpired = endDate < new Date();
+  const isExpired = endDate ? endDate < new Date() : false;
   const canReserve = offer.status === "ATIVA" && !isExpired;
   const avgRating = reviews && reviews.length > 0
-    ? reviews.reduce((s, r) => s + r.rating, 0) / reviews.length
+    ? reviews.reduce((s, r) => s + toNumber(r.rating), 0) / reviews.length
     : 0;
 
   const shareUrl = `${window.location.origin}/offers/${offer.id}`;
-  const shareText = `🔥 ${offer.title} com ${discount}% de desconto! De R$ ${offer.original_price.toFixed(2).replace(".", ",")} por R$ ${offer.offer_price.toFixed(2).replace(".", ",")}. Confira:`;
+  const shareText = `🔥 ${offer.title} com ${discount}% de desconto! De R$ ${originalPrice.toFixed(2).replace(".", ",")} por R$ ${offerPrice.toFixed(2).replace(".", ",")}. Confira:`;
 
   const handleShareWhatsApp = () => {
     window.open(`https://wa.me/?text=${encodeURIComponent(`${shareText} ${shareUrl}`)}`, "_blank");
@@ -114,7 +130,7 @@ export default function OfferDetailPage() {
           url: `https://compracoletiva.lovable.app/offers/${offer.id}`,
           offers: {
             "@type": "Offer",
-            price: offer.offer_price.toFixed(2),
+            price: offerPrice.toFixed(2),
             priceCurrency: "BRL",
             availability: canReserve
               ? "https://schema.org/InStock"
@@ -201,10 +217,10 @@ export default function OfferDetailPage() {
 
           <div className="flex items-baseline gap-3">
             <span className="font-display text-3xl font-bold text-primary">
-              R$ {offer.offer_price.toFixed(2).replace(".", ",")}
+              R$ {offerPrice.toFixed(2).replace(".", ",")}
             </span>
             <span className="text-lg text-muted-foreground line-through">
-              R$ {offer.original_price.toFixed(2).replace(".", ",")}
+              R$ {originalPrice.toFixed(2).replace(".", ",")}
             </span>
           </div>
 
@@ -215,7 +231,7 @@ export default function OfferDetailPage() {
           {/* Progress */}
           <div className="rounded-xl border bg-card p-4 space-y-2">
             <div className="flex items-center justify-between text-sm">
-              <span className="text-muted-foreground">{offer.sold_quantity}/{offer.min_quantity} reservas</span>
+              <span className="text-muted-foreground">{soldQuantity}/{minQuantity} reservas</span>
               <span className={`font-semibold ${isGoalReached ? "text-success" : "text-primary"}`}>
                 {isGoalReached ? "Meta atingida!" : `Faltam ${remaining}`}
               </span>
