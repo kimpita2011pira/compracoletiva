@@ -231,7 +231,7 @@ export default function OfferDetailPage() {
           {/* Progress */}
           <div className="rounded-xl border bg-card p-4 space-y-2">
             <div className="flex items-center justify-between text-sm">
-              <span className="text-muted-foreground">{offer.sold_quantity}/{offer.min_quantity} reservas</span>
+              <span className="text-muted-foreground">{soldQuantity}/{minQuantity} reservas</span>
               <span className={`font-semibold ${isGoalReached ? "text-success" : "text-primary"}`}>
                 {isGoalReached ? "Meta atingida!" : `Faltam ${remaining}`}
               </span>
