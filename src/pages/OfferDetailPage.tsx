@@ -217,10 +217,10 @@ export default function OfferDetailPage() {
 
           <div className="flex items-baseline gap-3">
             <span className="font-display text-3xl font-bold text-primary">
-              R$ {offer.offer_price.toFixed(2).replace(".", ",")}
+              R$ {offerPrice.toFixed(2).replace(".", ",")}
             </span>
             <span className="text-lg text-muted-foreground line-through">
-              R$ {offer.original_price.toFixed(2).replace(".", ",")}
+              R$ {originalPrice.toFixed(2).replace(".", ",")}
             </span>
           </div>
 
