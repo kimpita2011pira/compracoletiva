@@ -15,8 +15,9 @@ import {
 import { toast } from "@/hooks/use-toast";
 import {
   ArrowLeft, Plus, ShoppingBag, Clock, CheckCircle, XCircle, Ban,
-  Eye, MoreVertical, Pencil,
+  Eye, MoreVertical, Pencil, Truck,
 } from "lucide-react";
+import { VendorOffersOrdersDialog } from "@/components/VendorOffersOrdersDialog";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
