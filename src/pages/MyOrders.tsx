@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Package, Truck, MapPin, ShoppingBag } from "lucide-react";
+import { OrderReviewSection } from "@/components/OrderReviewSection";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
