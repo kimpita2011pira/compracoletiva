@@ -108,6 +108,7 @@ export default function VendorMyOffers() {
                 onView={() => navigate(`/offers/${offer.id}`)}
                 onEdit={() => navigate(`/vendor/edit-offer/${offer.id}`)}
                 onCancel={() => setCancelId(offer.id)}
+                onViewOrders={() => setOrdersOffer({ id: offer.id, title: offer.title })}
               />
             ))}
           </div>
