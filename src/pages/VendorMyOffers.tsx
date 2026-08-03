@@ -134,6 +134,13 @@ export default function VendorMyOffers() {
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
+
+        {/* Pedidos e endereços de entrega da oferta */}
+        <VendorOffersOrdersDialog
+          offerId={ordersOffer?.id ?? null}
+          offerTitle={ordersOffer?.title}
+          onOpenChange={(open) => !open && setOrdersOffer(null)}
+        />
       </main>
     </AppLayout>
   );
