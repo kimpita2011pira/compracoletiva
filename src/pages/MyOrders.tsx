@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Package, Truck, MapPin, ShoppingBag } from "lucide-react";
+import { OrderReviewSection } from "@/components/OrderReviewSection";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
@@ -112,6 +113,11 @@ const MyOrders = () => {
                   </p>
                 </div>
               </div>
+
+              {/* Avaliação do comprador — visível apenas para quem comprou */}
+              {order.offer && (order.status === "CONFIRMADO" || order.status === "RESERVADO") && (
+                <OrderReviewSection offerId={order.offer.id} />
+              )}
             </Card>
           );
         })}

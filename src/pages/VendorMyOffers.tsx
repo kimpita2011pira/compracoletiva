@@ -15,8 +15,9 @@ import {
 import { toast } from "@/hooks/use-toast";
 import {
   ArrowLeft, Plus, ShoppingBag, Clock, CheckCircle, XCircle, Ban,
-  Eye, MoreVertical, Pencil,
+  Eye, MoreVertical, Pencil, Truck,
 } from "lucide-react";
+import { VendorOffersOrdersDialog } from "@/components/VendorOffersOrdersDialog";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
@@ -37,6 +38,7 @@ export default function VendorMyOffers() {
   const { offers, isLoading } = useVendorOffers();
   const cancelOffer = useCancelOffer();
   const [cancelId, setCancelId] = useState<string | null>(null);
+  const [ordersOffer, setOrdersOffer] = useState<{ id: string; title: string } | null>(null);
 
   useEffect(() => {
     if (!vendorLoading && vendor && vendor.status !== "APROVADO") {
@@ -106,6 +108,7 @@ export default function VendorMyOffers() {
                 onView={() => navigate(`/offers/${offer.id}`)}
                 onEdit={() => navigate(`/vendor/edit-offer/${offer.id}`)}
                 onCancel={() => setCancelId(offer.id)}
+                onViewOrders={() => setOrdersOffer({ id: offer.id, title: offer.title })}
               />
             ))}
           </div>
@@ -131,6 +134,13 @@ export default function VendorMyOffers() {
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
+
+        {/* Pedidos e endereços de entrega da oferta */}
+        <VendorOffersOrdersDialog
+          offerId={ordersOffer?.id ?? null}
+          offerTitle={ordersOffer?.title}
+          onOpenChange={(open) => !open && setOrdersOffer(null)}
+        />
       </main>
     </AppLayout>
   );
@@ -141,11 +151,13 @@ function OfferRow({
   onView,
   onEdit,
   onCancel,
+  onViewOrders,
 }: {
   offer: VendorOffer;
   onView: () => void;
   onEdit: () => void;
   onCancel: () => void;
+  onViewOrders: () => void;
 }) {
   const statusCfg = STATUS_CONFIG[offer.status] ?? STATUS_CONFIG.ATIVA;
   const StatusIcon = statusCfg.icon;
@@ -197,6 +209,9 @@ function OfferRow({
               <DropdownMenuContent align="end">
                 <DropdownMenuItem onClick={onView} className="gap-2">
                   <Eye className="h-4 w-4" /> Ver oferta
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={onViewOrders} className="gap-2">
+                  <Truck className="h-4 w-4" /> Pedidos e entregas
                 </DropdownMenuItem>
                 {offer.status === "ATIVA" && (
                   <DropdownMenuItem onClick={onEdit} className="gap-2">

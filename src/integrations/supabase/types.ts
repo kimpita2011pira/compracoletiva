@@ -1013,6 +1013,27 @@ export type Database = {
       }
       run_monthly_admin_fee: { Args: never; Returns: Json }
       validate_expired_offers: { Args: never; Returns: Json }
+      vendor_list_offer_orders: {
+        Args: { p_offer_id: string }
+        Returns: {
+          address_label: string
+          buyer_name: string
+          buyer_phone: string
+          city: string
+          complement: string
+          created_at: string
+          delivery_type: Database["public"]["Enums"]["delivery_type"]
+          neighborhood: string
+          number: string
+          order_id: string
+          quantity: number
+          state: string
+          status: Database["public"]["Enums"]["order_status"]
+          street: string
+          total_price: number
+          zip_code: string
+        }[]
+      }
     }
     Enums: {
       app_role: "CLIENTE" | "VENDEDOR" | "ADMIN" | "FRANQUEADO"
