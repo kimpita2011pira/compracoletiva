@@ -144,11 +144,13 @@ function OfferRow({
   onView,
   onEdit,
   onCancel,
+  onViewOrders,
 }: {
   offer: VendorOffer;
   onView: () => void;
   onEdit: () => void;
   onCancel: () => void;
+  onViewOrders: () => void;
 }) {
   const statusCfg = STATUS_CONFIG[offer.status] ?? STATUS_CONFIG.ATIVA;
   const StatusIcon = statusCfg.icon;
