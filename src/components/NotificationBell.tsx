@@ -4,12 +4,16 @@ import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useNotifications } from "@/hooks/useNotifications";
+import { useAuth } from "@/hooks/useAuth";
+import { getNotificationRoute } from "@/lib/notificationRoute";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
 export function NotificationBell() {
   const navigate = useNavigate();
+  const { roles } = useAuth();
   const { data: notifications, unreadCount, markAsRead, markAllRead } = useNotifications();
+
 
   return (
     <Popover>
