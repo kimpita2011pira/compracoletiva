@@ -38,6 +38,7 @@ export default function VendorMyOffers() {
   const { offers, isLoading } = useVendorOffers();
   const cancelOffer = useCancelOffer();
   const [cancelId, setCancelId] = useState<string | null>(null);
+  const [ordersOffer, setOrdersOffer] = useState<{ id: string; title: string } | null>(null);
 
   useEffect(() => {
     if (!vendorLoading && vendor && vendor.status !== "APROVADO") {
