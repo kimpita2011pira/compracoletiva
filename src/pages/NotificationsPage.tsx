@@ -131,8 +131,9 @@ export default function NotificationsPage() {
                 isDeleting={deletingIds.has(n.id)}
                 onRead={() => {
                   if (!n.read) markAsRead.mutate(n.id);
-                  if (n.reference_id) navigate(`/offers/${n.reference_id}`);
+                  navigate(getNotificationRoute(n, roles));
                 }}
+
                 onDelete={() => handleDelete(n.id)}
               />
             ))}
