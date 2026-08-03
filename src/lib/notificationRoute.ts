@@ -8,16 +8,18 @@ import type { Notification } from "@/hooks/useNotifications";
  * transação de carteira ou de um vendedor. Navegar sempre para `/offers/:id`
  * fazia notificações de pedido caírem em "Oferta não encontrada".
  */
-export function getNotificationRoute(n: Pick<Notification, "title" | "reference_id">): string {
+export function getNotificationRoute(
+  n: Pick<Notification, "title" | "reference_id">,
+  roles: string[] = []
+): string {
   const title = (n.title ?? "").toLowerCase();
+  const isVendor = roles.includes("VENDEDOR");
 
-  // Pedidos / reservas → reference_id é um order.id
-  if (
-    title.includes("reserva") ||
-    title.includes("pedido")
-  ) {
-    return "/orders";
+  // Pedidos / reservas → reference_id é um order.id, não uma oferta
+  if (title.includes("reserva") || title.includes("pedido")) {
+    return isVendor ? "/vendor/my-offers" : "/orders";
   }
+
 
   // Carteira → reference_id é uma wallet_transaction.id
   if (title.includes("depósito") || title.includes("deposito")) {
