@@ -113,6 +113,11 @@ const MyOrders = () => {
                   </p>
                 </div>
               </div>
+
+              {/* Avaliação do comprador — visível apenas para quem comprou */}
+              {order.offer && (order.status === "CONFIRMADO" || order.status === "RESERVADO") && (
+                <OrderReviewSection offerId={order.offer.id} />
+              )}
             </Card>
           );
         })}
