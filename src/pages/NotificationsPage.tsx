@@ -25,6 +25,8 @@ type FilterType = "all" | "unread" | "read";
 export default function NotificationsPage() {
   const navigate = useNavigate();
   const { roles } = useAuth();
+  const { data: notifications, unreadCount, markAsRead, markAllRead, deleteNotification, deleteAllRead, isLoading } = useNotifications();
+
 
   const [filter, setFilter] = useState<FilterType>("all");
   const [deletingIds, setDeletingIds] = useState<Set<string>>(new Set());
