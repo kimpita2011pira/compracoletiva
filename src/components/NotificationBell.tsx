@@ -4,12 +4,16 @@ import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useNotifications } from "@/hooks/useNotifications";
+import { useAuth } from "@/hooks/useAuth";
+import { getNotificationRoute } from "@/lib/notificationRoute";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
 export function NotificationBell() {
   const navigate = useNavigate();
+  const { roles } = useAuth();
   const { data: notifications, unreadCount, markAsRead, markAllRead } = useNotifications();
+
 
   return (
     <Popover>
@@ -49,8 +53,9 @@ export function NotificationBell() {
                 key={n.id}
                 onClick={() => {
                   if (!n.read) markAsRead.mutate(n.id);
-                  if (n.reference_id) navigate(`/offers/${n.reference_id}`);
+                  navigate(getNotificationRoute(n, roles));
                 }}
+
                 className={`w-full text-left border-b last:border-0 px-4 py-3 transition-colors hover:bg-muted/50 ${
                   !n.read ? "bg-primary/5" : ""
                 }`}
