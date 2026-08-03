@@ -203,6 +203,9 @@ function OfferRow({
                 <DropdownMenuItem onClick={onView} className="gap-2">
                   <Eye className="h-4 w-4" /> Ver oferta
                 </DropdownMenuItem>
+                <DropdownMenuItem onClick={onViewOrders} className="gap-2">
+                  <Truck className="h-4 w-4" /> Pedidos e entregas
+                </DropdownMenuItem>
                 {offer.status === "ATIVA" && (
                   <DropdownMenuItem onClick={onEdit} className="gap-2">
                     <Pencil className="h-4 w-4" /> Editar oferta
