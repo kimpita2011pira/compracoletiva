@@ -1011,7 +1011,12 @@ export type Database = {
         }
         Returns: string
       }
+      run_external_reconciliation: {
+        Args: { p_discrepancies: Json }
+        Returns: string
+      }
       run_monthly_admin_fee: { Args: never; Returns: Json }
+      test_commission_notification: { Args: never; Returns: boolean }
       validate_expired_offers: { Args: never; Returns: Json }
       vendor_list_offer_orders: {
         Args: { p_offer_id: string }
