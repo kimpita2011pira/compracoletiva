@@ -48,5 +48,52 @@ export function useReconciliation() {
     },
   });
 
-  return { reports, runReconciliation };
+  const runExternalReconciliation = useMutation({
+    mutationFn: async () => {
+      const { data, error: funcError } = await supabase.functions.invoke("mercadopago-reconciliation");
+      if (funcError) throw funcError;
+
+      const { discrepancies } = data;
+      if (discrepancies.length === 0) return { empty: true };
+
+      const { data: reportId, error: rpcError } = await supabase.rpc("run_external_reconciliation" as any, {
+        p_discrepancies: discrepancies
+      });
+      if (rpcError) throw rpcError;
+      
+      return { reportId };
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["reconciliation-reports"] });
+      toast({
+        title: data.empty ? "Consistente!" : "Relatório Gerado!",
+        description: data.empty 
+          ? "Nenhuma divergência externa encontrada." 
+          : "Foram encontradas divergências entre o Mercado Pago e o banco de dados.",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Erro Externo",
+        description: "Falha ao verificar Mercado Pago: " + error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const testNotifications = useMutation({
+    mutationFn: async () => {
+      const { data, error } = await supabase.rpc("test_commission_notification" as any);
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      toast({
+        title: "Teste enviado!",
+        description: "Uma transação de teste foi criada. Verifique suas notificações em alguns instantes.",
+      });
+    },
+  });
+
+  return { reports, runReconciliation, runExternalReconciliation, testNotifications };
 }
