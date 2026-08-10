@@ -34,7 +34,8 @@ import { AdminFranchiseManager } from "@/components/AdminFranchiseManager";
 import { AdminPlatformSettings } from "@/components/AdminPlatformSettings";
 import { AdminFeeHistory } from "@/components/AdminFeeHistory";
 import { PlatformWalletLedger } from "@/components/PlatformWalletLedger";
-import { Building } from "lucide-react";
+import { Building, ShieldAlert } from "lucide-react";
+import { AdminReconciliation } from "@/components/AdminReconciliation";
 import {
   BarChart,
   Bar,
@@ -98,7 +99,7 @@ export default function AdminDashboard() {
     <AppLayout title="🛡️ Painel Admin">
       <main className="container py-8">
         <Tabs defaultValue="metricas" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-7">
+          <TabsList className="grid w-full grid-cols-8">
             <TabsTrigger value="metricas" className="gap-2">
               <BarChart3 className="h-4 w-4" /> Métricas
             </TabsTrigger>
@@ -116,6 +117,9 @@ export default function AdminDashboard() {
             </TabsTrigger>
             <TabsTrigger value="auditoria" className="gap-2">
               <FileText className="h-4 w-4" /> Auditoria
+            </TabsTrigger>
+            <TabsTrigger value="reconciliacao" className="gap-2">
+              <ShieldAlert className="h-4 w-4" /> Financeiro
             </TabsTrigger>
             <TabsTrigger value="config" className="gap-2">
               <Settings2 className="h-4 w-4" /> Configurações
@@ -395,6 +399,10 @@ export default function AdminDashboard() {
           {/* ===== AUDITORIA TAB ===== */}
           <TabsContent value="auditoria" className="space-y-6">
             <AdminAuditLogs />
+          </TabsContent>
+
+          <TabsContent value="reconciliacao" className="space-y-6">
+            <AdminReconciliation />
           </TabsContent>
 
           <TabsContent value="config" className="space-y-6">

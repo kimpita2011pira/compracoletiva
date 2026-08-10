@@ -33,6 +33,12 @@ const TX_CONFIG: Record<string, { label: string; icon: typeof ArrowDownLeft; col
   TAXA_ADMIN: { label: "Taxa administrativa", icon: ArrowUpRight, colorClass: "text-destructive" },
 };
 
+const TX_STATUS_CONFIG: Record<string, { label: string; color: string }> = {
+  CONFIRMADO: { label: "Confirmado", color: "text-success border-success/30 bg-success/5" },
+  PENDENTE: { label: "Pendente", color: "text-warning border-warning/30 bg-warning/5" },
+  FALHA: { label: "Falha", color: "text-destructive border-destructive/30 bg-destructive/5" },
+};
+
 export default function WalletPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [depositOpen, setDepositOpen] = useState(false);
@@ -214,13 +220,21 @@ function TransactionRow({ tx }: { tx: WalletTransaction }) {
         <Icon className={`h-4 w-4 ${config.colorClass}`} />
       </div>
       <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 overflow-hidden">
           <span className="text-sm font-semibold truncate">
             {tx.description || config.label}
           </span>
           <Badge variant="outline" className="text-[10px] shrink-0">
             {config.label}
           </Badge>
+          {(tx as any).status && (
+            <Badge 
+              variant="outline" 
+              className={cn("text-[10px] shrink-0", TX_STATUS_CONFIG[(tx as any).status]?.color)}
+            >
+              {TX_STATUS_CONFIG[(tx as any).status]?.label || (tx as any).status}
+            </Badge>
+          )}
         </div>
         <span className="text-xs text-muted-foreground">
           {date.toLocaleDateString("pt-BR")} às {date.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}
