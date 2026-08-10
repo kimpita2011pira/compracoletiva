@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo, useRef } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useWallet, useWalletTransactions } from "@/hooks/useWallet";
 import type { WalletTransaction } from "@/hooks/useWallet";
+import { cn } from "@/lib/utils";
 import { useVendor } from "@/hooks/useVendor";
 import { useVendorWithdrawals } from "@/hooks/useWithdrawals";
 import DepositModal from "@/components/DepositModal";
