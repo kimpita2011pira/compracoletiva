@@ -1002,7 +1002,6 @@ export type Database = {
         Returns: undefined
       }
       notify_users_missing_address: { Args: never; Returns: undefined }
-      process_manual_refunds: { Args: never; Returns: Json }
       reserve_offer: {
         Args: {
           p_address_id?: string
