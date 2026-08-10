@@ -22,7 +22,7 @@ export function useReconciliation() {
         .select("*")
         .order("created_at", { ascending: false });
       if (error) throw error;
-      return data as ReconciliationReport[];
+      return (data as any) as ReconciliationReport[];
     },
   });
 
