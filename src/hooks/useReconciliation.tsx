@@ -95,5 +95,43 @@ export function useReconciliation() {
     },
   });
 
-  return { reports, runReconciliation, runExternalReconciliation, testNotifications };
+  const fixOfferCredits = useMutation({
+    mutationFn: async (offerId: string) => {
+      const { data, error } = await supabase.rpc("fix_vendor_offer_credits" as any, {
+        p_offer_id: offerId
+      });
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: (data: any) => {
+      if (data.success) {
+        queryClient.invalidateQueries({ queryKey: ["reconciliation-reports"] });
+        toast({
+          title: "Sucesso!",
+          description: `Vendedor creditado com R$ ${data.vendor_credited} e Plataforma com R$ ${data.platform_credited}.`,
+        });
+      } else {
+        toast({
+          title: "Aviso",
+          description: data.message,
+          variant: "destructive",
+        });
+      }
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Erro",
+        description: "Falha ao corrigir créditos: " + error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  return { 
+    reports, 
+    runReconciliation, 
+    runExternalReconciliation, 
+    testNotifications,
+    fixOfferCredits
+  };
 }
