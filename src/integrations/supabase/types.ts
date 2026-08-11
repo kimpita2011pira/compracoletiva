@@ -949,6 +949,7 @@ export type Database = {
         Returns: undefined
       }
       delete_user_account: { Args: never; Returns: undefined }
+      fix_vendor_offer_credits: { Args: { p_offer_id: string }; Returns: Json }
       get_franchisee_cities: {
         Args: { _user_id: string }
         Returns: {
