@@ -49,8 +49,9 @@ serve(async (req) => {
     const dateLimit = new Date();
     dateLimit.setDate(dateLimit.getDate() - 7);
     const dateString = dateLimit.toISOString().split(".")[0] + "Z";
+    const nowString = new Date().toISOString().split(".")[0] + "Z";
 
-    const mpUrl = `https://api.mercadopago.com/v1/payments/search?status=approved&range=date_created&begin_date=${dateString}`;
+    const mpUrl = `https://api.mercadopago.com/v1/payments/search?status=approved&range=date_created&begin_date=${dateString}&end_date=${nowString}`;
     
     const mpRes = await fetch(mpUrl, {
       headers: { Authorization: `Bearer ${MP_TOKEN}` },
