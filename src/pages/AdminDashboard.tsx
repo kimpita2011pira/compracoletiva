@@ -148,6 +148,8 @@ export default function AdminDashboard() {
                     icon={<DollarSign className="h-5 w-5" />}
                     label="Receita Total"
                     value={`R$ ${metrics.totalRevenue.toFixed(2).replace(".", ",")}`}
+                    description="Total bruto reservado/confirmado"
+
                     color="success"
                   />
                   <MetricCard
