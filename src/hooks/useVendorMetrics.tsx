@@ -30,7 +30,7 @@ export function useVendorMetrics() {
 
       const { data: offers, error: offersErr } = await supabase
         .from("offers")
-        .select("id, status, sold_quantity, offer_price")
+        .select("id, status, sold_quantity, offer_price, delivery_fee")
         .eq("vendor_id", vendor.id);
       if (offersErr) throw offersErr;
 
@@ -38,20 +38,28 @@ export function useVendorMetrics() {
       const activeOffers = offersList.filter((o) => o.status === "ATIVA").length;
       const validatedOffers = offersList.filter((o) => o.status === "VALIDADA").length;
       const totalSold = offersList.reduce((sum, o) => sum + (o.sold_quantity ?? 0), 0);
-      const totalRevenue = offersList.reduce(
-        (sum, o) => sum + (o.sold_quantity ?? 0) * Number(o.offer_price),
-        0
-      );
 
+      // Calculamos a receita total incluindo as taxas de entrega dos pedidos
       const offerIds = offersList.map((o) => o.id);
+      let totalRevenue = 0;
       let pendingOrders = 0;
+
       if (offerIds.length > 0) {
-        const { count, error: ordersErr } = await supabase
+        const { data: orders, error: ordersErr } = await supabase
           .from("orders")
-          .select("id", { count: "exact", head: true })
-          .in("offer_id", offerIds)
-          .eq("status", "RESERVADO");
-        if (!ordersErr) pendingOrders = count ?? 0;
+          .select("total_price, status")
+          .in("offer_id", offerIds);
+
+        if (!ordersErr && orders) {
+          orders.forEach((order) => {
+            if (order.status === "CONFIRMADO" || order.status === "RESERVADO") {
+              totalRevenue += Number(order.total_price);
+            }
+            if (order.status === "RESERVADO") {
+              pendingOrders += 1;
+            }
+          });
+        }
       }
 
       return {
