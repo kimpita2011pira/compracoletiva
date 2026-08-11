@@ -75,7 +75,40 @@ export function AdminReconciliation() {
         </div>
       </div>
 
+      <Card className="border-primary/20 bg-primary/5">
+        <CardHeader className="py-4">
+          <CardTitle className="text-sm font-medium">Correção de Créditos</CardTitle>
+        </CardHeader>
+        <CardContent className="pb-4">
+          <div className="flex gap-2">
+            <input 
+              type="text" 
+              placeholder="UUID da Oferta (ex: d7c39e1a...)" 
+              className="flex-1 px-3 py-2 rounded-md border text-sm"
+              value={offerIdToFix}
+              onChange={(e) => setOfferIdToFix(e.target.value)}
+            />
+            <Button 
+              size="sm" 
+              className="font-bold"
+              onClick={() => {
+                if (!offerIdToFix.trim()) return;
+                fixOfferCredits.mutate(offerIdToFix);
+                setOfferIdToFix("");
+              }}
+              disabled={fixOfferCredits.isPending || !offerIdToFix.trim()}
+            >
+              Corrigir Créditos
+            </Button>
+          </div>
+          <p className="text-[10px] text-muted-foreground mt-2 uppercase">
+            Use esta ferramenta apenas se um vendedor relatar que as vendas não entraram na carteira após a oferta ser validada.
+          </p>
+        </CardContent>
+      </Card>
+
       <div className="grid gap-4">
+
         {reports.isLoading ? (
           <div className="flex justify-center py-12">
             <RefreshCcw className="h-8 w-8 animate-spin text-primary" />
