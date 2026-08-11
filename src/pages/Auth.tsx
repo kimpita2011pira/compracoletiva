@@ -179,7 +179,7 @@ const Auth = () => {
             <span className="font-semibold text-primary">Dica de Acesso</span>
           </div>
           <p className="leading-relaxed">
-            Cadastre-se para aproveitar as ofertas! Para navegar sem travamentos, <span className="font-medium text-foreground">instale o app via navegador</span> e mantenha-o sempre atualizado.
+            Cadastre-se para aproveitar as ofertas! Para navegar sem travamentos, <span className="font-medium text-foreground">instale o app via navegador</span>.
           </p>
           <Link to="/how-to-use" className="mt-2 inline-block text-xs font-medium text-primary hover:underline">
             Ver tutorial de instalação →
