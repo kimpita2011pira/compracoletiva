@@ -148,6 +148,8 @@ export default function AdminDashboard() {
                     icon={<DollarSign className="h-5 w-5" />}
                     label="Receita Total"
                     value={`R$ ${metrics.totalRevenue.toFixed(2).replace(".", ",")}`}
+                    description="Total bruto reservado/confirmado"
+
                     color="success"
                   />
                   <MetricCard
@@ -155,7 +157,9 @@ export default function AdminDashboard() {
                     label="Caixa Plataforma"
                     value={`R$ ${metrics.platformBalance.toFixed(2).replace(".", ",")}`}
                     color="warning"
+                    description="Taxas (1%) e Mensalidades"
                   />
+
                 </div>
 
                 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -418,7 +422,19 @@ export default function AdminDashboard() {
 
 /* ── Sub-components ── */
 
-function MetricCard({ icon, label, value, color }: { icon: React.ReactNode; label: string; value: string | number; color: string }) {
+function MetricCard({ 
+  icon, 
+  label, 
+  value, 
+  color,
+  description
+}: { 
+  icon: React.ReactNode; 
+  label: string; 
+  value: string | number; 
+  color: string;
+  description?: string;
+}) {
   const bgMap: Record<string, string> = {
     primary: "bg-primary/10 text-primary",
     secondary: "bg-secondary/10 text-secondary-foreground",
@@ -432,9 +448,11 @@ function MetricCard({ icon, label, value, color }: { icon: React.ReactNode; labe
         <div className={`rounded-lg p-2 ${bgMap[color]}`}>{icon}</div>
       </div>
       <p className="mt-2 font-display text-2xl font-bold">{value}</p>
+      {description && <p className="mt-1 text-[10px] text-muted-foreground">{description}</p>}
     </div>
   );
 }
+
 
 function KpiCard({ label, value, icon, color }: { label: string; value: number; icon: React.ReactNode; color: string }) {
   const colorMap: Record<string, string> = {
