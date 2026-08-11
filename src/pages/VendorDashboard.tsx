@@ -115,7 +115,7 @@ const VendorDashboard = () => {
                 <p className="text-2xl font-bold text-foreground">
                   R$ {metrics.totalRevenue.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
                 </p>
-                <p className="text-xs text-muted-foreground">Receita Total</p>
+                <p className="text-xs text-muted-foreground">Receita Total (inc. entregas)</p>
               </CardContent>
             </Card>
             <Card>
