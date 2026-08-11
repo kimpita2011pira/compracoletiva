@@ -75,7 +75,7 @@ export function useReconciliation() {
     onError: (error: any) => {
       toast({
         title: "Erro Externo",
-        description: "Falha ao verificar Mercado Pago: " + error.message,
+        description: "Falha ao verificar Mercado Pago. Certifique-se de que o token está configurado. Erro: " + error.message,
         variant: "destructive",
       });
     },
