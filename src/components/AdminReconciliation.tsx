@@ -25,8 +25,16 @@ import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
 export function AdminReconciliation() {
-  const { reports, runReconciliation, runExternalReconciliation, testNotifications } = useReconciliation();
+  const { 
+    reports, 
+    runReconciliation, 
+    runExternalReconciliation, 
+    testNotifications,
+    fixOfferCredits 
+  } = useReconciliation();
   const [expandedReport, setExpandedReport] = useState<string | null>(null);
+  const [offerIdToFix, setOfferIdToFix] = useState("");
+
 
   return (
     <div className="space-y-6">
