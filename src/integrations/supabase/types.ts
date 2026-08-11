@@ -677,6 +677,30 @@ export type Database = {
         }
         Relationships: []
       }
+      reconciliation_reports: {
+        Row: {
+          created_at: string | null
+          discrepancies: Json
+          id: string
+          status: string | null
+          total_discrepancies: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          discrepancies: Json
+          id?: string
+          status?: string | null
+          total_discrepancies?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          discrepancies?: Json
+          id?: string
+          status?: string | null
+          total_discrepancies?: number | null
+        }
+        Relationships: []
+      }
       reviews: {
         Row: {
           comment: string | null
@@ -1017,6 +1041,7 @@ export type Database = {
         Returns: string
       }
       run_monthly_admin_fee: { Args: never; Returns: Json }
+      run_wallet_reconciliation: { Args: never; Returns: string }
       test_commission_notification: { Args: never; Returns: boolean }
       validate_expired_offers: { Args: never; Returns: Json }
       vendor_list_offer_orders: {
