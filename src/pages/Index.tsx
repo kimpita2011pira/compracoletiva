@@ -102,7 +102,7 @@ const Index = () => {
               <HelpCircle className="h-5 w-5 text-primary" />
             </div>
             <div className="flex-1 text-muted-foreground leading-relaxed text-center md:text-left">
-              Para uma melhor experiência, <span className="font-bold text-primary">instale o app no seu navegador</span>. Mantenha-o atualizado e limpe o cache regularmente para garantir o melhor desempenho.
+              Para uma melhor experiência, <span className="font-bold text-primary">instale o app no seu navegador</span>.
             </div>
             <div className="flex gap-2 w-full md:w-auto">
               {deferredPrompt && (
