@@ -157,7 +157,9 @@ export default function AdminDashboard() {
                     label="Caixa Plataforma"
                     value={`R$ ${metrics.platformBalance.toFixed(2).replace(".", ",")}`}
                     color="warning"
+                    description="Taxas (1%) e Mensalidades"
                   />
+
                 </div>
 
                 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
