@@ -361,7 +361,7 @@ function OfferRow({
                     <XCircle className="h-4 w-4" /> Cancelar oferta
                   </DropdownMenuItem>
                 )}
-                {(offer.status === "EXPIRADA" || offer.status === "CANCELADA" || offer.status === "ENCERRADA") && (
+                {(offer.status === "EXPIRADA" || offer.status === "CANCELADA" || offer.status === "ENCERRADA" || offer.status === "VALIDADA") && (
                   <DropdownMenuItem onClick={onReactivate} className="gap-2 text-primary focus:text-primary">
                     <RefreshCcw className="h-4 w-4" /> Reativar oferta
                   </DropdownMenuItem>
