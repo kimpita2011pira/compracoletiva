@@ -92,19 +92,31 @@ export function PlatformWithdrawModal({
 
           <div className="space-y-2">
             <Label>Valor da transferência (R$)</Label>
-            <Input
-              type="text"
-              inputMode="decimal"
-              placeholder="0,00"
-              value={amount}
-              onChange={(e) => {
-                const val = e.target.value.replace(",", ".");
-                if (val === "" || /^\d*\.?\d*$/.test(val)) {
-                  setAmount(e.target.value);
-                }
-              }}
-              required
-            />
+            <div className="relative group">
+              <Input
+                type="text"
+                inputMode="decimal"
+                placeholder="0,00"
+                className="pr-20"
+                value={amount}
+                onChange={(e) => {
+                  const val = e.target.value.replace(",", ".");
+                  if (val === "" || /^\d*\.?\d*$/.test(val)) {
+                    setAmount(e.target.value);
+                  }
+                }}
+                required
+              />
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                className="absolute right-1 top-1 h-8 text-xs font-medium hover:bg-primary/10 hover:text-primary transition-colors"
+                onClick={() => setAmount(platformBalance.toString().replace(".", ","))}
+              >
+                Tudo
+              </Button>
+            </div>
             {numAmount > platformBalance && (
               <p className="text-xs text-destructive">Valor excede o saldo disponível no caixa</p>
             )}

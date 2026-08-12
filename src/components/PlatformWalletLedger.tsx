@@ -111,16 +111,32 @@ export function PlatformWalletLedger() {
 
       {sourceEntries.length > 0 && (
         <div className="rounded-lg border">
-          <div className="border-b px-3 py-2 text-xs font-semibold text-muted-foreground">
-            Total por fonte
+          <div className="border-b px-3 py-2 text-xs font-semibold text-muted-foreground bg-muted/30 flex justify-between">
+            <span>Total por fonte</span>
+            <span>Ações</span>
           </div>
           <div className="divide-y">
             {sourceEntries.slice(0, 10).map(([source, sum]) => (
               <div key={source} className="flex items-center justify-between px-3 py-2 text-sm">
-                <span className="truncate">{source}</span>
-                <span className="font-semibold shrink-0">
-                  R$ {sum.toFixed(2).replace(".", ",")}
-                </span>
+                <span className="truncate flex-1">{source}</span>
+                <div className="flex items-center gap-4">
+                  <span className="font-semibold shrink-0">
+                    R$ {sum.toFixed(2).replace(".", ",")}
+                  </span>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-7 w-7 text-primary hover:text-primary hover:bg-primary/10"
+                    title="Transferir valor desta fonte"
+                    onClick={() => {
+                      // We can pass the suggested amount to the modal
+                      // For now, let's open the modal normally but we could enhance it
+                      setWithdrawModalOpen(true);
+                    }}
+                  >
+                    <ArrowDownLeft className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
             ))}
           </div>
