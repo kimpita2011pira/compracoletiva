@@ -1,21 +1,22 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useVendorOffers, useCancelOffer } from "@/hooks/useVendorOffers";
+import { useVendorOffers, useCancelOffer, useDeleteOffer, useReactivateOffer } from "@/hooks/useVendorOffers";
 import { useVendor } from "@/hooks/useVendor";
 import { AppLayout } from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { toast } from "@/hooks/use-toast";
 import {
   ArrowLeft, Plus, ShoppingBag, Clock, CheckCircle, XCircle, Ban,
-  Eye, MoreVertical, Pencil, Truck,
+  Eye, MoreVertical, Pencil, Truck, Trash2, RefreshCcw
 } from "lucide-react";
 import { VendorOffersOrdersDialog } from "@/components/VendorOffersOrdersDialog";
 import {
@@ -23,12 +24,12 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { CATEGORY_MAP } from "./OffersMarketplace";
 import type { VendorOffer } from "@/hooks/useVendorOffers";
-import { useState } from "react";
 
 const STATUS_CONFIG: Record<string, { label: string; icon: React.ElementType; variant: "default" | "secondary" | "destructive" | "outline" }> = {
   ATIVA: { label: "Ativa", icon: Clock, variant: "default" },
   VALIDADA: { label: "Validada", icon: CheckCircle, variant: "secondary" },
   CANCELADA: { label: "Cancelada", icon: XCircle, variant: "destructive" },
+  EXPIRADA: { label: "Expirada", icon: Ban, variant: "destructive" },
   ENCERRADA: { label: "Encerrada", icon: Ban, variant: "outline" },
 };
 
@@ -37,7 +38,13 @@ export default function VendorMyOffers() {
   const { vendor, isLoading: vendorLoading } = useVendor();
   const { offers, isLoading } = useVendorOffers();
   const cancelOffer = useCancelOffer();
+  const deleteOffer = useDeleteOffer();
+  const reactivateOffer = useReactivateOffer();
+  
   const [cancelId, setCancelId] = useState<string | null>(null);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [reactivateData, setReactivateData] = useState<{ id: string; title: string } | null>(null);
+  const [newEndDate, setNewEndDate] = useState("");
   const [ordersOffer, setOrdersOffer] = useState<{ id: string; title: string } | null>(null);
 
   useEffect(() => {
