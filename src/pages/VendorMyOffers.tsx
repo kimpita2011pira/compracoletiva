@@ -216,52 +216,56 @@ export default function VendorMyOffers() {
         {/* Reactivate dialog */}
         <AlertDialog open={!!reactivateData} onOpenChange={(open) => !open && setReactivateData(null)}>
           <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Reativar Oferta</AlertDialogTitle>
-              <AlertDialogDescription className="space-y-3">
-                <p>
-                  Defina a nova data de validade para a oferta <strong>"{reactivateData?.title}"</strong>.
-                </p>
-                <div className="rounded-lg bg-muted p-3 text-xs">
-                  <strong>Status atual:</strong> {reactivateData?.status && STATUS_CONFIG[reactivateData.status]?.label}
-                  <br />
-                  <strong>Efeito:</strong> A oferta voltará a ficar <strong>ATIVA</strong> no marketplace e a contagem de tempo será reiniciada até a nova data.
-                </div>
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <div className="py-4 space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="new-end-date">Nova Data de Encerramento</Label>
-                <Input
-                  id="new-end-date"
-                  type="date"
-                  value={newEndDate}
-                  onChange={(e) => setNewEndDate(e.target.value)}
-                  min={new Date().toISOString().split('T')[0]}
-                />
-              </div>
-
-              {newEndDate && (
-                <div className="rounded-xl border border-primary/20 bg-primary/5 p-4 space-y-2">
-                  <p className="text-xs font-bold uppercase tracking-wider text-primary">Resumo da Reativação</p>
-                  <div className="grid grid-cols-2 gap-2 text-sm">
-                    <span className="text-muted-foreground">Nova data:</span>
-                    <span className="font-medium">{new Date(newEndDate + "T12:00:00").toLocaleDateString("pt-BR")}</span>
-                    <span className="text-muted-foreground">Status final:</span>
-                    <span className="font-medium text-success">ATIVA</span>
+            {reactivateData && (
+              <>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Reativar Oferta</AlertDialogTitle>
+                  <AlertDialogDescription className="space-y-3">
+                    <p>
+                      Defina a nova data de validade para a oferta <strong>"{reactivateData.title}"</strong>.
+                    </p>
+                    <div className="rounded-lg bg-muted p-3 text-xs">
+                      <strong>Status atual:</strong> {reactivateData.status && STATUS_CONFIG[reactivateData.status]?.label}
+                      <br />
+                      <strong>Efeito:</strong> A oferta voltará a ficar <strong>ATIVA</strong> no marketplace e a contagem de tempo será reiniciada até a nova data.
+                    </div>
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <div className="py-4 space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="new-end-date">Nova Data de Encerramento</Label>
+                    <Input
+                      id="new-end-date"
+                      type="date"
+                      value={newEndDate}
+                      onChange={(e) => setNewEndDate(e.target.value)}
+                      min={new Date().toISOString().split('T')[0]}
+                    />
                   </div>
+
+                  {newEndDate && (
+                    <div className="rounded-xl border border-primary/20 bg-primary/5 p-4 space-y-2">
+                      <p className="text-xs font-bold uppercase tracking-wider text-primary">Resumo da Reativação</p>
+                      <div className="grid grid-cols-2 gap-2 text-sm">
+                        <span className="text-muted-foreground">Nova data:</span>
+                        <span className="font-medium">{new Date(newEndDate + "T12:00:00").toLocaleDateString("pt-BR")}</span>
+                        <span className="text-muted-foreground">Status final:</span>
+                        <span className="font-medium text-success">ATIVA</span>
+                      </div>
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Cancelar</AlertDialogCancel>
-              <AlertDialogAction
-                onClick={handleReactivate}
-                disabled={!newEndDate || reactivateOffer.isPending}
-              >
-                {reactivateOffer.isPending ? "Reativando..." : "Confirmar Reativação"}
-              </AlertDialogAction>
-            </AlertDialogFooter>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={handleReactivate}
+                    disabled={!newEndDate || reactivateOffer.isPending}
+                  >
+                    {reactivateOffer.isPending ? "Reativando..." : "Confirmar Reativação"}
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </>
+            )}
           </AlertDialogContent>
         </AlertDialog>
 
