@@ -973,6 +973,7 @@ export type Database = {
         Returns: undefined
       }
       delete_user_account: { Args: never; Returns: undefined }
+      delete_vendor_offer: { Args: { p_offer_id: string }; Returns: undefined }
       fix_vendor_offer_credits: { Args: { p_offer_id: string }; Returns: Json }
       get_franchisee_cities: {
         Args: { _user_id: string }
@@ -1032,6 +1033,10 @@ export type Database = {
         Returns: undefined
       }
       process_platform_withdrawal: { Args: { p_amount: number }; Returns: Json }
+      reactivate_vendor_offer: {
+        Args: { p_new_end_date: string; p_offer_id: string }
+        Returns: undefined
+      }
       reserve_offer: {
         Args: {
           p_address_id?: string
@@ -1083,7 +1088,12 @@ export type Database = {
         | "SAUDE"
         | "SERVICOS"
         | "OUTROS"
-      offer_status: "ATIVA" | "VALIDADA" | "CANCELADA" | "ENCERRADA"
+      offer_status:
+        | "ATIVA"
+        | "VALIDADA"
+        | "CANCELADA"
+        | "ENCERRADA"
+        | "EXPIRADA"
       order_status: "RESERVADO" | "CONFIRMADO" | "CANCELADO" | "ESTORNADO"
       transaction_type:
         | "DEPOSITO"
@@ -1233,7 +1243,7 @@ export const Constants = {
         "SERVICOS",
         "OUTROS",
       ],
-      offer_status: ["ATIVA", "VALIDADA", "CANCELADA", "ENCERRADA"],
+      offer_status: ["ATIVA", "VALIDADA", "CANCELADA", "ENCERRADA", "EXPIRADA"],
       order_status: ["RESERVADO", "CONFIRMADO", "CANCELADO", "ESTORNADO"],
       transaction_type: [
         "DEPOSITO",
