@@ -102,7 +102,7 @@ export function AdminReconciliation() {
             </Button>
           </div>
           <p className="text-[10px] text-muted-foreground mt-2 uppercase">
-            Use esta ferramenta apenas se um vendedor relatar que as vendas não entraram na carteira após a oferta ser validada.
+            vendedor kimpita2011@gmail.com fez nova oferta, ela já foi efetivada, o valor já consta na aba do valor arrecadado e o valor não entrou em sua carteira e nem a comissão apareceu para o adm.
           </p>
         </CardContent>
       </Card>
