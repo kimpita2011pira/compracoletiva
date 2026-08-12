@@ -43,7 +43,7 @@ export default function VendorMyOffers() {
   
   const [cancelId, setCancelId] = useState<string | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
-  const [reactivateData, setReactivateData] = useState<{ id: string; title: string } | null>(null);
+  const [reactivateData, setReactivateData] = useState<{ id: string; title: string; status: string } | null>(null);
   const [newEndDate, setNewEndDate] = useState("");
   const [ordersOffer, setOrdersOffer] = useState<{ id: string; title: string } | null>(null);
 
@@ -140,7 +140,7 @@ export default function VendorMyOffers() {
                 onCancel={() => setCancelId(offer.id)}
                 onDelete={() => setDeleteId(offer.id)}
                 onReactivate={() => {
-                  setReactivateData({ id: offer.id, title: offer.title });
+                  setReactivateData({ id: offer.id, title: offer.title, status: offer.status });
                   const tomorrow = new Date();
                   tomorrow.setDate(tomorrow.getDate() + 7);
                   setNewEndDate(tomorrow.toISOString().split('T')[0]);
@@ -177,8 +177,15 @@ export default function VendorMyOffers() {
           <AlertDialogContent>
             <AlertDialogHeader>
               <AlertDialogTitle>Excluir oferta?</AlertDialogTitle>
-              <AlertDialogDescription>
-                Esta ação excluirá permanentemente a oferta. Só é possível excluir ofertas que não possuem pedidos.
+              <AlertDialogDescription className="space-y-3">
+                <p>
+                  Esta ação excluirá permanentemente a oferta <strong>"{offers.find(o => o.id === deleteId)?.title}"</strong>.
+                </p>
+                <div className="rounded-lg bg-muted p-3 text-xs">
+                  <strong>Status atual:</strong> {deleteId && STATUS_CONFIG[offers.find(o => o.id === deleteId)?.status || ""]?.label}
+                  <br />
+                  <strong>Efeito:</strong> A oferta será removida do histórico. Só é possível excluir ofertas que não possuem pedidos.
+                </div>
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
@@ -198,20 +205,40 @@ export default function VendorMyOffers() {
           <AlertDialogContent>
             <AlertDialogHeader>
               <AlertDialogTitle>Reativar Oferta</AlertDialogTitle>
-              <AlertDialogDescription>
-                Informe a nova data de encerramento para a oferta "{reactivateData?.title}".
+              <AlertDialogDescription className="space-y-3">
+                <p>
+                  Defina a nova data de validade para a oferta <strong>"{reactivateData?.title}"</strong>.
+                </p>
+                <div className="rounded-lg bg-muted p-3 text-xs">
+                  <strong>Status atual:</strong> {reactivateData?.status && STATUS_CONFIG[reactivateData.status]?.label}
+                  <br />
+                  <strong>Efeito:</strong> A oferta voltará a ficar <strong>ATIVA</strong> no marketplace e a contagem de tempo será reiniciada até a nova data.
+                </div>
               </AlertDialogDescription>
             </AlertDialogHeader>
-            <div className="py-4">
-              <Label htmlFor="new-end-date">Nova Data de Encerramento</Label>
-              <Input
-                id="new-end-date"
-                type="date"
-                value={newEndDate}
-                onChange={(e) => setNewEndDate(e.target.value)}
-                min={new Date().toISOString().split('T')[0]}
-                className="mt-2"
-              />
+            <div className="py-4 space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="new-end-date">Nova Data de Encerramento</Label>
+                <Input
+                  id="new-end-date"
+                  type="date"
+                  value={newEndDate}
+                  onChange={(e) => setNewEndDate(e.target.value)}
+                  min={new Date().toISOString().split('T')[0]}
+                />
+              </div>
+
+              {newEndDate && (
+                <div className="rounded-xl border border-primary/20 bg-primary/5 p-4 space-y-2">
+                  <p className="text-xs font-bold uppercase tracking-wider text-primary">Resumo da Reativação</p>
+                  <div className="grid grid-cols-2 gap-2 text-sm">
+                    <span className="text-muted-foreground">Nova data:</span>
+                    <span className="font-medium">{new Date(newEndDate + "T12:00:00").toLocaleDateString("pt-BR")}</span>
+                    <span className="text-muted-foreground">Status final:</span>
+                    <span className="font-medium text-success">ATIVA</span>
+                  </div>
+                </div>
+              )}
             </div>
             <AlertDialogFooter>
               <AlertDialogCancel>Cancelar</AlertDialogCancel>
@@ -219,7 +246,7 @@ export default function VendorMyOffers() {
                 onClick={handleReactivate}
                 disabled={!newEndDate || reactivateOffer.isPending}
               >
-                {reactivateOffer.isPending ? "Reativando..." : "Confirmar"}
+                {reactivateOffer.isPending ? "Reativando..." : "Confirmar Reativação"}
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
