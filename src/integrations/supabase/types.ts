@@ -1031,6 +1031,7 @@ export type Database = {
         Args: { p_offer_id: string }
         Returns: undefined
       }
+      process_platform_withdrawal: { Args: { p_amount: number }; Returns: Json }
       reserve_offer: {
         Args: {
           p_address_id?: string
