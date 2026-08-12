@@ -156,12 +156,17 @@ export default function VendorMyOffers() {
           <AlertDialogContent>
             <AlertDialogHeader>
               <AlertDialogTitle>Cancelar oferta?</AlertDialogTitle>
-              <AlertDialogDescription>
-                Esta ação não pode ser desfeita. Os clientes que reservaram serão notificados e os valores estornados.
+              <AlertDialogDescription className="space-y-3">
+                <p>
+                  Esta ação não pode ser desfeita. A oferta <strong>"{offers.find(o => o.id === cancelId)?.title}"</strong> será encerrada imediatamente.
+                </p>
+                <div className="rounded-lg bg-destructive/10 p-3 text-xs text-destructive">
+                  <strong>⚠️ Aviso importante:</strong> Os clientes que reservaram o produto serão notificados automaticamente e os valores pagos serão estornados para suas carteiras.
+                </div>
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel>Não, manter</AlertDialogCancel>
+              <AlertDialogCancel>Não, manter ativa</AlertDialogCancel>
               <AlertDialogAction
                 onClick={() => cancelId && handleCancel(cancelId)}
                 className="bg-destructive text-destructive-foreground hover:bg-destructive/90"

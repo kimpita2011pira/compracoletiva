@@ -391,6 +391,7 @@ export type Database = {
           start_date: string
           status: Database["public"]["Enums"]["offer_status"]
           title: string
+          updated_at: string
           vendor_id: string
         }
         Insert: {
@@ -414,6 +415,7 @@ export type Database = {
           start_date?: string
           status?: Database["public"]["Enums"]["offer_status"]
           title: string
+          updated_at?: string
           vendor_id: string
         }
         Update: {
@@ -437,6 +439,7 @@ export type Database = {
           start_date?: string
           status?: Database["public"]["Enums"]["offer_status"]
           title?: string
+          updated_at?: string
           vendor_id?: string
         }
         Relationships: [
