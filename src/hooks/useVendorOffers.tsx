@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useVendor } from "@/hooks/useVendor";
 import type { Tables, Database } from "@/integrations/supabase/types";
+import { toast } from "@/hooks/use-toast";
 
 type OfferStatus = Database["public"]["Enums"]["offer_status"];
 
@@ -48,6 +49,56 @@ export function useCancelOffer() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["vendor-offers"] });
       queryClient.invalidateQueries({ queryKey: ["offers-active"] });
+    },
+  });
+}
+
+export function useDeleteOffer() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (offerId: string) => {
+      const { error } = await supabase.rpc("delete_vendor_offer", {
+        p_offer_id: offerId,
+      });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["vendor-offers"] });
+      toast({ title: "Oferta excluída com sucesso" });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Erro ao excluir oferta",
+        description: error.message || "Tente novamente mais tarde",
+        variant: "destructive",
+      });
+    },
+  });
+}
+
+export function useReactivateOffer() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ offerId, newEndDate }: { offerId: string; newEndDate: string }) => {
+      const { error } = await supabase.rpc("reactivate_vendor_offer", {
+        p_offer_id: offerId,
+        p_new_end_date: newEndDate,
+      });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["vendor-offers"] });
+      queryClient.invalidateQueries({ queryKey: ["offers-active"] });
+      toast({ title: "Oferta reativada com sucesso" });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Erro ao reativar oferta",
+        description: error.message || "Tente novamente mais tarde",
+        variant: "destructive",
+      });
     },
   });
 }
