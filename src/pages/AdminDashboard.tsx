@@ -118,7 +118,7 @@ export default function AdminDashboard() {
             <TabsTrigger value="auditoria" className="gap-2">
               <FileText className="h-4 w-4" /> Auditoria
             </TabsTrigger>
-            <TabsTrigger value="reconciliacao" className="gap-2">
+            <TabsTrigger value="financeiro" className="gap-2">
               <ShieldAlert className="h-4 w-4" /> Financeiro
             </TabsTrigger>
             <TabsTrigger value="config" className="gap-2">
@@ -405,13 +405,13 @@ export default function AdminDashboard() {
             <AdminAuditLogs />
           </TabsContent>
 
-          <TabsContent value="reconciliacao" className="space-y-6">
+          <TabsContent value="financeiro" className="space-y-6">
+            <PlatformWalletLedger />
             <AdminReconciliation />
           </TabsContent>
 
           <TabsContent value="config" className="space-y-6">
             <AdminPlatformSettings />
-            <PlatformWalletLedger />
             <AdminFeeHistory />
           </TabsContent>
         </Tabs>
