@@ -1027,6 +1027,10 @@ export type Database = {
         Returns: undefined
       }
       notify_users_missing_address: { Args: never; Returns: undefined }
+      process_franchisee_commission: {
+        Args: { p_offer_id: string }
+        Returns: undefined
+      }
       reserve_offer: {
         Args: {
           p_address_id?: string
