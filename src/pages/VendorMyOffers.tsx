@@ -77,6 +77,29 @@ export default function VendorMyOffers() {
     }
   };
 
+  const handleDelete = async (id: string) => {
+    try {
+      await deleteOffer.mutateAsync(id);
+      setDeleteId(null);
+    } catch {
+      // toast is handled in hook
+    }
+  };
+
+  const handleReactivate = async () => {
+    if (!reactivateData || !newEndDate) return;
+    try {
+      await reactivateOffer.mutateAsync({ 
+        offerId: reactivateData.id, 
+        newEndDate: new Date(newEndDate).toISOString() 
+      });
+      setReactivateData(null);
+      setNewEndDate("");
+    } catch {
+      // toast is handled in hook
+    }
+  };
+
   return (
     <AppLayout title="📦 Minhas Ofertas">
       <main className="container max-w-3xl py-6 space-y-6">
@@ -115,6 +138,13 @@ export default function VendorMyOffers() {
                 onView={() => navigate(`/offers/${offer.id}`)}
                 onEdit={() => navigate(`/vendor/edit-offer/${offer.id}`)}
                 onCancel={() => setCancelId(offer.id)}
+                onDelete={() => setDeleteId(offer.id)}
+                onReactivate={() => {
+                  setReactivateData({ id: offer.id, title: offer.title });
+                  const tomorrow = new Date();
+                  tomorrow.setDate(tomorrow.getDate() + 7);
+                  setNewEndDate(tomorrow.toISOString().split('T')[0]);
+                }}
                 onViewOrders={() => setOrdersOffer({ id: offer.id, title: offer.title })}
               />
             ))}
@@ -142,6 +172,59 @@ export default function VendorMyOffers() {
           </AlertDialogContent>
         </AlertDialog>
 
+        {/* Delete confirmation dialog */}
+        <AlertDialog open={!!deleteId} onOpenChange={(open) => !open && setDeleteId(null)}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Excluir oferta?</AlertDialogTitle>
+              <AlertDialogDescription>
+                Esta ação excluirá permanentemente a oferta. Só é possível excluir ofertas que não possuem pedidos.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Voltar</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={() => deleteId && handleDelete(deleteId)}
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              >
+                Sim, excluir
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+
+        {/* Reactivate dialog */}
+        <AlertDialog open={!!reactivateData} onOpenChange={(open) => !open && setReactivateData(null)}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Reativar Oferta</AlertDialogTitle>
+              <AlertDialogDescription>
+                Informe a nova data de encerramento para a oferta "{reactivateData?.title}".
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <div className="py-4">
+              <Label htmlFor="new-end-date">Nova Data de Encerramento</Label>
+              <Input
+                id="new-end-date"
+                type="date"
+                value={newEndDate}
+                onChange={(e) => setNewEndDate(e.target.value)}
+                min={new Date().toISOString().split('T')[0]}
+                className="mt-2"
+              />
+            </div>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancelar</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={handleReactivate}
+                disabled={!newEndDate || reactivateOffer.isPending}
+              >
+                {reactivateOffer.isPending ? "Reativando..." : "Confirmar"}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+
         {/* Pedidos e endereços de entrega da oferta */}
         <VendorOffersOrdersDialog
           offerId={ordersOffer?.id ?? null}
@@ -158,12 +241,16 @@ function OfferRow({
   onView,
   onEdit,
   onCancel,
+  onDelete,
+  onReactivate,
   onViewOrders,
 }: {
   offer: VendorOffer;
   onView: () => void;
   onEdit: () => void;
   onCancel: () => void;
+  onDelete: () => void;
+  onReactivate: () => void;
   onViewOrders: () => void;
 }) {
   const statusCfg = STATUS_CONFIG[offer.status] ?? STATUS_CONFIG.ATIVA;
@@ -225,9 +312,19 @@ function OfferRow({
                     <Pencil className="h-4 w-4" /> Editar oferta
                   </DropdownMenuItem>
                 )}
-                {offer.status === "ATIVA" && (
+                {(offer.status === "ATIVA") && (
                   <DropdownMenuItem onClick={onCancel} className="gap-2 text-destructive focus:text-destructive">
                     <XCircle className="h-4 w-4" /> Cancelar oferta
+                  </DropdownMenuItem>
+                )}
+                {(offer.status === "EXPIRADA" || offer.status === "CANCELADA" || offer.status === "ENCERRADA") && (
+                  <DropdownMenuItem onClick={onReactivate} className="gap-2 text-primary focus:text-primary">
+                    <RefreshCcw className="h-4 w-4" /> Reativar oferta
+                  </DropdownMenuItem>
+                )}
+                {(offer.status === "EXPIRADA" || offer.status === "CANCELADA" || offer.status === "ENCERRADA") && (
+                  <DropdownMenuItem onClick={onDelete} className="gap-2 text-destructive focus:text-destructive">
+                    <Trash2 className="h-4 w-4" /> Excluir oferta
                   </DropdownMenuItem>
                 )}
               </DropdownMenuContent>
