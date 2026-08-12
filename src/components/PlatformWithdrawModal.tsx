@@ -97,7 +97,12 @@ export function PlatformWithdrawModal({
               inputMode="decimal"
               placeholder="0,00"
               value={amount}
-              onChange={(e) => setAmount(e.target.value.replace(/[^0-9,\.]/g, ""))}
+              onChange={(e) => {
+                const val = e.target.value.replace(",", ".");
+                if (val === "" || /^\d*\.?\d*$/.test(val)) {
+                  setAmount(e.target.value);
+                }
+              }}
               required
             />
             {numAmount > platformBalance && (

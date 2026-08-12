@@ -405,13 +405,13 @@ export default function AdminDashboard() {
             <AdminAuditLogs />
           </TabsContent>
 
-          <TabsContent value="reconciliacao" className="space-y-6">
+          <TabsContent value="financeiro" className="space-y-6">
+            <PlatformWalletLedger />
             <AdminReconciliation />
           </TabsContent>
 
           <TabsContent value="config" className="space-y-6">
             <AdminPlatformSettings />
-            <PlatformWalletLedger />
             <AdminFeeHistory />
           </TabsContent>
         </Tabs>
