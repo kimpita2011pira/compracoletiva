@@ -184,28 +184,32 @@ export default function VendorMyOffers() {
         {/* Delete confirmation dialog */}
         <AlertDialog open={!!deleteId} onOpenChange={(open) => !open && setDeleteId(null)}>
           <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Excluir oferta?</AlertDialogTitle>
-              <AlertDialogDescription className="space-y-3">
-                <p>
-                  Esta ação excluirá permanentemente a oferta <strong>"{offers.find(o => o.id === deleteId)?.title}"</strong>.
-                </p>
-                <div className="rounded-lg bg-muted p-3 text-xs">
-                  <strong>Status atual:</strong> {deleteId && STATUS_CONFIG[offers.find(o => o.id === deleteId)?.status || ""]?.label}
-                  <br />
-                  <strong>Efeito:</strong> A oferta será removida do histórico. Só é possível excluir ofertas que não possuem pedidos.
-                </div>
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Voltar</AlertDialogCancel>
-              <AlertDialogAction
-                onClick={() => deleteId && handleDelete(deleteId)}
-                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-              >
-                Sim, excluir
-              </AlertDialogAction>
-            </AlertDialogFooter>
+            {deleteId && (
+              <>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Excluir oferta?</AlertDialogTitle>
+                  <AlertDialogDescription className="space-y-3">
+                    <p>
+                      Esta ação excluirá permanentemente a oferta <strong>"{offers.find(o => o.id === deleteId)?.title}"</strong>.
+                    </p>
+                    <div className="rounded-lg bg-muted p-3 text-xs">
+                      <strong>Status atual:</strong> {deleteId && STATUS_CONFIG[offers.find(o => o.id === deleteId)?.status || ""]?.label}
+                      <br />
+                      <strong>Efeito:</strong> A oferta será removida do histórico. Só é possível excluir ofertas que não possuem pedidos.
+                    </div>
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Voltar</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={() => deleteId && handleDelete(deleteId)}
+                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                  >
+                    Sim, excluir
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </>
+            )}
           </AlertDialogContent>
         </AlertDialog>
 
