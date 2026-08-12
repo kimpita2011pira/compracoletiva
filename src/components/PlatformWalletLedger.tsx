@@ -1,7 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Badge } from "@/components/ui/badge";
-import { Wallet, TrendingUp, Receipt } from "lucide-react";
+import { Wallet, TrendingUp, Receipt, ArrowDownLeft } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useState } from "react";
+import { PlatformWithdrawModal } from "./PlatformWithdrawModal";
 
 type Row = {
   id: string;
@@ -19,9 +22,21 @@ const TYPE_LABEL: Record<string, { label: string; color: string }> = {
   COMISSAO_SEM_FRANQUIA: { label: "Comissão sem franquia (10%)", color: "text-success" },
   TAXA_ADMIN: { label: "Taxa administrativa", color: "text-warning-foreground" },
   AJUSTE: { label: "Ajuste manual", color: "text-muted-foreground" },
+  SAQUE_PLATAFORMA: { label: "Saque da plataforma", color: "text-destructive" },
 };
 
 export function PlatformWalletLedger() {
+  const [withdrawModalOpen, setWithdrawModalOpen] = useState(false);
+
+  const { data: platformWallet } = useQuery({
+    queryKey: ["admin-platform-wallet"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("platform_wallet").select("balance").maybeSingle();
+      if (error) throw error;
+      return data;
+    },
+  });
+
   const { data: rows, isLoading } = useQuery({
     queryKey: ["platform-wallet-ledger"],
     refetchInterval: 30000,
@@ -36,10 +51,16 @@ export function PlatformWalletLedger() {
     },
   });
 
+  const currentBalance = Number(platformWallet?.balance ?? 0);
+
   const totals = (rows ?? []).reduce(
     (acc, r) => {
-      acc.total += Number(r.amount);
-      acc.bySource[r.source_label] = (acc.bySource[r.source_label] ?? 0) + Number(r.amount);
+      if (r.type === 'SAQUE_PLATAFORMA') {
+        acc.total -= Number(r.amount);
+      } else {
+        acc.total += Number(r.amount);
+        acc.bySource[r.source_label] = (acc.bySource[r.source_label] ?? 0) + Number(r.amount);
+      }
       return acc;
     },
     { total: 0, bySource: {} as Record<string, number> }
@@ -49,9 +70,21 @@ export function PlatformWalletLedger() {
 
   return (
     <div className="rounded-2xl border bg-card p-6 space-y-4">
-      <div className="flex items-center gap-2">
-        <Wallet className="h-5 w-5 text-primary" />
-        <h3 className="font-display text-lg font-bold">Carteira da plataforma</h3>
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2">
+          <Wallet className="h-5 w-5 text-primary" />
+          <h3 className="font-display text-lg font-bold">Carteira da plataforma</h3>
+        </div>
+        <Button 
+          size="sm" 
+          variant="outline" 
+          className="gap-2"
+          onClick={() => setWithdrawModalOpen(true)}
+          disabled={currentBalance <= 0}
+        >
+          <ArrowDownLeft className="h-4 w-4" />
+          Transferir para minha carteira
+        </Button>
       </div>
       <p className="text-sm text-muted-foreground">
         Registro detalhado das receitas da plataforma: 1% de cada oferta com franquia ativa,
@@ -62,10 +95,10 @@ export function PlatformWalletLedger() {
       <div className="grid gap-2 sm:grid-cols-2">
         <div className="rounded-lg border bg-gradient-to-br from-primary/5 to-transparent p-3">
           <div className="text-xs text-muted-foreground flex items-center gap-1">
-            <TrendingUp className="h-3 w-3" /> Total recebido (últimas 200)
+            <TrendingUp className="h-3 w-3" /> Saldo Disponível no Caixa
           </div>
           <p className="font-display text-2xl font-bold text-primary">
-            R$ {totals.total.toFixed(2).replace(".", ",")}
+            R$ {currentBalance.toFixed(2).replace(".", ",")}
           </p>
         </div>
         <div className="rounded-lg border p-3">
@@ -128,8 +161,8 @@ export function PlatformWalletLedger() {
                       {new Date(r.created_at).toLocaleString("pt-BR")}
                     </span>
                   </div>
-                  <span className="font-display font-bold text-sm text-success shrink-0">
-                    +R$ {Number(r.amount).toFixed(2).replace(".", ",")}
+                  <span className={`font-display font-bold text-sm shrink-0 ${r.type === 'SAQUE_PLATAFORMA' ? 'text-destructive' : 'text-success'}`}>
+                    {r.type === 'SAQUE_PLATAFORMA' ? '-' : '+'}R$ {Number(r.amount).toFixed(2).replace(".", ",")}
                   </span>
                 </div>
               );
@@ -137,6 +170,12 @@ export function PlatformWalletLedger() {
           </div>
         )}
       </div>
+
+      <PlatformWithdrawModal 
+        open={withdrawModalOpen} 
+        onOpenChange={setWithdrawModalOpen}
+        platformBalance={currentBalance}
+      />
     </div>
   );
 }
