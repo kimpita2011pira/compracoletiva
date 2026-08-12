@@ -154,106 +154,118 @@ export default function VendorMyOffers() {
         {/* Cancel confirmation dialog */}
         <AlertDialog open={!!cancelId} onOpenChange={(open) => !open && setCancelId(null)}>
           <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Cancelar oferta?</AlertDialogTitle>
-              <AlertDialogDescription className="space-y-3">
-                <p>
-                  Esta ação não pode ser desfeita. A oferta <strong>"{offers.find(o => o.id === cancelId)?.title}"</strong> será encerrada imediatamente.
-                </p>
-                <div className="rounded-lg bg-destructive/10 p-3 text-xs text-destructive">
-                  <strong>⚠️ Aviso importante:</strong> Os clientes que reservaram o produto serão notificados automaticamente e os valores pagos serão estornados para suas carteiras.
-                </div>
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Não, manter ativa</AlertDialogCancel>
-              <AlertDialogAction
-                onClick={() => cancelId && handleCancel(cancelId)}
-                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-              >
-                Sim, cancelar oferta
-              </AlertDialogAction>
-            </AlertDialogFooter>
+            {cancelId && (
+              <>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Cancelar oferta?</AlertDialogTitle>
+                  <AlertDialogDescription className="space-y-3">
+                    <p>
+                      Esta ação não pode ser desfeita. A oferta <strong>"{offers.find(o => o.id === cancelId)?.title}"</strong> será encerrada imediatamente.
+                    </p>
+                    <div className="rounded-lg bg-destructive/10 p-3 text-xs text-destructive">
+                      <strong>⚠️ Aviso importante:</strong> Os clientes que reservaram o produto serão notificados automaticamente e os valores pagos serão estornados para suas carteiras.
+                    </div>
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Não, manter ativa</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={() => cancelId && handleCancel(cancelId)}
+                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                  >
+                    Sim, cancelar oferta
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </>
+            )}
           </AlertDialogContent>
         </AlertDialog>
 
         {/* Delete confirmation dialog */}
         <AlertDialog open={!!deleteId} onOpenChange={(open) => !open && setDeleteId(null)}>
           <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Excluir oferta?</AlertDialogTitle>
-              <AlertDialogDescription className="space-y-3">
-                <p>
-                  Esta ação excluirá permanentemente a oferta <strong>"{offers.find(o => o.id === deleteId)?.title}"</strong>.
-                </p>
-                <div className="rounded-lg bg-muted p-3 text-xs">
-                  <strong>Status atual:</strong> {deleteId && STATUS_CONFIG[offers.find(o => o.id === deleteId)?.status || ""]?.label}
-                  <br />
-                  <strong>Efeito:</strong> A oferta será removida do histórico. Só é possível excluir ofertas que não possuem pedidos.
-                </div>
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Voltar</AlertDialogCancel>
-              <AlertDialogAction
-                onClick={() => deleteId && handleDelete(deleteId)}
-                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-              >
-                Sim, excluir
-              </AlertDialogAction>
-            </AlertDialogFooter>
+            {deleteId && (
+              <>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Excluir oferta?</AlertDialogTitle>
+                  <AlertDialogDescription className="space-y-3">
+                    <p>
+                      Esta ação excluirá permanentemente a oferta <strong>"{offers.find(o => o.id === deleteId)?.title}"</strong>.
+                    </p>
+                    <div className="rounded-lg bg-muted p-3 text-xs">
+                      <strong>Status atual:</strong> {deleteId && STATUS_CONFIG[offers.find(o => o.id === deleteId)?.status || ""]?.label}
+                      <br />
+                      <strong>Efeito:</strong> A oferta será removida do histórico. Só é possível excluir ofertas que não possuem pedidos.
+                    </div>
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Voltar</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={() => deleteId && handleDelete(deleteId)}
+                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                  >
+                    Sim, excluir
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </>
+            )}
           </AlertDialogContent>
         </AlertDialog>
 
         {/* Reactivate dialog */}
         <AlertDialog open={!!reactivateData} onOpenChange={(open) => !open && setReactivateData(null)}>
           <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Reativar Oferta</AlertDialogTitle>
-              <AlertDialogDescription className="space-y-3">
-                <p>
-                  Defina a nova data de validade para a oferta <strong>"{reactivateData?.title}"</strong>.
-                </p>
-                <div className="rounded-lg bg-muted p-3 text-xs">
-                  <strong>Status atual:</strong> {reactivateData?.status && STATUS_CONFIG[reactivateData.status]?.label}
-                  <br />
-                  <strong>Efeito:</strong> A oferta voltará a ficar <strong>ATIVA</strong> no marketplace e a contagem de tempo será reiniciada até a nova data.
-                </div>
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <div className="py-4 space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="new-end-date">Nova Data de Encerramento</Label>
-                <Input
-                  id="new-end-date"
-                  type="date"
-                  value={newEndDate}
-                  onChange={(e) => setNewEndDate(e.target.value)}
-                  min={new Date().toISOString().split('T')[0]}
-                />
-              </div>
-
-              {newEndDate && (
-                <div className="rounded-xl border border-primary/20 bg-primary/5 p-4 space-y-2">
-                  <p className="text-xs font-bold uppercase tracking-wider text-primary">Resumo da Reativação</p>
-                  <div className="grid grid-cols-2 gap-2 text-sm">
-                    <span className="text-muted-foreground">Nova data:</span>
-                    <span className="font-medium">{new Date(newEndDate + "T12:00:00").toLocaleDateString("pt-BR")}</span>
-                    <span className="text-muted-foreground">Status final:</span>
-                    <span className="font-medium text-success">ATIVA</span>
+            {reactivateData && (
+              <>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Reativar Oferta</AlertDialogTitle>
+                  <AlertDialogDescription className="space-y-3">
+                    <p>
+                      Defina a nova data de validade para a oferta <strong>"{reactivateData.title}"</strong>.
+                    </p>
+                    <div className="rounded-lg bg-muted p-3 text-xs">
+                      <strong>Status atual:</strong> {reactivateData.status && STATUS_CONFIG[reactivateData.status]?.label}
+                      <br />
+                      <strong>Efeito:</strong> A oferta voltará a ficar <strong>ATIVA</strong> no marketplace e a contagem de tempo será reiniciada até a nova data.
+                    </div>
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <div className="py-4 space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="new-end-date">Nova Data de Encerramento</Label>
+                    <Input
+                      id="new-end-date"
+                      type="date"
+                      value={newEndDate}
+                      onChange={(e) => setNewEndDate(e.target.value)}
+                      min={new Date().toISOString().split('T')[0]}
+                    />
                   </div>
+
+                  {newEndDate && (
+                    <div className="rounded-xl border border-primary/20 bg-primary/5 p-4 space-y-2">
+                      <p className="text-xs font-bold uppercase tracking-wider text-primary">Resumo da Reativação</p>
+                      <div className="grid grid-cols-2 gap-2 text-sm">
+                        <span className="text-muted-foreground">Nova data:</span>
+                        <span className="font-medium">{new Date(newEndDate + "T12:00:00").toLocaleDateString("pt-BR")}</span>
+                        <span className="text-muted-foreground">Status final:</span>
+                        <span className="font-medium text-success">ATIVA</span>
+                      </div>
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Cancelar</AlertDialogCancel>
-              <AlertDialogAction
-                onClick={handleReactivate}
-                disabled={!newEndDate || reactivateOffer.isPending}
-              >
-                {reactivateOffer.isPending ? "Reativando..." : "Confirmar Reativação"}
-              </AlertDialogAction>
-            </AlertDialogFooter>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={handleReactivate}
+                    disabled={!newEndDate || reactivateOffer.isPending}
+                  >
+                    {reactivateOffer.isPending ? "Reativando..." : "Confirmar Reativação"}
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </>
+            )}
           </AlertDialogContent>
         </AlertDialog>
 
