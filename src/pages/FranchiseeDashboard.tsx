@@ -123,7 +123,7 @@ export default function FranchiseeDashboard() {
             {/* KPIs */}
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               <Kpi icon={<Wallet className="h-5 w-5" />} label="Comissão acumulada" value={fmtBRL(totals.franchiseeCommissionEarned)} accent="primary" />
-              <Kpi icon={<DollarSign className="h-5 w-5" />} label="Receita validada" value={fmtBRL(totals.totalRevenue)} accent="success" />
+              <Kpi icon={<DollarSign className="h-5 w-5" />} label="Valor arrecadado" value={fmtBRL(totals.totalRevenue)} accent="success" />
               <Kpi icon={<ShoppingCart className="h-5 w-5" />} label="Pedidos" value={String(totals.totalOrders)} accent="secondary" />
               <Kpi icon={<Building2 className="h-5 w-5" />} label="Vendedores" value={String(totals.vendors)} sub={totals.pendingVendors > 0 ? `${totals.pendingVendors} pendente(s)` : undefined} accent="warning" />
             </div>
