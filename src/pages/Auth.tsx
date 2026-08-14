@@ -496,7 +496,11 @@ const Auth = () => {
                           });
                           setLoading(false);
                           if (error) {
-                            toast({ title: "Erro ao entrar com Apple", description: String(error), variant: "destructive" });
+                            const errorMsg = String(error);
+                            const message = errorMsg.includes("Failed to fetch") 
+                              ? "Erro de conexão. Verifique sua internet e tente novamente."
+                              : errorMsg;
+                            toast({ title: "Erro ao entrar com Apple", description: message, variant: "destructive" });
                           }
                         }}
                       >
