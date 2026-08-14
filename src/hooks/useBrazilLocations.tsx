@@ -18,11 +18,19 @@ export function useBrazilLocations(selectedState: string) {
   const [loadingCities, setLoadingCities] = useState(false);
 
   useEffect(() => {
+    let isMounted = true;
     fetch("https://servicodados.ibge.gov.br/api/v1/localidades/estados?orderBy=nome")
       .then((res) => res.json())
-      .then((data) => setStates(data))
-      .catch(console.error)
-      .finally(() => setLoadingStates(false));
+      .then((data) => {
+        if (isMounted) setStates(data);
+      })
+      .catch((err) => {
+        console.error("Erro ao buscar estados:", err);
+      })
+      .finally(() => {
+        if (isMounted) setLoadingStates(false);
+      });
+    return () => { isMounted = false; };
   }, []);
 
   useEffect(() => {
@@ -30,12 +38,20 @@ export function useBrazilLocations(selectedState: string) {
       setCities([]);
       return;
     }
+    let isMounted = true;
     setLoadingCities(true);
     fetch(`https://servicodados.ibge.gov.br/api/v1/localidades/estados/${selectedState}/municipios?orderBy=nome`)
       .then((res) => res.json())
-      .then((data) => setCities(data))
-      .catch(console.error)
-      .finally(() => setLoadingCities(false));
+      .then((data) => {
+        if (isMounted) setCities(data);
+      })
+      .catch((err) => {
+        console.error("Erro ao buscar cidades:", err);
+      })
+      .finally(() => {
+        if (isMounted) setLoadingCities(false);
+      });
+    return () => { isMounted = false; };
   }, [selectedState]);
 
   return { states, cities, loadingStates, loadingCities };
