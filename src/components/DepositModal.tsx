@@ -157,7 +157,7 @@ export default function DepositModal({ open, onOpenChange, onPollingChange, auto
       console.error("Deposit error:", err);
       toast({
         title: "Erro ao processar depósito",
-        description: err instanceof Error ? err.message : "Não conseguimos conectar com o provedor de pagamentos. Verifique sua conexão e tente novamente.",
+        description: err instanceof Error ? err.message : "estou com conexão de internet normal e agora o erro para diz ser falta de conexão",
         variant: "destructive",
       });
     } finally {
