@@ -66,7 +66,10 @@ const Auth = () => {
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     setLoading(false);
     if (error) {
-      toast({ title: "Erro ao entrar", description: error.message, variant: "destructive" });
+      const message = error.message === "Failed to fetch" 
+        ? "Erro de conexão. Verifique sua internet e tente novamente."
+        : error.message;
+      toast({ title: "Erro ao entrar", description: message, variant: "destructive" });
     } else {
       navigate("/");
     }
