@@ -107,7 +107,10 @@ const Auth = () => {
     });
     setLoading(false);
     if (error) {
-      toast({ title: "erro ao cadastrar novo usuario", description: error.message, variant: "destructive" });
+      const message = error.message === "Failed to fetch" 
+        ? "Erro de conexão. Verifique sua internet e tente novamente."
+        : error.message;
+      toast({ title: "erro ao cadastrar novo usuario", description: message, variant: "destructive" });
     } else {
       toast({
         title: "Cadastro realizado!",
