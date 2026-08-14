@@ -20,7 +20,7 @@ export function PromoBanner() {
 
   return (
     <div className="relative overflow-hidden bg-primary text-primary-foreground">
-      <div className="container flex h-16 items-center justify-center text-base font-semibold">
+      <div className="container flex h-16 items-center justify-center text-lg sm:text-xl font-bold tracking-tight">
         <AnimatePresence mode="wait">
           <motion.div
             key={banners[safeIndex].id}

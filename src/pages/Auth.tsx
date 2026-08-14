@@ -66,7 +66,10 @@ const Auth = () => {
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     setLoading(false);
     if (error) {
-      toast({ title: "Erro ao entrar", description: error.message, variant: "destructive" });
+      const message = error.message === "Failed to fetch" 
+        ? "Erro de conexão. Verifique sua internet e tente novamente."
+        : error.message;
+      toast({ title: "Erro ao entrar", description: message, variant: "destructive" });
     } else {
       navigate("/");
     }
@@ -104,7 +107,10 @@ const Auth = () => {
     });
     setLoading(false);
     if (error) {
-      toast({ title: "erro ao cadastrar novo usuario", description: error.message, variant: "destructive" });
+      const message = error.message === "Failed to fetch" 
+        ? "Erro de conexão. Verifique sua internet e tente novamente."
+        : error.message;
+      toast({ title: "erro ao cadastrar novo usuario", description: message, variant: "destructive" });
     } else {
       toast({
         title: "Cadastro realizado!",
@@ -461,7 +467,11 @@ const Auth = () => {
                           });
                           setLoading(false);
                           if (error) {
-                            toast({ title: "Erro ao entrar com Google", description: String(error), variant: "destructive" });
+                            const errorMsg = String(error);
+                            const message = errorMsg.includes("Failed to fetch") 
+                              ? "Erro de conexão. Verifique sua internet e tente novamente."
+                              : errorMsg;
+                            toast({ title: "Erro ao entrar com Google", description: message, variant: "destructive" });
                           }
                         }}
                       >
@@ -486,7 +496,11 @@ const Auth = () => {
                           });
                           setLoading(false);
                           if (error) {
-                            toast({ title: "Erro ao entrar com Apple", description: String(error), variant: "destructive" });
+                            const errorMsg = String(error);
+                            const message = errorMsg.includes("Failed to fetch") 
+                              ? "Erro de conexão. Verifique sua internet e tente novamente."
+                              : errorMsg;
+                            toast({ title: "Erro ao entrar com Apple", description: message, variant: "destructive" });
                           }
                         }}
                       >
