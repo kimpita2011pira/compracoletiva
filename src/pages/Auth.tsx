@@ -67,7 +67,7 @@ const Auth = () => {
     setLoading(false);
     if (error) {
       const message = error.message === "Failed to fetch" 
-        ? "continua msg de erro ao acessar, qual o erro que não está me permitindo acessar o app?"
+        ? "não estou conseguindo acessar o app e os comandos que dou aqui vão para o texto da msg de erro"
         : error.message;
       toast({ title: "Erro ao entrar", description: message, variant: "destructive" });
     } else {
@@ -108,7 +108,7 @@ const Auth = () => {
     setLoading(false);
     if (error) {
       const message = error.message === "Failed to fetch" 
-        ? "continua msg de erro ao acessar, qual o erro que não está me permitindo acessar o app?"
+        ? "não estou conseguindo acessar o app e os comandos que dou aqui vão para o texto da msg de erro"
         : error.message;
       toast({ title: "erro ao cadastrar novo usuario", description: message, variant: "destructive" });
     } else {
