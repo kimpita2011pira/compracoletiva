@@ -67,7 +67,7 @@ const Auth = () => {
     setLoading(false);
     if (error) {
       const message = error.message === "Failed to fetch" 
-        ? "dinovo, corrigir erro de acesso"
+        ? "erro ao acessar sistema"
         : error.message;
       toast({ title: "Erro ao entrar", description: message, variant: "destructive" });
     } else {
@@ -108,7 +108,7 @@ const Auth = () => {
     setLoading(false);
     if (error) {
       const message = error.message === "Failed to fetch" 
-        ? "dinovo, corrigir erro de acesso"
+        ? "erro ao acessar sistema"
         : error.message;
       toast({ title: "erro ao cadastrar novo usuario", description: message, variant: "destructive" });
     } else {
