@@ -1,0 +1,1 @@
+DO $$ DECLARE r jsonb; BEGIN r := public.validate_expired_offers(); RAISE NOTICE 'result %', r; END $$;
