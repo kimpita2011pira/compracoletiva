@@ -957,6 +957,18 @@ export type Database = {
           isSetofReturn: true
         }
       }
+      admin_list_wallets: {
+        Args: never
+        Returns: {
+          balance: number
+          company_name: string
+          name: string
+          roles: string
+          updated_at: string
+          user_id: string
+          wallet_id: string
+        }[]
+      }
       can_upload_offer_image: { Args: { _user_id: string }; Returns: boolean }
       charge_admin_fee_current_month: {
         Args: { _user_id: string }
@@ -1031,6 +1043,7 @@ export type Database = {
         Returns: undefined
       }
       notify_users_missing_address: { Args: never; Returns: undefined }
+      pause_vendor_offer: { Args: { p_offer_id: string }; Returns: undefined }
       process_franchisee_commission: {
         Args: { p_offer_id: string }
         Returns: undefined
@@ -1048,6 +1061,10 @@ export type Database = {
           p_quantity: number
         }
         Returns: string
+      }
+      resume_vendor_offer: {
+        Args: { p_new_end_date: string; p_offer_id: string }
+        Returns: undefined
       }
       run_external_reconciliation: {
         Args: { p_discrepancies: Json }
@@ -1097,6 +1114,7 @@ export type Database = {
         | "CANCELADA"
         | "ENCERRADA"
         | "EXPIRADA"
+        | "PAUSADA"
       order_status: "RESERVADO" | "CONFIRMADO" | "CANCELADO" | "ESTORNADO"
       transaction_type:
         | "DEPOSITO"
@@ -1246,7 +1264,14 @@ export const Constants = {
         "SERVICOS",
         "OUTROS",
       ],
-      offer_status: ["ATIVA", "VALIDADA", "CANCELADA", "ENCERRADA", "EXPIRADA"],
+      offer_status: [
+        "ATIVA",
+        "VALIDADA",
+        "CANCELADA",
+        "ENCERRADA",
+        "EXPIRADA",
+        "PAUSADA",
+      ],
       order_status: ["RESERVADO", "CONFIRMADO", "CANCELADO", "ESTORNADO"],
       transaction_type: [
         "DEPOSITO",
