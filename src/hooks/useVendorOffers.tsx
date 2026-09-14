@@ -102,3 +102,54 @@ export function useReactivateOffer() {
     },
   });
 }
+
+export function usePauseOffer() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (offerId: string) => {
+      const { error } = await supabase.rpc("pause_vendor_offer" as never, {
+        p_offer_id: offerId,
+      } as never);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["vendor-offers"] });
+      queryClient.invalidateQueries({ queryKey: ["offers-active"] });
+      toast({ title: "Oferta pausada" });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Erro ao pausar oferta",
+        description: error.message || "Tente novamente mais tarde",
+        variant: "destructive",
+      });
+    },
+  });
+}
+
+export function useResumeOffer() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ offerId, newEndDate }: { offerId: string; newEndDate: string }) => {
+      const { error } = await supabase.rpc("resume_vendor_offer" as never, {
+        p_offer_id: offerId,
+        p_new_end_date: newEndDate,
+      } as never);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["vendor-offers"] });
+      queryClient.invalidateQueries({ queryKey: ["offers-active"] });
+      toast({ title: "Oferta retomada com sucesso" });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Erro ao retomar oferta",
+        description: error.message || "Tente novamente mais tarde",
+        variant: "destructive",
+      });
+    },
+  });
+}

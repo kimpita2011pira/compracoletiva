@@ -3,6 +3,7 @@ import { useAdminWallets, usePlatformWalletBalance } from "@/hooks/useAdminWalle
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Building2, Landmark, Search, Users, Wallet } from "lucide-react";
 
 const formatBRL = (value: number) =>
@@ -81,18 +82,16 @@ export function AdminWalletsOverview() {
         </div>
         <div className="flex flex-wrap gap-2">
           {(["TODOS", "VENDEDOR", "FRANQUEADO", "CLIENTE"] as Filter[]).map((option) => (
-            <button
+            <Button
               key={option}
               type="button"
+              size="sm"
+              variant={option === filter ? "default" : "outline"}
               onClick={() => setFilter(option)}
-              className={
-                option === filter
-                  ? "rounded-full bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground"
-                  : "rounded-full border px-3 py-1.5 text-xs font-semibold text-muted-foreground hover:bg-muted"
-              }
+              className="h-8 rounded-full px-3 text-xs"
             >
               {option === "TODOS" ? "Todos" : ROLE_LABEL[option]}
-            </button>
+            </Button>
           ))}
         </div>
       </div>

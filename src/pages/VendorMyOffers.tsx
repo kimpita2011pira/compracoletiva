@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useVendorOffers, useCancelOffer, useDeleteOffer, useReactivateOffer } from "@/hooks/useVendorOffers";
+import { useVendorOffers, useCancelOffer, useDeleteOffer, useReactivateOffer, usePauseOffer, useResumeOffer } from "@/hooks/useVendorOffers";
 import { useVendor } from "@/hooks/useVendor";
 import { AppLayout } from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
@@ -16,7 +16,7 @@ import {
 import { toast } from "@/hooks/use-toast";
 import {
   ArrowLeft, Plus, ShoppingBag, Clock, CheckCircle, XCircle, Ban,
-  Eye, MoreVertical, Pencil, Truck, Trash2, RefreshCcw
+  Eye, MoreVertical, Pencil, Truck, Trash2, RefreshCcw, PauseCircle, PlayCircle
 } from "lucide-react";
 import { VendorOffersOrdersDialog } from "@/components/VendorOffersOrdersDialog";
 import {
@@ -31,6 +31,7 @@ const STATUS_CONFIG: Record<string, { label: string; icon: React.ElementType; va
   CANCELADA: { label: "Cancelada", icon: XCircle, variant: "destructive" },
   EXPIRADA: { label: "Expirada", icon: Ban, variant: "destructive" },
   ENCERRADA: { label: "Encerrada", icon: Ban, variant: "outline" },
+  PAUSADA: { label: "Pausada", icon: PauseCircle, variant: "outline" },
 };
 
 export default function VendorMyOffers() {
@@ -40,10 +41,14 @@ export default function VendorMyOffers() {
   const cancelOffer = useCancelOffer();
   const deleteOffer = useDeleteOffer();
   const reactivateOffer = useReactivateOffer();
+  const pauseOffer = usePauseOffer();
+  const resumeOffer = useResumeOffer();
   
   const [cancelId, setCancelId] = useState<string | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [reactivateData, setReactivateData] = useState<{ id: string; title: string; status: string } | null>(null);
+  const [pauseId, setPauseId] = useState<string | null>(null);
+  const [resumeData, setResumeData] = useState<{ id: string; title: string } | null>(null);
   const [newEndDate, setNewEndDate] = useState("");
   const [ordersOffer, setOrdersOffer] = useState<{ id: string; title: string } | null>(null);
 
@@ -100,6 +105,19 @@ export default function VendorMyOffers() {
     }
   };
 
+  const handlePause = async () => {
+    if (!pauseId) return;
+    await pauseOffer.mutateAsync(pauseId);
+    setPauseId(null);
+  };
+
+  const handleResume = async () => {
+    if (!resumeData || !newEndDate) return;
+    await resumeOffer.mutateAsync({ offerId: resumeData.id, newEndDate: new Date(newEndDate).toISOString() });
+    setResumeData(null);
+    setNewEndDate("");
+  };
+
   return (
     <AppLayout title="📦 Minhas Ofertas">
       <main className="container max-w-3xl py-6 space-y-6">
@@ -138,6 +156,13 @@ export default function VendorMyOffers() {
                 onView={() => navigate(`/offers/${offer.id}`)}
                 onEdit={() => navigate(`/vendor/edit-offer/${offer.id}`)}
                 onCancel={() => setCancelId(offer.id)}
+                onPause={() => setPauseId(offer.id)}
+                onResume={() => {
+                  setResumeData({ id: offer.id, title: offer.title });
+                  const nextWeek = new Date();
+                  nextWeek.setDate(nextWeek.getDate() + 7);
+                  setNewEndDate(nextWeek.toISOString().split("T")[0]);
+                }}
                 onDelete={() => setDeleteId(offer.id)}
                 onReactivate={() => {
                   setReactivateData({ id: offer.id, title: offer.title, status: offer.status });
@@ -178,6 +203,50 @@ export default function VendorMyOffers() {
                 </AlertDialogFooter>
               </>
             )}
+          </AlertDialogContent>
+        </AlertDialog>
+
+        <AlertDialog open={!!pauseId} onOpenChange={(open) => !open && setPauseId(null)}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Pausar oferta?</AlertDialogTitle>
+              <AlertDialogDescription>
+                A oferta sairá temporariamente do marketplace. As reservas e o progresso atual serão preservados.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Voltar</AlertDialogCancel>
+              <AlertDialogAction onClick={handlePause} disabled={pauseOffer.isPending}>
+                {pauseOffer.isPending ? "Pausando..." : "Pausar oferta"}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+
+        <AlertDialog open={!!resumeData} onOpenChange={(open) => !open && setResumeData(null)}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Retomar oferta</AlertDialogTitle>
+              <AlertDialogDescription>
+                Escolha uma nova data de encerramento para “{resumeData?.title}”. As reservas já feitas serão mantidas.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <div className="space-y-2 py-4">
+              <Label htmlFor="resume-end-date">Nova data de encerramento</Label>
+              <Input
+                id="resume-end-date"
+                type="date"
+                value={newEndDate}
+                min={new Date().toISOString().split("T")[0]}
+                onChange={(event) => setNewEndDate(event.target.value)}
+              />
+            </div>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancelar</AlertDialogCancel>
+              <AlertDialogAction onClick={handleResume} disabled={!newEndDate || resumeOffer.isPending}>
+                {resumeOffer.isPending ? "Retomando..." : "Retomar oferta"}
+              </AlertDialogAction>
+            </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
 
@@ -285,6 +354,8 @@ function OfferRow({
   onView,
   onEdit,
   onCancel,
+  onPause,
+  onResume,
   onDelete,
   onReactivate,
   onViewOrders,
@@ -293,6 +364,8 @@ function OfferRow({
   onView: () => void;
   onEdit: () => void;
   onCancel: () => void;
+  onPause: () => void;
+  onResume: () => void;
   onDelete: () => void;
   onReactivate: () => void;
   onViewOrders: () => void;
@@ -354,6 +427,16 @@ function OfferRow({
                 {offer.status === "ATIVA" && (
                   <DropdownMenuItem onClick={onEdit} className="gap-2">
                     <Pencil className="h-4 w-4" /> Editar oferta
+                  </DropdownMenuItem>
+                )}
+                {(offer.status === "ATIVA") && (
+                  <DropdownMenuItem onClick={onPause} className="gap-2">
+                    <PauseCircle className="h-4 w-4" /> Pausar oferta
+                  </DropdownMenuItem>
+                )}
+                {(offer.status === "PAUSADA") && (
+                  <DropdownMenuItem onClick={onResume} className="gap-2 text-primary focus:text-primary">
+                    <PlayCircle className="h-4 w-4" /> Retomar oferta
                   </DropdownMenuItem>
                 )}
                 {(offer.status === "ATIVA") && (
