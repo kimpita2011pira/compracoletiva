@@ -36,6 +36,7 @@ import { AdminFeeHistory } from "@/components/AdminFeeHistory";
 import { PlatformWalletLedger } from "@/components/PlatformWalletLedger";
 import { Building, ShieldAlert } from "lucide-react";
 import { AdminReconciliation } from "@/components/AdminReconciliation";
+import { AdminWalletsOverview } from "@/components/AdminWalletsOverview";
 import {
   BarChart,
   Bar,
@@ -99,7 +100,7 @@ export default function AdminDashboard() {
     <AppLayout title="🛡️ Painel Admin">
       <main className="container py-8">
         <Tabs defaultValue="metricas" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4 md:grid-cols-8 h-auto">
+          <TabsList className="grid w-full grid-cols-3 md:grid-cols-9 h-auto">
             <TabsTrigger value="metricas" className="gap-2">
               <BarChart3 className="h-4 w-4" /> Métricas
             </TabsTrigger>
@@ -120,6 +121,9 @@ export default function AdminDashboard() {
             </TabsTrigger>
             <TabsTrigger value="financeiro" className="gap-2">
               <ShieldAlert className="h-4 w-4" /> Financeiro
+            </TabsTrigger>
+            <TabsTrigger value="carteiras" className="gap-2">
+              <Wallet className="h-4 w-4" /> Carteiras
             </TabsTrigger>
             <TabsTrigger value="config" className="gap-2">
               <Settings2 className="h-4 w-4" /> Configurações
@@ -408,6 +412,10 @@ export default function AdminDashboard() {
           <TabsContent value="financeiro" className="space-y-6">
             <PlatformWalletLedger />
             <AdminReconciliation />
+          </TabsContent>
+
+          <TabsContent value="carteiras" className="space-y-6">
+            <AdminWalletsOverview />
           </TabsContent>
 
           <TabsContent value="config" className="space-y-6">
